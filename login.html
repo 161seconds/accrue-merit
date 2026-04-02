@@ -6,13 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GieoNhanLanh - Login</title>
   <link rel="icon" type="image/png" href="../../assets/images/logoApp/logoHertz.png" />
-  <!-- css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <!-- <video autoplay muted loop playsinline class="bgVideo">
-      <source src="../../assets/video/videoBackground.mp4" type="video/mp4" />
-    </video> -->
-
-  <!-- <link rel="stylesheet" href="./login.css" /> -->
 
   <style>
     :root {
@@ -20,17 +14,10 @@
       --gold-light: #E8C97A;
       --gold-dim: #7A5E28;
       --red: #B83228;
-      --red-glow: rgba(184, 50, 40, 0.4);
       --jade: #2E6B48;
-      --jade-light: #4A9B6A;
       --ink: #0D0A04;
-      --ink2: #1A1108;
-      --parchment: #F0E6C8;
-      --parchment2: #D8C89A;
       --smoke: rgba(240, 230, 200, 0.07);
     }
-
-
 
     * {
       margin: 0;
@@ -48,16 +35,43 @@
       align-items: center;
       color: #fff;
       font-size: 1.6rem;
+      position: relative;
+      overflow: hidden;
     }
 
-    .bgVideo {
-      position: fixed;
+    /* Hieu ung bui vang / dom dom background */
+    .bg-particles {
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      z-index: -2;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      background: radial-gradient(circle, var(--gold-light) 0%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatParticle 8s infinite ease-in-out;
+    }
+
+    @keyframes floatParticle {
+      0% {
+        transform: translateY(100vh) scale(0.5);
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translateY(-10vh) scale(1.5);
+        opacity: 0;
+      }
     }
 
     .containerLogin {
@@ -65,12 +79,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      z-index: 1;
     }
 
     .boxLogin {
       width: 400px;
-      /* width: 30%; */
-      background: rgba(240, 230, 200, 0.07);
+      background: rgba(20, 15, 10, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(201, 168, 76, 0.15);
       border-radius: 16px;
       padding: 40px 30px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
@@ -81,7 +97,9 @@
       font-size: 28px;
       font-weight: bold;
       margin-bottom: 30px;
-      color: #7A5E28;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
     .inputBoxLogin {
@@ -118,7 +136,7 @@
       bottom: 0;
       width: 0;
       height: 2px;
-      background: #7A5E28;
+      background: var(--gold-dim);
       transition: 0.3s;
     }
 
@@ -126,7 +144,7 @@
     .inputBoxLogin input:valid~span {
       top: -6px;
       font-size: 12px;
-      color: #7A5E28;
+      color: var(--gold-dim);
     }
 
     .inputBoxLogin input:focus~i,
@@ -147,13 +165,13 @@
     }
 
     .linksLogin a:hover {
-      color: #7A5E28;
+      color: var(--gold-dim);
     }
 
     .btnLogin {
       width: 100%;
       padding: 11px;
-      background: #7A5E28;
+      background: var(--gold-dim);
       border: none;
       border-radius: 30px;
       color: #000;
@@ -165,78 +183,7 @@
     }
 
     .btnLogin:hover {
-      background: rgba(184, 136, 40, 0.4);
-    }
-
-    .dividerLogin {
-      margin: 26px 0;
-      text-align: center;
-      position: relative;
-    }
-
-    .dividerLogin span {
-      font-size: 12px;
-      color: #999;
-      background: #111;
-      padding: 0 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .dividerLogin::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: #333;
-    }
-
-    .socialLogin {
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-    }
-
-    .socialBtn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 1px solid #333;
-      background: transparent;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 19px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .socialBtn i {
-      font-size: 1.6rem;
-    }
-
-    .socialBtn:hover {
-      /* transform: scale(1.1); */
-      border-color: #2e2e2e;
-      /* background-color: #000; */
-    }
-
-    .socialBtn.google {
-      color: #b8b8b8;
-    }
-
-    .socialBtn.google:hover {
-      color: #d90000;
-    }
-
-    .socialBtn.facebook {
-      color: #b8b8b8;
-    }
-
-    .socialBtn.facebook:hover {
-      color: #1877f2;
+      background: var(--gold-light);
     }
 
     .passwordBox {
@@ -245,27 +192,23 @@
 
     .togglePassword {
       position: absolute;
-      right: 20px;
+      right: 10px;
       top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
       color: #777;
       cursor: pointer;
-      font-size: 2rem;
+      font-size: 1.8rem;
     }
 
+    .togglePassword:hover,
     .passwordBox input:focus~.togglePassword {
-      color: #7A5E28;
-    }
-
-    .togglePassword:hover {
-      color: #7A5E28;
+      color: var(--gold-dim);
     }
 
     .privacy {
       font-size: 1.2rem;
-      font-family: Tahoma, Geneva, Verdana, sans-serif;
       color: #aaa;
       user-select: none;
     }
@@ -282,41 +225,31 @@
     .boxPrivacy input[type="checkbox"] {
       appearance: none;
       -webkit-appearance: none;
-      width: 2.5rem;
-      height: 2.2rem;
-      border: 2px solid #7A5E28;
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid var(--gold-dim);
       border-radius: 4px;
       cursor: pointer;
       position: relative;
-      margin-top: 3px;
+      margin-top: 2px;
       transition: all 0.2s ease;
-      /* background-color: #fff; */
-    }
-
-    .boxPrivacy input[type="checkbox"]:hover {
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
     }
 
     .boxPrivacy input[type="checkbox"]:checked {
-      background-color: #7A5E28;
-      border-color: #7A5E28;
+      background-color: var(--gold-dim);
     }
 
     .boxPrivacy input[type="checkbox"]:checked::after {
       content: "";
       position: absolute;
-      left: 6px;
-      top: 2px;
+      left: 5px;
+      top: 1px;
       width: 4px;
       height: 10px;
-      border: solid white;
-      border-width: 0 3px 3px 0;
+      border: solid #000;
+      border-width: 0 2px 2px 0;
       transform: rotate(45deg);
     }
-
-    /* .privacy:hover {
-  color: #7A5E28;
-} */
 
     @media (max-width: 480px) {
       .boxLogin {
@@ -324,142 +257,127 @@
         padding: 30px 20px;
       }
     }
-
-    input[type="password"]::-ms-reveal,
-    input[type="password"]::-ms-clear {
-      display: none;
-    }
-
-    input[type="password"]::-webkit-credentials-auto-fill-button,
-    input[type="password"]::-webkit-contacts-auto-fill-button,
-    input[type="password"]::-webkit-textfield-decoration-container {
-      display: none !important;
-    }
   </style>
-
-
-
 </head>
 
 <body>
-  <!-- code here -->
   <div class="containerLogin">
     <div class="boxLogin">
-      <div class="titleLogin">Login</div>
+      <div class="titleLogin">Đăng Nhập</div>
       <form id="formLogin" autocomplete="off">
         <div class="inputBoxLogin">
-          <input type="text" id="username" placeholder="Login (161seconds)">
-          <span>Username</span>
+          <input type="text" id="username" required>
+          <span>Tên tài khoản (VD: 161seconds)</span>
           <i></i>
         </div>
 
         <div class="inputBoxLogin passwordBox">
-          <input type="password" id="password" placeholder="Password (123)">
-          <span>Password</span>
+          <input type="password" id="password" required>
+          <span>Mật khẩu (VD: 123)</span>
           <i></i>
-
           <button type="button" class="togglePassword">
             <i class="fa-solid fa-eye"></i>
           </button>
         </div>
 
         <div class="linksLogin">
-          <a href="../pageForgotPassword/forgotPassword.html">Forgot Password?</a>
-          <a href="./register.html">Sign Up</a>
+          <a href="#">Quên mật khẩu?</a>
+          <a href="./register.html">Chưa có tài khoản?</a>
         </div>
 
         <label class="boxPrivacy">
-          <input id="agree" type="checkbox" checked />
-          <label for="agree" class="privacy">I have read, understood, and agree to the
-            <a href="https://www.nhaccuatui.com/privacy-policy" target="_blank" rel="noopener noreferrer" style="
-                  font-size: 1.2rem;
-                  font-family: Tahoma, Geneva, Verdana, sans-serif;
-                  color: #aaa;
-                  user-select: none;
-                  text-decoration: none;
-                  color: #7A5E28;
-                ">Privacy Policy</a>
-            and
-            <a href="https://www.nhaccuatui.com/terms-of-use" target="_blank" rel="noopener noreferrer" style="
-                  font-size: 1.2rem;
-                  font-family: Tahoma, Geneva, Verdana, sans-serif;
-                  color: #aaa;
-                  user-select: none;
-                  text-decoration: none;
-                  color: #7A5E28;
-                ">Terms of Use</a>.</label>
+          <input id="agree" type="checkbox" checked required />
+          <label for="agree" class="privacy">Tôi đồng ý với
+            <a href="#" style="color: var(--gold-dim); text-decoration: none;">Điều khoản</a> và
+            <a href="#" style="color: var(--gold-dim); text-decoration: none;">Chính sách bảo mật</a>.
+          </label>
         </label>
 
-        <button type="submit" class="btnLogin">Login</button>
-        <!--        <div class="dividerLogin">
-        <span>or continue with</span>
-        </div>
-
-        <div class="socialLogin">
-          <button class="socialBtn google">
-            <i class="fa-brands fa-google"></i>
-          </button>
-
-          <button class="socialBtn facebook">
-            <i class="fa-brands fa-facebook-f"></i>
-          </button>
-        </div>
-        -->
+        <button type="submit" class="btnLogin">Đăng Nhập</button>
       </form>
     </div>
   </div>
-  <!-- code here -->
-  <!-- script -->
-  <!-- <script src="/client/assets/js/auth.js"></script> -->
+
   <script>
+    // Tao hieu ung bui vang
+    function createParticles() {
+      const container = document.createElement('div');
+      container.className = 'bg-particles';
+      document.body.appendChild(container);
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.width = (Math.random() * 5 + 2) + 'px';
+        p.style.height = p.style.width;
+        p.style.animationDelay = (Math.random() * 8) + 's';
+        p.style.animationDuration = (Math.random() * 5 + 6) + 's';
+        container.appendChild(p);
+      }
+    }
+
+    // Khoi tao tai khoan Demo va hieu ung khi load trang
+    document.addEventListener('DOMContentLoaded', () => {
+      createParticles();
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      if (!users.find(u => u.username === '161seconds')) {
+        users.push({ username: '161seconds', password: '123', name: 'Bao (Demo)' });
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+    });
+
+    // An hien mat khau
+    const toggleBtn = document.querySelector(".togglePassword");
+    toggleBtn.addEventListener("click", function () {
+      const input = document.getElementById("password");
+      const icon = this.querySelector("i");
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    });
+
+    // Xu ly submit form
+    document.getElementById('formLogin').addEventListener('submit', function (e) {
+      e.preventDefault(); // Chan reload trang
+      const userVal = document.getElementById('username').value.trim();
+      const passVal = document.getElementById('password').value.trim();
+      handleLogin(userVal, passVal);
+    });
+
     function handleLogin(username, password) {
       const users = JSON.parse(localStorage.getItem('users')) || [];
       const user = users.find(u => u.username === username && u.password === password);
 
       if (user) {
-        // Lưu phiên đăng nhập
         localStorage.setItem('currentUser', JSON.stringify(user));
-        alert('Successfully logged in!');
-        window.location.href = 'index.html'; // Đẩy về trang chính
+        alert('Đăng nhập thành công!');
+        window.location.href = 'index.html'; // Day ve trang chinh
       } else {
-        alert('Wrong username or password!');
+        alert('Sai tên tài khoản hoặc mật khẩu!');
       }
     }
-
-    function loginWithGoogle() {
-      console.log("Opening Google authentication popup...");
-      alert("Redirecting to Google for authentication...");
-
-      setTimeout(() => {
-        // Tạo một tài khoản Google giả định trả về từ API
-        const googleUser = {
-          username: 'google_user_' + Math.floor(Math.random() * 1000),
-          name: 'Google User',
-          provider: 'google'
-        };
-
-        // Lưu vào phiên đăng nhập và đẩy về trang chủ
-        localStorage.setItem('currentUser', JSON.stringify(googleUser));
-        window.location.href = 'index.html';
-      }, 1500);
+    function showModal(icon, title, desc, pts = "") {
+      document.getElementById('modal-icon').textContent = icon;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-desc').textContent = desc;
+      const ptsEl = document.getElementById('modal-pts');
+      if (pts) {
+        ptsEl.style.display = 'block';
+        ptsEl.textContent = pts;
+      } else {
+        ptsEl.style.display = 'none';
+      }
+      document.getElementById('modal-overlay').classList.add('open');
     }
 
-    function loginWithFacebook() {
-      console.log("Opening Facebook authentication popup...");
-      alert("Redirecting to Facebook for authentication...");
-
-      setTimeout(() => {
-        // Tạo một tài khoản Facebook giả định trả về từ API
-        const fbUser = {
-          username: 'fb_user_' + Math.floor(Math.random() * 1000),
-          name: 'Facebook User',
-          provider: 'facebook'
-        };
-
-        // Lưu vào phiên đăng nhập và đẩy về trang chủ
-        localStorage.setItem('currentUser', JSON.stringify(fbUser));
-        window.location.href = 'index.html';
-      }, 1500);
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
     }
   </script>
 </body>

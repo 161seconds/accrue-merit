@@ -7,7 +7,6 @@
     <title>GieoNhanLanh - Register</title>
     <link rel="icon" type="image/png" href="../../assets/images/logoApp/logoHertz.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="./register.css" />
 
     <style>
         :root {
@@ -15,13 +14,8 @@
             --gold-light: #e8c97a;
             --gold-dim: #7a5e28;
             --red: #b83228;
-            --red-glow: rgba(184, 50, 40, 0.4);
             --jade: #2e6b48;
-            --jade-light: #4a9b6a;
             --ink: #0d0a04;
-            --ink2: #1a1108;
-            --parchment: #f0e6c8;
-            --parchment2: #d8c89a;
             --smoke: rgba(240, 230, 200, 0.07);
         }
 
@@ -41,6 +35,43 @@
             align-items: center;
             color: #fff;
             font-size: 1.6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hieu ung bui vang / dom dom background */
+        .bg-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, var(--gold-light) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle 8s infinite ease-in-out;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(1.5);
+                opacity: 0;
+            }
         }
 
         .containerLogin {
@@ -49,12 +80,14 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            z-index: 1;
         }
 
         .boxLogin {
             width: 450px;
-            /* Tăng nhẹ chiều rộng cho trang đăng ký */
-            background: var(--smoke);
+            background: rgba(20, 15, 10, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(201, 168, 76, 0.15);
             border-radius: 16px;
             padding: 40px 30px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
@@ -176,6 +209,11 @@
             font-size: 1.8rem;
         }
 
+        .togglePassword:hover,
+        .passwordBox input:focus~.togglePassword {
+            color: var(--gold-dim);
+        }
+
         .boxPrivacy {
             display: flex;
             align-items: flex-start;
@@ -214,23 +252,23 @@
 <body>
     <div class="containerLogin">
         <div class="boxLogin">
-            <div class="titleLogin">Register</div>
+            <div class="titleLogin">Đăng Ký</div>
             <form id="formRegister" autocomplete="off">
                 <div class="inputBoxLogin">
                     <input type="text" id="username" required />
-                    <span>Username</span>
+                    <span>Tên tài khoản</span>
                     <i></i>
                 </div>
 
                 <div class="inputBoxLogin">
                     <input type="email" id="email" required />
-                    <span>Email Address</span>
+                    <span>Địa chỉ Email</span>
                     <i></i>
                 </div>
 
                 <div class="inputBoxLogin passwordBox">
                     <input type="password" id="password" required />
-                    <span>Password</span>
+                    <span>Mật khẩu</span>
                     <i></i>
                     <button type="button" class="togglePassword">
                         <i class="fa-solid fa-eye"></i>
@@ -239,7 +277,7 @@
 
                 <div class="inputBoxLogin passwordBox">
                     <input type="password" id="confirmPassword" required />
-                    <span>Confirm Password</span>
+                    <span>Xác nhận mật khẩu</span>
                     <i></i>
                     <button type="button" class="togglePassword">
                         <i class="fa-solid fa-eye"></i>
@@ -247,25 +285,43 @@
                 </div>
 
                 <label class="boxPrivacy">
-                    <input id="agree" type="checkbox" required />
+                    <input id="agree" type="checkbox" checked required />
                     <span class="privacy-text">
-                        I agree to the
-                        <a href="#">Privacy Policy</a> and <a href="#">Terms of Use</a>.
+                        Tôi đồng ý với
+                        <a href="#">Điều khoản</a> và <a href="#">Chính sách bảo mật</a>.
                     </span>
                 </label>
 
-                <button type="submit" class="btnLogin">Create Account</button>
+                <button type="submit" class="btnLogin">Tạo Tài Khoản</button>
 
                 <div class="linksLogin">
-                    <span>Already have an account?</span>
-                    <a href="./login.html">Login</a>
+                    <span>Đã có tài khoản?</span>
+                    <a href="./login.html">Đăng nhập</a>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Logic ẩn hiện mật khẩu (Xử lý cho cả 2 ô password)
+        // Tao hieu ung bui vang
+        function createParticles() {
+            const container = document.createElement('div');
+            container.className = 'bg-particles';
+            document.body.appendChild(container);
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.width = (Math.random() * 5 + 2) + 'px';
+                p.style.height = p.style.width;
+                p.style.animationDelay = (Math.random() * 8) + 's';
+                p.style.animationDuration = (Math.random() * 5 + 6) + 's';
+                container.appendChild(p);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', createParticles);
+
+        // Logic an hien mat khau cho 2 o
         const toggleButtons = document.querySelectorAll(".togglePassword");
         toggleButtons.forEach((btn) => {
             btn.addEventListener("click", function () {
@@ -284,31 +340,55 @@
             });
         });
 
+        // Xu ly submit dang ky
         document.getElementById("formRegister").addEventListener("submit", (e) => {
-            const password = document.getElementById("password").value;
-            const confirm = document.getElementById("confirmPassword").value;
+            e.preventDefault(); // Chan form tu dong gui
+
+            const username = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const confirm = document.getElementById("confirmPassword").value.trim();
 
             if (password !== confirm) {
-                e.preventDefault();
-                alert("Passwords do not match!");
+                alert("Mật khẩu xác nhận không khớp!");
+                return;
             }
+
+            handleRegister(username, password, username);
         });
 
         function handleRegister(username, password, name) {
             let users = JSON.parse(localStorage.getItem('users')) || [];
 
             if (users.find(u => u.username === username)) {
-                alert('This username is already taken!');
+                alert('Tên tài khoản này đã được sử dụng!');
                 return;
             }
 
-            const newUser = { username, password, name: name || username };
+            const newUser = { username, password, name: name };
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
 
-            alert('Registration successful! You can now log in.');
+            alert('Đăng ký thành công! Hệ thống sẽ chuyển bạn vào trang chính.');
             localStorage.setItem('currentUser', JSON.stringify(newUser));
-            window.location.href = 'login.html';
+            window.location.href = 'index.html'; // Dang ky xong day ve trang chinh luon
+        }
+        function showModal(icon, title, desc, pts = "") {
+            document.getElementById('modal-icon').textContent = icon;
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').textContent = desc;
+            const ptsEl = document.getElementById('modal-pts');
+            if (pts) {
+                ptsEl.style.display = 'block';
+                ptsEl.textContent = pts;
+            } else {
+                ptsEl.style.display = 'none';
+            }
+            document.getElementById('modal-overlay').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('open');
         }
 
     </script>

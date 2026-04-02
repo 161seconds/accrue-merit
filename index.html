@@ -1746,6 +1746,37 @@
       text-transform: uppercase;
     }
 
+    .subpage-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .sub-p {
+      position: absolute;
+      background: radial-gradient(circle, var(--gold-light) 0%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0;
+      animation: subFloat 10s infinite ease-in-out;
+    }
+
+    @keyframes subFloat {
+      0% {
+        transform: translate(0, 110vh);
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+
+      100% {
+        transform: translate(20px, -10vh);
+        opacity: 0;
+      }
+    }
+
     /* ══ QUYÊN GÓP PAGE ══ */
     .qg-content {
       flex: 1;
@@ -2509,7 +2540,7 @@
           <div class="avatar" onclick="toggleUserMenu(event)">🧘</div>
 
           <div class="user-menu" id="user-menu-dropdown">
-            <div class="um-item" onclick="goPage('caidat')">
+            <div class="um-item" onclick="goPage('settings')">
               <span class="um-icon">⚙️</span> Cài đặt
             </div>
             <div class="um-item" onclick="goPage('quyengop')">
@@ -3289,7 +3320,7 @@
     });
 
     function checkAuthState() {
-      initMockDB();
+      //initMockDB();
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
       const guestLinks = document.getElementById('guest-links');
@@ -3332,6 +3363,28 @@
 
       // Chạy lại hàm kiểm tra để ẩn tên, hiện lại nút Đăng nhập/Đăng ký
       initializeApp();
+    }
+
+    function initSubpageBackgrounds() {
+      const subpages = ['page-nhiemvu', 'page-nhang', 'page-gomo', 'page-duc', 'page-toi', 'page-danhhieu', 'page-quyengop'];
+      subpages.forEach(id => {
+        const pg = document.getElementById(id);
+        if (pg) {
+          const container = document.createElement('div');
+          container.className = 'subpage-particles';
+          pg.appendChild(container);
+          for (let i = 0; i < 15; i++) {
+            const p = document.createElement('div');
+            p.className = 'sub-p';
+            p.style.left = Math.random() * 100 + '%';
+            const size = Math.random() * 4 + 2 + 'px';
+            p.style.width = size; p.style.height = size;
+            p.style.animationDelay = Math.random() * 10 + 's';
+            p.style.animationDuration = Math.random() * 5 + 7 + 's';
+            container.appendChild(p);
+          }
+        }
+      });
     }
 
     // ══════════════ STATE (LƯU LOCALSTORAGE) ══════════════
@@ -3647,11 +3700,121 @@
 
     // ══════════════ NAVIGATION ══════════════
     function goPage(name) {
+      const targetPage = document.getElementById('page-' + name);
+      if (name === 'caidat' || name === 'settings') {
+        window.location.href = 'settings.html';
+        return; // Dừng hàm ngay lập tức
+      }
+      if (!targetPage) {
+        console.warn(`Không tìm thấy trang: page-${name}. Có thể bạn đang gọi nhầm ID hoặc chưa tách file.`);
+        return;
+      }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page-' + name).classList.add('active');
+      targetPage.classList.add('active');
       if (name === 'nhiemvu') renderKanban();
       if (name === 'danhhieu') renderTitles();
-      if (name === 'quyengop') { renderDonors(); initQRs(); }
+      if (name === 'quyengop') {
+        renderDonors();
+        initQRs();
+        setTimeout(syncGlobalTitleBadge, 50);
+      }
+    }
+
+    // --- HÀM ĐỒNG BỘ TRẠNG THÁI ĐĂNG NHẬP CHO TẤT CẢ CÁC TRANG ---
+    // ══════════════ ĐỒNG BỘ HEADER & MENU NGƯỜI DÙNG TOÀN CỤC ══════════════
+    function syncAllHeaders() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const allUserZones = document.querySelectorAll('.user-zone');
+
+      allUserZones.forEach(zone => {
+        // Dọn dẹp rác từ code cũ
+        const oldNames = zone.querySelectorAll('.user-name-display, .user-name-span');
+        oldNames.forEach(el => el.remove());
+
+        let avatar = zone.querySelector('.avatar');
+        let wrapper = zone.querySelector('.avatar-wrapper');
+
+        // Bổ sung HTML cấu trúc nếu thiếu
+        if (!wrapper && avatar) {
+          wrapper = document.createElement('div');
+          wrapper.className = 'avatar-wrapper';
+          avatar.parentNode.insertBefore(wrapper, avatar);
+          wrapper.appendChild(avatar);
+          avatar.setAttribute('onclick', 'toggleUserMenu(event)');
+
+          const menuHTML = `
+            <div class="user-menu">
+              <a href="settings.html" class="um-item" style="text-decoration: none;">
+                <span class="um-icon">⚙️</span> Cài đặt
+              </a>
+              <div class="um-item" onclick="goPage('quyengop')">
+                <span class="um-icon">🏮</span> Quyên góp
+              </div>
+              <div class="um-divider logout-divider"></div>
+              <div class="um-item logout-btn" style="color: #E8A090;" onclick="handleLogout()">
+                <span class="um-icon">🚪</span> Đăng xuất
+              </div>
+            </div>
+          `;
+          wrapper.insertAdjacentHTML('beforeend', menuHTML);
+        } else if (wrapper && avatar && !avatar.hasAttribute('onclick')) {
+          avatar.setAttribute('onclick', 'toggleUserMenu(event)');
+        }
+
+        // Chèn tên người dùng vào trước avatar-wrapper
+        const nameEl = document.createElement('div');
+        nameEl.className = 'user-name-display';
+        nameEl.style.cssText = "font-size: 13px; color: var(--gold-light); font-weight: 700; margin-right: 10px; letter-spacing: 0.05em;";
+
+        if (wrapper) {
+          zone.insertBefore(nameEl, wrapper);
+        }
+
+        const authLinks = zone.querySelector('.auth-links, #guest-links');
+        const menuDivider = wrapper ? wrapper.querySelector('.logout-divider, #logout-divider') : null;
+        const menuLogout = wrapper ? wrapper.querySelector('.logout-btn, #logout-btn') : null;
+
+        // Cập nhật hiển thị dựa trên trạng thái auth
+        if (currentUser) {
+          if (authLinks) authLinks.style.display = 'none';
+          nameEl.textContent = currentUser.name;
+          nameEl.style.display = 'block';
+          // Cập nhật icon avatar nếu người dùng đã đổi trong cài đặt
+          if (avatar && currentUser.avatar) avatar.textContent = currentUser.avatar;
+
+          if (menuDivider) menuDivider.style.display = 'block';
+          if (menuLogout) menuLogout.style.display = 'flex';
+        } else {
+          if (authLinks) authLinks.style.display = 'flex';
+          nameEl.style.display = 'none';
+          if (menuDivider) menuDivider.style.display = 'none';
+          if (menuLogout) menuLogout.style.display = 'none';
+        }
+      });
+
+      // Đồng bộ lại danh hiệu sau khi đã vẽ xong Header
+      syncGlobalTitleBadge();
+    }
+
+    // ══════════════ XỬ LÝ CLICK MỞ MENU ══════════════
+    function toggleUserMenu(e) {
+      e.stopPropagation(); // Chặn click xuyên thủng
+
+      // Tìm chính xác menu nằm cùng cụm với icon vừa được bấm
+      const wrapper = e.currentTarget.closest('.avatar-wrapper');
+      if (!wrapper) return;
+      const currentMenu = wrapper.querySelector('.user-menu');
+      if (!currentMenu) return;
+
+      const isOpening = !currentMenu.classList.contains('open');
+
+      // Đóng tất cả các menu khác trên toàn màn hình trước
+      document.querySelectorAll('.user-menu').forEach(m => m.classList.remove('open'));
+
+      // Mở menu hiện tại nếu nó đang đóng
+      if (isOpening) {
+        currentMenu.classList.add('open');
+      }
     }
 
     // ══════════════ THREE.JS HOME ══════════════
@@ -4027,15 +4190,33 @@
     }
 
     // ══════════════ MODAL / TOAST ══════════════
-    function showModal(icon, title, desc, pts) {
+    function showModal(icon, title, desc, pts = "") {
       document.getElementById('modal-icon').textContent = icon;
       document.getElementById('modal-title').textContent = title;
       document.getElementById('modal-desc').textContent = desc;
-      document.getElementById('modal-pts').textContent = pts;
+      const ptsEl = document.getElementById('modal-pts');
+      if (pts) {
+        ptsEl.style.display = 'block';
+        ptsEl.textContent = pts;
+      } else {
+        ptsEl.style.display = 'none';
+      }
       document.getElementById('modal-overlay').classList.add('open');
     }
-    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-    function showToast(msg) { const old = document.querySelector('.toast'); if (old) old.remove(); const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+    }
+
+    function showToast(msg) {
+      const old = document.querySelector('.toast');
+      if (old) old.remove();
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    }
 
     // ══════════════ AI CHAT ══════════════
     let chatOpen = false;
@@ -4090,8 +4271,20 @@
     function getFallback(msg) { const r = ['Hôm nay bạn có thể nhường chỗ cho người lớn tuổi, hoặc nhặt rác ở vỉa hè gần nhà. Mỗi việc nhỏ đều tích lũy phúc đức! 🪷', 'Nam mô A Di Đà Phật 🙏 Bố thí không chỉ là vật chất — một lời động viên đúng lúc cũng là tích đức rồi.', 'Sám hối chân thành là bước đầu tịnh hóa tâm. Nhìn nhận lỗi lầm và quyết tâm không tái phạm. 💙', 'Ăn chay dù chỉ một bữa cũng gieo nhân từ bi. Hôm nay bạn thử thực hành không? 🥗']; return r[Math.floor(Math.random() * r.length)]; }
 
     // ══════════════ INIT ══════════════
-    updateScoreDisplays();
-    syncGlobalTitleBadge(); 
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Đồng bộ người dùng cho mọi header
+      syncAllHeaders();
+      // 2. Tạo hiệu ứng nền cho các trang phụ
+      initSubpageBackgrounds();
+      // 3. Load điểm và danh hiệu
+      updateScoreDisplays();
+      syncGlobalTitleBadge();
+
+      // Xử lý đóng menu khi click ra ngoài
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.user-menu').forEach(m => m.classList.remove('open'));
+      });
+    });
   </script>
 </body>
 
