@@ -2505,6 +2505,58 @@
         transform: none
       }
     }
+
+    /* Hiệu ứng chữ bay lên khi gõ mõ */
+    .floating-karma-text {
+      position: absolute;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      font-weight: bold;
+      pointer-events: none;
+      animation: floatUp 1s ease-out forwards;
+      text-shadow: 0 0 10px rgba(201, 168, 76, 0.8);
+      z-index: 50;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-80px) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* Hào quang tâm linh sau cái cây ở Trang Chính */
+    .tree-halo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(201, 168, 76, 0.15) 0%, transparent 60%);
+      border-radius: 50%;
+      z-index: 0;
+      pointer-events: none;
+      animation: pulseHalo 4s infinite alternate;
+    }
+
+    @keyframes pulseHalo {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 
@@ -2513,6 +2565,7 @@
   <!-- ══════════ HOME ══════════ -->
   <div id="page-home" class="page active">
     <canvas id="three-canvas"></canvas>
+    <div class="tree-halo"></div>
     <div class="home-overlay"></div>
     <div class="mist mist-a"></div>
     <div class="mist mist-b"></div>
@@ -2580,7 +2633,7 @@
     </div>
     <div class="score-widget">
       <div class="score-lbl">Công Đức Tích Lũy</div>
-      <div class="score-num" id="home-score">3,667</div>
+      <div class="score-num" id="home-score">0</div>
       <div class="score-unit">điểm thiện lành</div>
     </div>
     <div class="tasks-card">
@@ -3264,7 +3317,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    function initializeApp() {
+    /*function initializeApp() {
       let users = JSON.parse(localStorage.getItem('users')) || [];
       if (!users.find(u => u.username === '161seconds')) {
         users.push({ username: '161seconds', password: '123', name: '161seconds' });
@@ -3295,7 +3348,7 @@
         if (logoutDiv) logoutDiv.style.display = 'none';
       }
     }
-    document.addEventListener('DOMContentLoaded', initializeApp);
+    document.addEventListener('DOMContentLoaded', initializeApp);*/
 
     // ══════════════ USER MENU ══════════════
     function toggleUserMenu(e) {
@@ -3319,7 +3372,7 @@
       document.querySelectorAll('.user-menu').forEach(m => m.classList.remove('open'));
     });
 
-    function checkAuthState() {
+    /*function checkAuthState() {
       //initMockDB();
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
@@ -3344,26 +3397,7 @@
         if (logoutBtn) logoutBtn.style.display = 'none';
         if (logoutDiv) logoutDiv.style.display = 'none';
       }
-    }
-
-    function handleLogout() {
-      localStorage.removeItem('currentUser');
-      if (typeof showToast === "function") showToast('Đã đăng xuất thành công');
-      checkAuthState(); // Cập nhật lại giao diện ngay lập tức
-    }
-
-    // Gọi hàm này ngay khi trang tải xong
-    document.addEventListener('DOMContentLoaded', () => {
-      checkAuthState();
-    });
-
-    function handleLogout() {
-      localStorage.removeItem('currentUser');
-      if (typeof showToast === "function") showToast('Đã đăng xuất 🙏');
-
-      // Chạy lại hàm kiểm tra để ẩn tên, hiện lại nút Đăng nhập/Đăng ký
-      initializeApp();
-    }
+    }*/
 
     function initSubpageBackgrounds() {
       const subpages = ['page-nhiemvu', 'page-nhang', 'page-gomo', 'page-duc', 'page-toi', 'page-danhhieu', 'page-quyengop'];
@@ -3721,20 +3755,20 @@
     }
 
     // --- HÀM ĐỒNG BỘ TRẠNG THÁI ĐĂNG NHẬP CHO TẤT CẢ CÁC TRANG ---
-    // ══════════════ ĐỒNG BỘ HEADER & MENU NGƯỜI DÙNG TOÀN CỤC ══════════════
+    // ══════════════ ĐỒNG BỘ HEADER (FIX TRIỆT ĐỂ LỖI QUYÊN GÓP) ══════════════
     function syncAllHeaders() {
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
       const allUserZones = document.querySelectorAll('.user-zone');
 
       allUserZones.forEach(zone => {
-        // Dọn dẹp rác từ code cũ
-        const oldNames = zone.querySelectorAll('.user-name-display, .user-name-span');
+        // 1. Quét sạch TẤT CẢ các thẻ tên cũ (dù là id hay class) để tránh xung đột
+        const oldNames = zone.querySelectorAll('.user-name-display, [id*="user-name-display"], .user-name-span');
         oldNames.forEach(el => el.remove());
 
         let avatar = zone.querySelector('.avatar');
         let wrapper = zone.querySelector('.avatar-wrapper');
 
-        // Bổ sung HTML cấu trúc nếu thiếu
+        // 2. Chèn Menu nếu chưa có (áp dụng cho các trang tĩnh)
         if (!wrapper && avatar) {
           wrapper = document.createElement('div');
           wrapper.className = 'avatar-wrapper';
@@ -3757,11 +3791,9 @@
             </div>
           `;
           wrapper.insertAdjacentHTML('beforeend', menuHTML);
-        } else if (wrapper && avatar && !avatar.hasAttribute('onclick')) {
-          avatar.setAttribute('onclick', 'toggleUserMenu(event)');
         }
 
-        // Chèn tên người dùng vào trước avatar-wrapper
+        // 3. Tạo lại thẻ tên CHUẨN (dùng class thay vì id)
         const nameEl = document.createElement('div');
         nameEl.className = 'user-name-display';
         nameEl.style.cssText = "font-size: 13px; color: var(--gold-light); font-weight: 700; margin-right: 10px; letter-spacing: 0.05em;";
@@ -3770,30 +3802,34 @@
           zone.insertBefore(nameEl, wrapper);
         }
 
-        const authLinks = zone.querySelector('.auth-links, #guest-links');
-        const menuDivider = wrapper ? wrapper.querySelector('.logout-divider, #logout-divider') : null;
-        const menuLogout = wrapper ? wrapper.querySelector('.logout-btn, #logout-btn') : null;
+        // 4. Lùng sục mọi nút Đăng nhập / Đăng ký trong khu vực này
+        const authLinks = zone.querySelectorAll('.auth-links, [id*="guest-links"]');
 
-        // Cập nhật hiển thị dựa trên trạng thái auth
         if (currentUser) {
-          if (authLinks) authLinks.style.display = 'none';
+          // KHI ĐÃ ĐĂNG NHẬP: Ẩn nút đăng nhập, hiện tên
+          authLinks.forEach(el => el.style.display = 'none');
           nameEl.textContent = currentUser.name;
           nameEl.style.display = 'block';
-          // Cập nhật icon avatar nếu người dùng đã đổi trong cài đặt
+          // Đồng bộ luôn Avatar nếu có sửa trong phần Cài đặt
           if (avatar && currentUser.avatar) avatar.textContent = currentUser.avatar;
-
-          if (menuDivider) menuDivider.style.display = 'block';
-          if (menuLogout) menuLogout.style.display = 'flex';
         } else {
-          if (authLinks) authLinks.style.display = 'flex';
+          // KHI CHƯA ĐĂNG NHẬP: Hiện nút đăng nhập, ẩn tên
+          authLinks.forEach(el => el.style.display = 'flex');
           nameEl.style.display = 'none';
-          if (menuDivider) menuDivider.style.display = 'none';
-          if (menuLogout) menuLogout.style.display = 'none';
         }
       });
 
-      // Đồng bộ lại danh hiệu sau khi đã vẽ xong Header
-      syncGlobalTitleBadge();
+      // Chạy luôn hàm đồng bộ Danh Hiệu nếu nó tồn tại
+      if (typeof syncGlobalTitleBadge === 'function') syncGlobalTitleBadge();
+    }
+
+    // ══════════════ XỬ LÝ ĐĂNG XUẤT ══════════════
+    function handleLogout() {
+      localStorage.removeItem('currentUser');
+      if (typeof showToast === "function") showToast('Đã rời khỏi hệ thống ✦');
+
+      // Gọi hàm đồng bộ để giao diện toàn bộ các trang tự động chuyển về trạng thái khách
+      syncAllHeaders();
     }
 
     // ══════════════ XỬ LÝ CLICK MỞ MENU ══════════════
@@ -4059,6 +4095,15 @@
       document.getElementById('mo-count').textContent = moCount;
       ducTotal += 1; // Cộng 1 điểm mỗi lần gõ
 
+      const floatText = document.createElement('div');
+      floatText.className = 'floating-karma-text';
+      floatText.textContent = '+1 Phúc';
+      // Căn vị trí chữ bay xuất hiện ngay trên cái mõ
+      floatText.style.top = '20px';
+      floatText.style.left = (40 + Math.random() * 20) + '%';
+      document.getElementById('mo-bowl-wrap').appendChild(floatText);
+      setTimeout(() => floatText.remove(), 1000);
+
       const wrap = document.getElementById('mo-bowl-wrap');
       const ripple = document.getElementById('mo-ripple');
       wrap.classList.add('hit');
@@ -4128,31 +4173,81 @@
       document.getElementById('wish-select').value = '';
     }
 
+    // ══════════════ HIỆU ỨNG NHẢY SỐ (ANIMATE NUMBER) ══════════════
+    function animateValue(obj, start, end, duration) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        // Tính toán tiến độ (từ 0 đến 1)
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        // Hiệu ứng easeOutCubic giúp số chạy nhanh lúc đầu và chậm dần lúc cuối
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const currentVal = Math.floor(start + easeOut * (end - start));
+
+        obj.textContent = currentVal.toLocaleString();
+
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          obj.textContent = end.toLocaleString(); // Đảm bảo số cuối cùng chính xác 100%
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    // ══════════════ SCORE & LOCALSTORAGE SAVE ══════════════
+    // ══════════════ AUTO-SYNC ĐIỂM LÊN DATABASE ══════════════
+    function syncToServer() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return; // Nếu là khách vãng lai thì không lưu
+
+      fetch('http://localhost:5000/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: currentUser.username,
+          stats: {
+            ducTotal: ducTotal,
+            toiTotal: toiTotal,
+            moCount: moCount,
+            streak: streak
+          }
+        })
+      })
+        .then(res => res.json())
+        .then(data => console.log('Đã đồng bộ:', data.message))
+        .catch(err => console.error('Lỗi đồng bộ:', err));
+    }
+
     // ══════════════ SCORE & LOCALSTORAGE SAVE ══════════════
     function updateScoreDisplays() {
-      // 1. Tính toán điểm số mới nhất
+      const oldNetScore = netScore;
       netScore = ducTotal - toiTotal;
 
-      // 2. LƯU VÀO LOCALSTORAGE NGAY LẬP TỨC
       localStorage.setItem('ducTotal', ducTotal);
       localStorage.setItem('toiTotal', toiTotal);
       localStorage.setItem('moCount', moCount);
 
-      // 3. Cập nhật giao diện (Real-time UI)
       const setText = (id, value) => {
         const el = document.getElementById(id);
         if (el) el.textContent = value;
       };
-
-      setText('home-score', netScore.toLocaleString());
       const prefix = netScore > 0 ? '+' : '';
       setText('duc-total', `+${ducTotal.toLocaleString()}`);
       setText('net-score', `${prefix}${netScore.toLocaleString()}`);
 
-      // 4. Đồng bộ sự phát triển của cây 3D
+      const homeScoreEl = document.getElementById('home-score');
+      if (homeScoreEl) {
+        const currentDisplayed = parseInt(homeScoreEl.textContent.replace(/,/g, '')) || 0;
+        animateValue(homeScoreEl, currentDisplayed, netScore, 1000);
+      }
+
       if (typeof generateFoliage === 'function') {
         generateFoliage(netScore);
       }
+
+      // THÊM DÒNG NÀY ĐỂ BẮN DATA LÊN DATABASE SAU KHI CẬP NHẬT TRÊN MÀN HÌNH
+      syncToServer();
     }
 
     // ══════════════ SỔ ══════════════
@@ -4272,6 +4367,7 @@
 
     // ══════════════ INIT ══════════════
     document.addEventListener('DOMContentLoaded', () => {
+      loadSavedFont();
       // 1. Đồng bộ người dùng cho mọi header
       syncAllHeaders();
       // 2. Tạo hiệu ứng nền cho các trang phụ

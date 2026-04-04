@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cài Đặt - Tích Đức</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700&display=swap');
+        /* Import các Font chữ */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700&family=Quicksand:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
 
         :root {
             --gold: #C9A84C;
@@ -36,7 +37,7 @@
             flex-direction: column;
         }
 
-        /* Hiệu ứng nền */
+        /* Hiệu ứng Đom đóm nền */
         .bg-particles {
             position: absolute;
             inset: 0;
@@ -96,7 +97,6 @@
             align-items: center;
             justify-content: center;
             font-size: 15px;
-            box-shadow: 0 0 10px rgba(201, 168, 76, .3);
             color: var(--gold);
         }
 
@@ -105,14 +105,13 @@
             font-size: 15px;
             font-weight: 700;
             color: var(--gold-light);
-            letter-spacing: .12em;
         }
 
         .logo-tagline {
             font-size: 8px;
             color: var(--gold-dim);
-            letter-spacing: .22em;
             display: block;
+            letter-spacing: .22em;
         }
 
         .back-btn {
@@ -137,44 +136,38 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 20px 0 40px;
+            padding: 20px 0;
             overflow: hidden;
+            /* ĐÃ BỎ LỆNH justify-content: center ĐỂ FIX LỖI BỊ ĐẨY GIAO DIỆN */
         }
 
         .page-title-block {
             text-align: center;
-            padding: 0 20px 14px;
+            padding: 0 20px 20px;
             flex-shrink: 0;
-        }
-
-        .page-badge {
-            font-size: 9px;
-            letter-spacing: .35em;
-            color: var(--gold-dim);
-            text-transform: uppercase;
-            margin-bottom: 5px;
         }
 
         .page-h {
             font-family: 'Cinzel', serif;
-            font-size: 22px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--parchment);
-            letter-spacing: .08em;
         }
 
         .page-h span {
             color: var(--gold-light);
         }
 
+        /* BẢNG CÀI ĐẶT CĂN GIỮA & CHIA Ô */
         .settings-content {
             flex: 1;
-            padding: 0 16px;
+            /* Cho phép phần cuộn lấp đầy không gian trống */
+            padding: 0 16px 40px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
             width: 100%;
         }
@@ -185,36 +178,38 @@
 
         .settings-content::-webkit-scrollbar-thumb {
             background: rgba(201, 168, 76, .2);
-            border-radius: 2px;
         }
 
         .set-section {
-            background: rgba(13, 10, 4, .7);
-            border: 1px solid rgba(201, 168, 76, .15);
-            border-radius: 12px;
+            background: rgba(20, 15, 10, 0.8);
+            border: 1px solid rgba(201, 168, 76, .3);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .set-title {
-            font-size: 10px;
-            letter-spacing: 0.2em;
-            color: var(--gold-dim);
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.15em;
+            color: var(--gold-light);
             text-transform: uppercase;
-            padding: 12px 16px 8px;
+            padding: 14px 16px 10px;
+            background: rgba(201, 168, 76, 0.05);
             border-bottom: 1px solid rgba(201, 168, 76, .1);
-            background: rgba(255, 255, 255, .02);
         }
 
         .set-item {
-            padding: 14px 16px;
-            font-size: 13px;
+            padding: 16px;
+            font-size: 14px;
             color: var(--parchment);
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            border-bottom: 1px solid rgba(201, 168, 76, .05);
-            transition: background 0.2s;
+            border-bottom: 1px solid rgba(201, 168, 76, .08);
+            transition: 0.2s;
         }
 
         .set-item:last-child {
@@ -222,8 +217,8 @@
         }
 
         .set-item:hover {
-            background: rgba(201, 168, 76, .1);
-            color: var(--gold-light);
+            background: rgba(201, 168, 76, .15);
+            padding-left: 20px;
         }
 
         .set-item.danger {
@@ -231,14 +226,142 @@
         }
 
         .set-item.danger:hover {
-            background: rgba(184, 50, 40, .15);
-            color: var(--red);
+            background: rgba(184, 50, 40, .2);
+            color: #fff;
         }
 
         .set-val {
-            font-size: 11px;
-            color: rgba(240, 230, 200, .4);
+            font-size: 12px;
+            color: rgba(240, 230, 200, .5);
             pointer-events: none;
+            font-weight: bold;
+        }
+
+        .font-select {
+            background: transparent;
+            color: var(--gold-light);
+            border: 1px solid var(--gold-dim);
+            padding: 4px 8px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .font-select option {
+            background: var(--ink);
+            color: var(--parchment);
+        }
+
+        /* ══ CUSTOM DIALOG (THAY THẾ PROMPT/CONFIRM) ══ */
+        .dialog-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .dialog-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .dialog-box {
+            background: linear-gradient(135deg, #1A1208, #0D0A04);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            transform: scale(0.8);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dialog-overlay.open .dialog-box {
+            transform: scale(1);
+        }
+
+        .dg-title {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            color: var(--gold-light);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .dg-msg {
+            font-size: 13px;
+            color: var(--parchment);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .dg-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--gold-dim);
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .dg-input:focus {
+            border-color: var(--gold-light);
+        }
+
+        .dg-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .dg-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+            transition: 0.2s;
+        }
+
+        .dg-btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+        }
+
+        .dg-btn.cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dg-btn.confirm {
+            background: var(--gold-dim);
+            color: #000;
+        }
+
+        .dg-btn.confirm:hover {
+            background: var(--gold-light);
+        }
+
+        .dg-btn.danger {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .dg-btn.danger:hover {
+            background: #E05040;
         }
 
         /* ══ THẺ 3D MODAL ══ */
@@ -373,7 +496,6 @@
             padding: 7px 18px;
             font-size: 11px;
             color: var(--gold-light);
-            letter-spacing: .08em;
             pointer-events: none;
             animation: toastIn .3s ease-out, toastOut .3s 2.2s forwards;
             white-space: nowrap;
@@ -415,7 +537,6 @@
 
     <div class="sub-content">
         <div class="page-title-block">
-            <p class="page-badge">Tùy Chỉnh Cá Nhân</p>
             <h2 class="page-h">Cài <span>Đặt</span></h2>
         </div>
 
@@ -426,38 +547,58 @@
                     <span>Xem Thẻ Chân Nguyên 3D</span><span class="set-val">Chi tiết ✦</span>
                 </div>
                 <div class="set-item" onclick="changeUserAvatar()">
-                    <span>Sửa ảnh đại diện</span><span class="set-val" id="set-av-val">☸</span>
+                    <span>Sửa biểu tượng</span><span class="set-val" id="set-av-val">☸</span>
+                </div>
+                <div class="set-item" onclick="changeUserName()">
+                    <span>Đổi pháp danh (Tên)</span><span class="set-val" id="set-name-val">...</span>
                 </div>
             </div>
 
             <div class="set-section">
-                <div class="set-title">Riêng Tư & Bảo Mật</div>
-                <div class="set-item" onclick="changeUserName()">
-                    <span>Đổi pháp danh (Tên)</span><span class="set-val" id="set-name-val">...</span>
-                </div>
-                <div class="set-item" onclick="changeUserPassword()">
-                    <span>Đổi mật khẩu</span><span class="set-val">***</span>
+                <div class="set-title">Giao Diện</div>
+                <div class="set-item">
+                    <span>Phông chữ (Font)</span>
+                    <select class="font-select" id="font-selector" onchange="changeAppFont(this.value)">
+                        <option value="'Noto Serif', serif">Noto Serif (Mặc định)</option>
+                        <option value="'Quicksand', sans-serif">Quicksand (Hiện đại)</option>
+                        <option value="'Playfair Display', serif">Playfair (Cổ điển)</option>
+                    </select>
                 </div>
             </div>
 
             <div class="set-section">
                 <div class="set-title">Hỗ Trợ & Liên Hệ</div>
                 <div class="set-item" onclick="showToast('Hòm thư góp ý đang được xây dựng.')">
-                    <span>Gửi đề xuất</span>
+                    <span>Gửi đề xuất tính năng</span>
                 </div>
                 <div class="set-item" onclick="showToast('Đội ngũ sẽ xem xét sự cố của bạn.')">
                     <span>Báo cáo sự cố</span>
                 </div>
             </div>
 
-            <div class="set-section" style="border-color: rgba(184, 50, 40, .2);">
-                <div class="set-title" style="color: #E8A090;">Vùng Nguy Hiểm</div>
-                <div class="set-item danger" onclick="resetKarmaPoints()">
-                    <span>Xóa bỏ nợ trần gian (Reset điểm)</span>
+            <div class="set-section" style="border-color: rgba(184, 50, 40, .4);">
+                <div class="set-title" style="color: #E8A090; background: rgba(184, 50, 40, 0.1);">Vùng Nguy Hiểm</div>
+                <div class="set-item danger" onclick="changeUserPassword()">
+                    <span>Đổi mật khẩu</span>
                 </div>
-                <div class="set-item danger" onclick="deleteUserAccount()">
+                <div class="set-item danger" onclick="confirmReset()">
+                    <span>Xóa bỏ nợ trần gian (Làm lại từ đầu)</span>
+                </div>
+                <div class="set-item danger" onclick="confirmDelete()">
                     <span>Rời khỏi hệ thống (Xóa tài khoản)</span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dialog-overlay" id="custom-dialog">
+        <div class="dialog-box">
+            <div class="dg-title" id="dg-title">Tiêu đề</div>
+            <div class="dg-msg" id="dg-msg">Nội dung</div>
+            <input type="text" class="dg-input" id="dg-input" style="display: none;">
+            <div class="dg-btns">
+                <button class="dg-btn cancel" onclick="closeDialog()">Hủy</button>
+                <button class="dg-btn confirm" id="dg-confirm-btn">Xác nhận</button>
             </div>
         </div>
     </div>
@@ -467,7 +608,6 @@
             <div class="card-avatar-3d" id="c3d-avatar">☸</div>
             <div class="card-name-3d" id="c3d-name">Pháp Danh</div>
             <div class="card-title-3d" id="c3d-title">Danh Hiệu</div>
-
             <div class="card-stats-grid">
                 <div class="c-stat">
                     <div class="c-stat-lbl">Tích Đức</div>
@@ -483,15 +623,15 @@
                 </div>
                 <div class="c-stat">
                     <div class="c-stat-lbl">Chuỗi Ngày</div>
-                    <div class="c-stat-val" id="c3d-streak">0</div>
+                    <div class="c-stat-val" id="c3d-streak">1</div>
                 </div>
             </div>
-            <button class="card-close-btn" onclick="close3DCard()">Thu Ấn</button>
+            <button class="card-close-btn" onclick="close3DCard()">Thu Ấn ✦</button>
         </div>
     </div>
 
     <script>
-        // ══════════════ KHỞI TẠO ══════════════
+        // ══════════════ HIỆU ỨNG NỀN & TOAST ══════════════
         function showToast(msg) {
             const old = document.querySelector('.toast'); if (old) old.remove();
             const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
@@ -511,13 +651,57 @@
             }
         }
 
-        // Load dữ liệu người dùng
+        // ══════════════ FONT CHỮ ══════════════
+        function loadSavedFont() {
+            const savedFont = localStorage.getItem('appFont') || "'Noto Serif', serif";
+            document.body.style.fontFamily = savedFont;
+            const select = document.getElementById('font-selector');
+            if (select) select.value = savedFont;
+        }
+
+        function changeAppFont(fontValue) {
+            document.body.style.fontFamily = fontValue;
+            localStorage.setItem('appFont', fontValue);
+            showToast('Đã áp dụng phông chữ mới ✦');
+        }
+
+        // ══════════════ HỆ THỐNG CUSTOM DIALOG ══════════════
+        let dialogCallback = null;
+
+        function openDialog(title, msg, isPrompt, defaultInput, btnStyle, callback) {
+            document.getElementById('dg-title').textContent = title;
+            document.getElementById('dg-msg').textContent = msg;
+
+            const input = document.getElementById('dg-input');
+            if (isPrompt) {
+                input.style.display = 'block'; input.value = defaultInput || ''; input.focus();
+            } else {
+                input.style.display = 'none';
+            }
+
+            const confirmBtn = document.getElementById('dg-confirm-btn');
+            confirmBtn.className = `dg-btn ${btnStyle}`;
+
+            dialogCallback = callback;
+            document.getElementById('custom-dialog').classList.add('open');
+        }
+
+        function closeDialog() {
+            document.getElementById('custom-dialog').classList.remove('open');
+            dialogCallback = null;
+        }
+
+        document.getElementById('dg-confirm-btn').addEventListener('click', () => {
+            const inputVal = document.getElementById('dg-input').value;
+            if (dialogCallback) dialogCallback(inputVal);
+            closeDialog();
+        });
+
+        // ══════════════ DATA NGƯỜI DÙNG ══════════════
         function loadSettingsData() {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) {
-                alert("Vui lòng đăng nhập để truy cập Cài Đặt.");
-                window.location.href = 'login.html';
-                return;
+                window.location.href = 'login.html'; return;
             }
             document.getElementById('set-name-val').textContent = currentUser.name;
             document.getElementById('set-av-val').textContent = currentUser.avatar || '☸';
@@ -526,94 +710,84 @@
         document.addEventListener('DOMContentLoaded', () => {
             initParticles();
             loadSettingsData();
+            loadSavedFont();
         });
 
-        // ══════════════ LOGIC SỬA ĐỔI ══════════════
+        // ══════════════ XỬ LÝ SỰ KIỆN ══════════════
         function changeUserName() {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            const newName = prompt('Nhập pháp danh (tên) mới của bạn:', currentUser.name);
-            if (newName && newName.trim() !== '') {
-                currentUser.name = newName.trim();
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            openDialog('Đổi Pháp Danh', 'Xin hãy nhập tên gọi mới của bạn:', true, currentUser.name, 'confirm', (newName) => {
+                if (newName && newName.trim() !== '') {
+                    currentUser.name = newName.trim();
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-                let users = JSON.parse(localStorage.getItem('users')) || [];
-                const uIndex = users.findIndex(u => u.username === currentUser.username);
-                if (uIndex > -1) { users[uIndex].name = currentUser.name; localStorage.setItem('users', JSON.stringify(users)); }
+                    let users = JSON.parse(localStorage.getItem('users')) || [];
+                    const uIndex = users.findIndex(u => u.username === currentUser.username);
+                    if (uIndex > -1) { users[uIndex].name = currentUser.name; localStorage.setItem('users', JSON.stringify(users)); }
 
-                loadSettingsData();
-                showToast('Đã đổi pháp danh thành công ✦');
-            }
+                    loadSettingsData(); showToast('Đã đổi pháp danh thành công ✦');
+                }
+            });
         }
 
         function changeUserAvatar() {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            const newAv = prompt('Nhập một biểu tượng làm ảnh đại diện (VD: ✧, ⚜, ☯):', currentUser.avatar || '☸');
-            if (newAv && newAv.trim() !== '') {
-                currentUser.avatar = newAv.trim().substring(0, 2);
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                loadSettingsData();
-                showToast('Đã đổi ảnh đại diện ✦');
-            }
+            openDialog('Đổi Biểu Tượng', 'Nhập một ký tự hoặc biểu tượng (VD: ✧, ⚜, ☯):', true, currentUser.avatar || '☸', 'confirm', (newAv) => {
+                if (newAv && newAv.trim() !== '') {
+                    currentUser.avatar = newAv.trim().substring(0, 2);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    loadSettingsData(); showToast('Đã đổi ảnh đại diện ✦');
+                }
+            });
         }
 
         function changeUserPassword() {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            const oldPass = prompt('Nhập mật khẩu hiện tại:');
-            if (oldPass !== currentUser.password) return showToast('Mật khẩu cũ không chính xác!');
+            openDialog('Xác Thực', 'Nhập mật khẩu HIỆN TẠI của bạn:', true, '', 'confirm', (oldPass) => {
+                if (oldPass !== currentUser.password) { showToast('Mật khẩu cũ không chính xác!'); return; }
 
-            const newPass = prompt('Nhập mật khẩu mới:');
-            if (newPass && newPass.trim() !== '') {
-                currentUser.password = newPass.trim();
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-                let users = JSON.parse(localStorage.getItem('users')) || [];
-                const uIndex = users.findIndex(u => u.username === currentUser.username);
-                if (uIndex > -1) { users[uIndex].password = currentUser.password; localStorage.setItem('users', JSON.stringify(users)); }
-
-                showToast('Đã cập nhật mật khẩu an toàn ✦');
-            }
+                setTimeout(() => {
+                    openDialog('Mật Khẩu Mới', 'Nhập mật khẩu MỚI bạn muốn đặt:', true, '', 'confirm', (newPass) => {
+                        if (newPass && newPass.trim() !== '') {
+                            currentUser.password = newPass.trim();
+                            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                            let users = JSON.parse(localStorage.getItem('users')) || [];
+                            const uIndex = users.findIndex(u => u.username === currentUser.username);
+                            if (uIndex > -1) { users[uIndex].password = currentUser.password; localStorage.setItem('users', JSON.stringify(users)); }
+                            showToast('Đã cập nhật mật khẩu an toàn ✦');
+                        }
+                    });
+                }, 400);
+            });
         }
 
-        function resetKarmaPoints() {
-            if (confirm('CẢNH BÁO: Việc này sẽ xóa sạch toàn bộ công đức và tội nghiệt của bạn. Bạn có chắc chắn muốn làm lại từ đầu?')) {
-                localStorage.setItem('ducTotal', 0);
-                localStorage.setItem('toiTotal', 0);
-                localStorage.setItem('moCount', 0);
-                showToast('Điểm số đã được thiết lập lại ✧');
-            }
+        function confirmReset() {
+            openDialog('CẢNH BÁO TỐI THƯỢNG', 'Việc này sẽ xóa sạch công đức và tội nghiệp. Làm lại từ đầu?', false, '', 'danger', () => {
+                localStorage.setItem('ducTotal', 0); localStorage.setItem('toiTotal', 0); localStorage.setItem('moCount', 0);
+                showToast('Nợ trần gian đã được thanh tẩy ✧');
+            });
         }
 
-        function deleteUserAccount() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (confirm('CẢNH BÁO TỐI THƯỢNG: Tài khoản của bạn sẽ bị xóa vĩnh viễn khỏi hệ thống. Xác nhận?')) {
+        function confirmDelete() {
+            openDialog('RỜI KHỎI HỆ THỐNG', 'Tài khoản của bạn sẽ bị xóa vĩnh viễn. Xác nhận?', false, '', 'danger', () => {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
                 let users = JSON.parse(localStorage.getItem('users')) || [];
                 users = users.filter(u => u.username !== currentUser.username);
                 localStorage.setItem('users', JSON.stringify(users));
 
-                localStorage.removeItem('ducTotal');
-                localStorage.removeItem('toiTotal');
-                localStorage.removeItem('moCount');
-                localStorage.removeItem('currentUser');
-
+                localStorage.removeItem('ducTotal'); localStorage.removeItem('toiTotal');
+                localStorage.removeItem('moCount'); localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
-            }
+            });
         }
 
         // ══════════════ THẺ 3D ══════════════
-        // Mảng danh hiệu (Giữ đồng bộ với trang index)
         const TITLES_PTS = [
-            { id: 't1', icon: '🌱', name: 'Thiện Nhân Sơ Cấp', req: 0 },
-            { id: 't2', icon: '🌿', name: 'Thiện Tâm Mới Nở', req: 500 },
-            { id: 't3', icon: '🌸', name: 'Đệ Tử Thanh Tịnh', req: 1000 },
-            { id: 't4', icon: '☘', name: 'Hành Giả Từ Bi', req: 2000 },
-            { id: 't5', icon: '🪷', name: 'Bồ Tát Nhân Gian', req: 3500 },
-            { id: 't6', icon: '⭐', name: 'Bậc Đại Thiện Nhân', req: 5000 },
-            { id: 't7', icon: '🌟', name: 'Phật Tử Chân Chánh', req: 8000 },
-            { id: 't8', icon: '☀', name: 'Giác Ngộ Viên Mãn', req: 15000 },
+            { id: 't1', icon: '🌱', name: 'Thiện Nhân Sơ Cấp', req: 0 }, { id: 't2', icon: '🌿', name: 'Thiện Tâm Mới Nở', req: 500 },
+            { id: 't3', icon: '🌸', name: 'Đệ Tử Thanh Tịnh', req: 1000 }, { id: 't4', icon: '☘', name: 'Hành Giả Từ Bi', req: 2000 },
+            { id: 't5', icon: '🪷', name: 'Bồ Tát Nhân Gian', req: 3500 }, { id: 't6', icon: '⭐', name: 'Bậc Đại Thiện Nhân', req: 5000 },
+            { id: 't7', icon: '🌟', name: 'Phật Tử Chân Chánh', req: 8000 }, { id: 't8', icon: '☀', name: 'Giác Ngộ Viên Mãn', req: 15000 },
         ];
-
-        const cardModal = document.getElementById('card-3d-modal');
-        const card3D = document.getElementById('the-3d-card');
 
         function open3DCard() {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -621,13 +795,9 @@
             const toi = parseInt(localStorage.getItem('toiTotal')) || 0;
             const net = duc - toi;
 
-            // Tìm danh hiệu đang đeo
             const savedId = localStorage.getItem('equippedTitleId');
             let curTitle = TITLES_PTS.find(t => t.id === savedId);
-            if (!curTitle) {
-                curTitle = TITLES_PTS[0];
-                for (const t of TITLES_PTS) { if (net >= t.req) curTitle = t; }
-            }
+            if (!curTitle) { curTitle = TITLES_PTS[0]; for (const t of TITLES_PTS) { if (net >= t.req) curTitle = t; } }
 
             document.getElementById('c3d-avatar').textContent = currentUser.avatar || '☸';
             document.getElementById('c3d-name').textContent = currentUser.name;
@@ -635,22 +805,21 @@
             document.getElementById('c3d-duc').textContent = duc.toLocaleString();
             document.getElementById('c3d-toi').textContent = toi.toLocaleString();
             document.getElementById('c3d-net').textContent = net.toLocaleString();
-            document.getElementById('c3d-streak').textContent = "1"; // Default streak
 
-            cardModal.classList.add('open');
+            document.getElementById('card-3d-modal').classList.add('open');
             document.addEventListener('mousemove', tiltCard);
         }
 
         function close3DCard() {
-            cardModal.classList.remove('open');
-            card3D.style.transform = `rotateY(0deg) rotateX(0deg)`;
+            document.getElementById('card-3d-modal').classList.remove('open');
+            document.getElementById('the-3d-card').style.transform = `rotateY(0deg) rotateX(0deg)`;
             document.removeEventListener('mousemove', tiltCard);
         }
 
         function tiltCard(e) {
-            if (!cardModal.classList.contains('open')) return;
-            let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-            let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            if (!document.getElementById('card-3d-modal').classList.contains('open')) return;
+            const card3D = document.getElementById('the-3d-card');
+            let xAxis = (window.innerWidth / 2 - e.pageX) / 25; let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
             card3D.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         }
     </script>
