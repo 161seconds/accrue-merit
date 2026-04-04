@@ -350,18 +350,32 @@
       handleLogin(userVal, passVal);
     });
 
-    function handleLogin(username, password) {
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      const user = users.find(u => u.username === username && u.password === password);
+    async function handleLogin(username, password) {
+      try {
+        const response = await fetch('http://localhost:5000/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
 
-      if (user) {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        alert('Đăng nhập thành công!');
-        window.location.href = 'index.html'; // Day ve trang chinh
-      } else {
-        alert('Sai tên tài khoản hoặc mật khẩu!');
+        const data = await response.json();
+        if (!response.ok) {
+          alert(data.error); // Báo sai pass
+        } else {
+          // LƯU DATA LẤY TỪ DATABASE VÀO LOCALSTORAGE
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+          localStorage.setItem('ducTotal', data.user.stats.ducTotal);
+          localStorage.setItem('toiTotal', data.user.stats.toiTotal);
+          localStorage.setItem('moCount', data.user.stats.moCount);
+
+          alert('Đăng nhập thành công ✦');
+          window.location.href = 'index.html'; // Chuyển về trang chủ
+        }
+      } catch (err) {
+        console.error(err);
       }
     }
+    
     function showModal(icon, title, desc, pts = "") {
       document.getElementById('modal-icon').textContent = icon;
       document.getElementById('modal-title').textContent = title;
