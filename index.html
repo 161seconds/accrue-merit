@@ -3492,13 +3492,56 @@
     }
 
     // ══════════════ DONORS ══════════════
-    const DONORS = [
-      { name: 'Nguyễn Thị Lan 🌸', msg: 'Nam mô A Di Đà Phật, cầu bình an cho gia đình', amt: '200.000đ', time: '5 phút trước', av: '🧘' },
-      { name: 'Trần Minh Đức', msg: 'Tâm bố thí, phúc vô lượng', amt: '100.000đ', time: '12 phút trước', av: '🙏' },
-      { name: 'Phạm Thị Hoa 🌺', msg: 'Hồi hướng công đức cho chúng sinh', amt: '500.000đ', time: '1 giờ trước', av: '💐' },
-      { name: 'Lê Văn An', msg: '', amt: '50.000đ', time: '2 giờ trước', av: '☯️' },
-      { name: 'Võ Thị Mai', msg: 'Cầu mọi chúng sinh đều được an lạc', amt: '100.000đ', time: '3 giờ trước', av: '🌸' },
-    ];
+    async function renderDonors() {
+      const c = document.getElementById('donors-list');
+      const totalEl = document.getElementById('qg-total');
+
+      // Hiển thị trạng thái đang tải
+      c.innerHTML = '<div style="text-align:center; padding: 20px; font-size: 11px; color: var(--gold-dim);">Đang kết nối đạo tràng... ☸</div>';
+
+      try {
+        // Gọi API lấy dữ liệu từ Backend Node.js
+        const res = await fetch('http://localhost:5000/api/donations');
+        const data = await res.json();
+
+        // 1. Cập nhật Tổng tiền (tự động cộng dồn từ DB)
+        if (totalEl && data.totalAmount !== undefined) {
+          totalEl.textContent = data.totalAmount.toLocaleString('vi-VN') + ' VND';
+        }
+
+        // 2. Vẽ danh sách người quyên góp
+        c.innerHTML = '';
+
+        if (!data.donations || data.donations.length === 0) {
+          c.innerHTML = '<div style="text-align:center; padding: 20px; font-size: 11px; color: var(--gold-dim);">Chưa có dữ liệu cúng dường.</div>';
+          return;
+        }
+
+        data.donations.forEach(d => {
+          const el = document.createElement('div');
+          el.className = 'donor-item';
+
+          const amtStr = d.amount.toLocaleString('vi-VN') + 'đ';
+          const av = ['🧘', '🙏', '💐', '☯️', '🌸'][Math.floor(Math.random() * 5)];
+
+          el.innerHTML = `
+            <div class="donor-avatar">${av}</div>
+            <div class="donor-info">
+              <div class="donor-name">${d.donorName}</div>
+              ${d.message ? `<div class="donor-msg">"${d.message}"</div>` : ''}
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div class="donor-amt">${amtStr}</div>
+              <div class="donor-time">Vừa xong</div>
+            </div>
+          `;
+          c.appendChild(el);
+        });
+      } catch (err) {
+        console.error("Lỗi fetch donations:", err);
+        c.innerHTML = '<div style="text-align:center; padding: 20px; font-size: 11px; color: #E8A090;">❌ Không thể tải dữ liệu quyên góp</div>';
+      }
+    }
 
     function renderDonors() {
       const c = document.getElementById('donors-list');
@@ -3511,32 +3554,45 @@
       });
     }
 
-    // ══════════════ MISSIONS KANBAN ══════════════
-    const MISSIONS = [
-      { id: 'd1', icon: '🔔', name: 'Gõ mõ sáng', desc: 'Gõ 10 tiếng', pts: 30, streakBonus: true, col: 'done' },
-      { id: 'd2', icon: '🕯️', name: 'Thắp nhang', desc: 'Thắp & cầu nguyện', pts: 25, streakBonus: true, col: 'done' },
-      { id: 'd3', icon: '🪷', name: 'Ghi việc thiện', desc: '1 việc lành', pts: 20, streakBonus: true, col: 'todo' },
-      { id: 'd4', icon: '🥗', name: 'Ăn chay', desc: '1 bữa chay', pts: 15, streakBonus: false, col: 'todo' },
-      { id: 'd5', icon: '📿', name: 'Tụng kinh', desc: '5 phút niệm Phật', pts: 20, streakBonus: true, col: 'doing' },
-      { id: 'd6', icon: '🤲', name: 'Giúp người khác', desc: '1 việc thiện', pts: 35, streakBonus: true, col: 'todo' },
-      { id: 'd7', icon: '♻️', name: 'Nhặt rác', desc: 'Dọn môi trường', pts: 15, streakBonus: false, col: 'todo' },
-      { id: 'w1', icon: '🕊️', name: 'Phóng sinh', desc: 'Mua sinh vật thả', pts: 100, col: 'todo' },
-      { id: 'w2', icon: '🌿', name: 'Thiền định', desc: '10 phút tĩnh tâm', pts: 25, streakBonus: true, col: 'doing' },
-      { id: 'd1', icon: '🔔', name: 'Gõ mõ sáng', desc: 'Gõ 10 tiếng', pts: 30, streakBonus: true, col: 'done' },
-      { id: 'd2', icon: '🕯️', name: 'Thắp nhang', desc: 'Thắp & cầu nguyện', pts: 25, streakBonus: true, col: 'done' },
-      { id: 'd3', icon: '🪷', name: 'Ghi việc thiện', desc: '1 việc lành', pts: 20, streakBonus: true, col: 'todo' },
-      { id: 'd4', icon: '🥗', name: 'Ăn chay', desc: '1 bữa chay', pts: 15, streakBonus: false, col: 'todo' },
-      { id: 'd5', icon: '📿', name: 'Tụng kinh', desc: '5 phút niệm Phật', pts: 20, streakBonus: true, col: 'doing' },
-      { id: 'd6', icon: '🤲', name: 'Giúp người khác', desc: '1 việc thiện', pts: 35, streakBonus: true, col: 'todo' },
-      { id: 'd7', icon: '♻️', name: 'Nhặt rác', desc: 'Dọn môi trường', pts: 15, streakBonus: false, col: 'todo' },
-      { id: 'w1', icon: '🕊️', name: 'Phóng sinh', desc: 'Mua sinh vật thả', pts: 100, col: 'todo' },
-      { id: 'w2', icon: '🌿', name: 'Thiền định', desc: '10 phút tĩnh tâm', pts: 25, streakBonus: true, col: 'doing' },
-    ];
-    const CHAINS = [
-      { icon: '🔗', name: 'Chuỗi Thiện Tâm', desc: 'Ghi đức 7 ngày liên tiếp', pts: 200, chainDays: 7, currentDays: 4 },
-      { icon: '⛓️', name: 'Chuỗi Thanh Tịnh', desc: 'Không ghi tội 5 ngày', pts: 150, chainDays: 5, currentDays: 3 },
-      { icon: '🌊', name: 'Chuỗi Từ Bi', desc: 'Thắp nhang 14 ngày liên tiếp', pts: 300, chainDays: 14, currentDays: 7 },
-    ];
+    // ══════════════ KHỞI TẠO BIẾN TRỐNG ══════════════
+    let MISSIONS = [];
+    let CHAINS = [];
+    let TITLES_PTS = [];
+    let TITLES_LIMITED = [];
+
+    // ══════════════ API: TẢI MASTER DATA TỪ MÂY ══════════════
+    async function loadSystemData() {
+      try {
+        const res = await fetch('http://localhost:5000/api/system-data');
+        const data = await res.json();
+
+        // Phân loại data lấy về thành các mảng tương ứng cho giao diện
+        data.missions.forEach(m => {
+          if (m.isChain) {
+            CHAINS.push({ icon: m.icon, name: m.name, desc: m.desc, pts: m.pts, chainDays: m.chainDays, currentDays: 0 }); // currentDays lưu tạm ở 0
+          } else {
+            MISSIONS.push({ id: m.id, icon: m.icon, name: m.name, desc: m.desc, pts: m.pts, streakBonus: m.streakBonus, col: 'todo' }); // Mặc định ở cột Chưa Làm
+          }
+        });
+
+        data.titles.forEach(t => {
+          if (t.isLimited) {
+            // check unlocked tạm thời bằng false, sau này làm backend user tiến độ sẽ cập nhật
+            TITLES_LIMITED.push({ id: t.id, icon: t.icon, name: t.name, desc: t.desc, req: t.reqText, unlocked: false });
+          } else {
+            TITLES_PTS.push({ id: t.id, icon: t.icon, name: t.name, desc: t.desc, req: t.req });
+          }
+        });
+
+        // Vẽ lại giao diện sau khi đã nạp đủ đạn
+        renderKanban();
+        renderTitles();
+        syncGlobalTitleBadge();
+      } catch (err) {
+        console.error("Lỗi thỉnh kinh từ Database:", err);
+        showToast("⚠️ Mất kết nối tới Hệ Thống Tâm Linh");
+      }
+    }
 
     let dragId = null;
 
@@ -3617,28 +3673,13 @@
       renderKanban();
     }
 
-    // ══════════════ DANH HIỆU ══════════════
-    const TITLES_PTS = [
-      { id: 't1', icon: '🌱', name: 'Thiện Nhân Sơ Cấp', desc: 'Người mới bước đầu trên con đường thiện lành', req: 0 },
-      { id: 't2', icon: '🌿', name: 'Thiện Tâm Mới Nở', desc: 'Tấm lòng thiện lành đang nảy mầm', req: 500 },
-      { id: 't3', icon: '🌸', name: 'Đệ Tử Thanh Tịnh', desc: 'Giữ tâm trong sạch, hành thiện mỗi ngày', req: 1000 },
-      { id: 't4', icon: '☘️', name: 'Hành Giả Từ Bi', desc: 'Lòng từ bi lan tỏa đến mọi chúng sinh', req: 2000 },
-      { id: 't5', icon: '🪷', name: 'Bồ Tát Nhân Gian', desc: 'Hóa thân Bồ Tát giữa cuộc đời thường', req: 3500 },
-      { id: 't6', icon: '⭐', name: 'Bậc Đại Thiện Nhân', desc: 'Đức hạnh sáng ngời, phúc lành vô lượng', req: 5000 },
-      { id: 't7', icon: '🌟', name: 'Phật Tử Chân Chánh', desc: 'Trọn vẹn trên con đường Phật pháp', req: 8000 },
-      { id: 't8', icon: '☀️', name: 'Giác Ngộ Viên Mãn', desc: 'Đạt tới cảnh giới giải thoát', req: 15000 },
-    ];
-
-    const TITLES_LIMITED = [
-      { id: 'l1', icon: '🔥', name: 'Hành Giả Chuỗi Lửa', desc: 'Hoàn thành 7 ngày liên tiếp', req: 'Chuỗi 7 ngày', unlocked: streak >= 7 },
-      { id: 'l2', icon: '🌙', name: 'Thiền Giả Đêm Trăng', desc: 'Gõ mõ lúc nửa đêm', req: 'Gõ mõ 0:00–1:00', unlocked: false },
-      { id: 'l3', icon: '🦋', name: 'Phóng Sinh 10 Lần', desc: 'Thực hiện phóng sinh 10 lần', req: 'Phóng sinh ×10', unlocked: false },
-      { id: 'l4', icon: '🏯', name: 'Người Hành Hương', desc: 'Thắp nhang 30 ngày liên tục', req: 'Thắp nhang 30 ngày', unlocked: false },
-      { id: 'l5', icon: '💎', name: 'Kim Cương Tâm', desc: 'Đạt điểm thuần dương 30 ngày', req: '30 ngày tâm sạch', unlocked: false },
-      { id: 'l6', icon: '🌈', name: 'Cầu Vồng Phúc Đức', desc: 'Hoàn thành 100 nhiệm vụ', req: '100 nhiệm vụ', unlocked: false },
-    ];
 
     function getCurrentTitle() {
+      // NẾU DATABASE CHƯA CÓ GÌ, TRẢ VỀ DANH HIỆU MẶC ĐỊNH ĐỂ WEB KHÔNG BỊ SẬP
+      if (TITLES_PTS.length === 0) {
+        return { id: 't0', icon: '🌱', name: 'Đang thỉnh danh hiệu...', desc: 'Đợi kết nối Database', req: 0 };
+      }
+
       let cur = TITLES_PTS[0];
       for (const t of TITLES_PTS) {
         if (netScore >= t.req) cur = t;
@@ -3647,7 +3688,6 @@
     }
 
     function syncGlobalTitleBadge() {
-      // 1. Lấy ID danh hiệu đang đeo từ localStorage, nếu không có thì lấy danh hiệu mặc định theo điểm
       const savedId = localStorage.getItem('equippedTitleId');
       let curTitle = TITLES_PTS.find(t => t.id === savedId);
 
@@ -3655,13 +3695,13 @@
         curTitle = getCurrentTitle();
       }
 
-      // 2. Tìm TẤT CẢ các thẻ badge hiển thị danh hiệu và cập nhật đồng loạt
+      if (!curTitle) return;
+
       const allBadges = document.querySelectorAll('.user-zone .badge');
       allBadges.forEach(badge => {
         badge.textContent = `✦ ${curTitle.name}`;
       });
 
-      // 3. Nếu đang ở trang Danh Hiệu, cập nhật luôn cái khối "Danh Hiệu Hiện Tại" to đùng
       const curIconEl = document.getElementById('dh-cur-icon');
       if (curIconEl) {
         document.getElementById('dh-cur-icon').textContent = curTitle.icon;
@@ -4250,6 +4290,30 @@
       syncToServer();
     }
 
+    // ══════════════ LOAD FONT ══════════════
+    function loadSavedFont() {
+      const font = localStorage.getItem('appFont') || "'Noto Serif', serif";
+      document.body.style.fontFamily = font;
+    }
+
+    // ══════════════ INIT (KHỞI CHẠY HỆ THỐNG) ══════════════
+    // THÊM CHỮ "async" VÀO ĐÂY
+    document.addEventListener('DOMContentLoaded', async () => {
+      loadSavedFont();
+
+      // THÊM CHỮ "await" VÀO ĐÂY ĐỂ BẮT BUỘC CHỜ DATA TỪ BACKEND VỀ
+      await loadSystemData();
+
+      syncAllHeaders();
+      initSubpageBackgrounds();
+      updateScoreDisplays();
+
+      // Xử lý đóng menu khi click ra ngoài
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.user-menu').forEach(m => m.classList.remove('open'));
+      });
+    });
+
     // ══════════════ SỔ ══════════════
     // ══════════════ SỔ GHI ĐỨC / TỘI ══════════════
     function addEntry(type) {
@@ -4313,7 +4377,7 @@
       setTimeout(() => t.remove(), 2600);
     }
 
-    // ══════════════ AI CHAT ══════════════
+    /* ══════════════ AI CHAT ══════════════
     let chatOpen = false;
     const SUGGESTIONS = ['Gợi ý việc thiện hôm nay', 'Làm gì tăng điểm đức?', 'Cách sám hối tội lỗi?', 'Ý nghĩa bố thí là gì?'];
     function toggleChat() { chatOpen = !chatOpen; document.getElementById('chat-panel').classList.toggle('open', chatOpen); if (chatOpen && document.getElementById('chat-msgs').children.length === 0) initChat(); }
@@ -4325,48 +4389,128 @@
     function addBotMsg(text) { const msgs = document.getElementById('chat-msgs'); const div = document.createElement('div'); div.className = 'msg bot'; div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${getTime()}</div>`; msgs.appendChild(div); scrollChat(); }
     function addTypingIndicator() { const msgs = document.getElementById('chat-msgs'); const div = document.createElement('div'); div.className = 'msg bot'; div.innerHTML = `<div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`; msgs.appendChild(div); scrollChat(); return div; }
     function scrollChat() { const m = document.getElementById('chat-msgs'); m.scrollTop = m.scrollHeight; }
-    function getTime() { const n = new Date(); return String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); }
-    async function callAI(userMsg) {
-      // const API_KEY = import.meta.env.GEMINI_API_KEY; // 
-      const API_KEY = window.ENV.GEMINI_API_KEY;
-      try {
-        const response = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-goog-api-key": API_KEY
-            },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    {
-                      text: userMsg
-                    }
-                  ]
-                }
-              ]
-            })
-          }
-        );
+    function getTime() { const n = new Date(); return String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); }*/
 
-        const data = await response.json();
-        console.log("Gemini raw:", data);
+    // ══════════════ AI CHAT ══════════════
+    let chatOpen = false;
+    const SUGGESTIONS = ['Gợi ý việc thiện hôm nay', 'Làm gì tăng điểm đức?', 'Cách sám hối tội lỗi?', 'Ý nghĩa bố thí là gì?'];
 
-        return data?.candidates?.[0]?.content?.parts?.[0]?.text
-          || "trợ lý Tâm Linh chưa thể trả lời";
+    function toggleChat() {
+      chatOpen = !chatOpen;
+      document.getElementById('chat-panel').classList.toggle('open', chatOpen);
+      if (chatOpen && document.getElementById('chat-msgs').children.length === 0) initChat();
+    }
 
-      } catch (err) {
-        console.error(err);
-        return "Lỗi kết nối trợ lý Tâm Linh";
+    function initChat() {
+      const s = document.getElementById('chat-suggests');
+      s.innerHTML = '';
+      SUGGESTIONS.forEach(sg => {
+        const b = document.createElement('div');
+        b.className = 'chat-sug';
+        b.textContent = sg;
+        b.onclick = () => sendChatMsg(sg);
+        s.appendChild(b);
+      });
+      addBotMsg('Chào bạn! Tôi là Trợ Lý Tâm Linh. Hôm nay bạn muốn làm gì tốt đẹp?');
+    }
+
+    function chatKeydown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChat();
       }
     }
+
+    function sendChat() {
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      sendChatMsg(msg);
+      input.value = '';
+    }
+
+    function sendChatMsg(msg) {
+      addUserMsg(msg);
+      document.getElementById('chat-suggests').innerHTML = '';
+      const typingEl = addTypingIndicator();
+
+      // GỌI HÀM callAI VÀ ĐỢI KẾT QUẢ
+      callAI(msg).then(reply => {
+        typingEl.remove();
+        addBotMsg(reply);
+        scrollChat();
+      });
+    }
+
+    function addUserMsg(text) {
+      const msgs = document.getElementById('chat-msgs');
+      const div = document.createElement('div');
+      div.className = 'msg user';
+      div.innerHTML = `<div class="msg-bubble">${text.replace(/</g, '&lt;')}</div><div class="msg-time">${getTime()}</div>`;
+      msgs.appendChild(div);
+      scrollChat();
+    }
+
+    function addBotMsg(text) {
+      const msgs = document.getElementById('chat-msgs');
+      const div = document.createElement('div');
+      div.className = 'msg bot';
+      // Dùng Markdown format cơ bản nếu Gemini trả về in đậm/in nghiêng
+      let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>');
+      div.innerHTML = `<div class="msg-bubble">${formattedText}</div><div class="msg-time">${getTime()}</div>`;
+      msgs.appendChild(div);
+      scrollChat();
+    }
+
+    function addTypingIndicator() {
+      const msgs = document.getElementById('chat-msgs');
+      const div = document.createElement('div');
+      div.className = 'msg bot';
+      div.innerHTML = `<div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+      msgs.appendChild(div);
+      scrollChat();
+      return div;
+    }
+
+    function scrollChat() {
+      const m = document.getElementById('chat-msgs');
+      m.scrollTop = m.scrollHeight;
+    }
+
+    function getTime() {
+      const n = new Date();
+      return String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0');
+    }
+
+    // --- HÀM callAI CHÍNH THỨC NỐI VỚI BACKEND ---
+    async function callAI(userMsg) {
+      try {
+        const response = await fetch('http://localhost:5000/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userMsg })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error("Lỗi từ Backend:", data.error);
+          return "Mất kết nối: " + data.error;
+        }
+
+        return data.reply;
+      } catch (err) {
+        console.error("Lỗi mạng:", err);
+        return "❌ Lỗi mạng: Không thể kết nối tới Server Node.js (Cổng 5000).";
+      }
+    }
+
     function getFallback(msg) { const r = ['Hôm nay bạn có thể nhường chỗ cho người lớn tuổi, hoặc nhặt rác ở vỉa hè gần nhà. Mỗi việc nhỏ đều tích lũy phúc đức! 🪷', 'Nam mô A Di Đà Phật 🙏 Bố thí không chỉ là vật chất — một lời động viên đúng lúc cũng là tích đức rồi.', 'Sám hối chân thành là bước đầu tịnh hóa tâm. Nhìn nhận lỗi lầm và quyết tâm không tái phạm. 💙', 'Ăn chay dù chỉ một bữa cũng gieo nhân từ bi. Hôm nay bạn thử thực hành không? 🥗']; return r[Math.floor(Math.random() * r.length)]; }
 
     // ══════════════ INIT ══════════════
     document.addEventListener('DOMContentLoaded', () => {
+      loadSystemData();
+
       loadSavedFont();
       // 1. Đồng bộ người dùng cho mọi header
       syncAllHeaders();
