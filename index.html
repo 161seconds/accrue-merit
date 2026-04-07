@@ -3498,17 +3498,25 @@
     }
 
     let currentQR = 'mb';
+    // Tìm hàm openQR(key) và thêm nội dung chuyển khoản theo tên User
     function openQR(key) {
       currentQR = key;
       const d = QR_DATA[key];
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const transferContent = currentUser ? `NAP ${currentUser.username}` : "NAP TUTHIEN";
+
       document.getElementById('qr-modal-title').textContent = d.title;
       document.getElementById('qr-modal-bank').textContent = d.bank;
       document.getElementById('qr-modal-img').innerHTML = makeQRSvg(d.seed, 200);
       document.getElementById('qr-modal-acct').textContent = d.acct;
       document.getElementById('qr-modal-name').textContent = d.name;
+
       document.getElementById('qr-modal').classList.add('open');
     }
-    function closeQRModal() { document.getElementById('qr-modal').classList.remove('open'); }
+
+    function closeQRModal() {
+      document.getElementById('qr-modal').classList.remove('open');
+    }
 
     function selectAmt(el, amt) {
       document.querySelectorAll('.qg-amt-btn').forEach(b => b.classList.remove('active'));
