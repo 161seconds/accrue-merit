@@ -5,7 +5,7 @@ require('dotenv').config();
 const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: parseInt(process.env.MAIL_PORT || 587),
-    secure: false,                  
+    secure: false,
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASSWORD
@@ -97,8 +97,7 @@ const sendLoginSuccessMail = async (userEmail, userName = "") => {
 
 </body>
 </html>
-```
-;
+```;
     try {
         const mailOptions = {
             from: `"${process.env.MAIL_DISPLAY_NAME || 'My App'}" <${process.env.MAIL_USER}>`,
@@ -109,12 +108,12 @@ const sendLoginSuccessMail = async (userEmail, userName = "") => {
 
         const info = await transporter.sendMail(mailOptions);
         console.log(` Email login success đã gửi đến: ${userEmail} | MessageId: ${info.messageId}`);
-        
+
         return true;
 
     } catch (error) {
         console.error(' Gửi email thất bại:', error.message);
-        throw error; 
+        throw error;
     }
 };
 
