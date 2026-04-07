@@ -106,26 +106,6 @@ app.post('/api/sync', async (req, res) => {
 
 // ══════════════ KHỞI ĐỘNG SERVER ══════════════
 const PORT = 5000;
-// ══════════════ API BƠM DỮ LIỆU QUYÊN GÓP MẪU VÀO DB ══════════════
-app.get('/seed-donors', async (req, res) => {
-    try {
-        const donators = [
-            { donorName: 'Nguyễn Thị Lan 🌸', message: 'Nam mô A Di Đà Phật, cầu bình an cho gia đình', amount: 200000 },
-            { donorName: 'Trần Minh Đức', message: 'Tâm bố thí, phúc vô lượng', amount: 100000 },
-            { donorName: 'Phạm Thị Hoa 🌺', message: 'Hồi hướng công đức cho chúng sinh', amount: 500000 },
-            { donorName: 'Lê Văn An', message: '', amount: 50000 },
-            { donorName: 'Võ Thị Mai', message: 'Cầu mọi chúng sinh đều được an lạc', amount: 100000 }
-        ];
-
-        // Xóa dữ liệu cũ (nếu có) và bơm mảng trên vào bảng Donation
-        await Donation.deleteMany({});
-        await Donation.insertMany(donators);
-
-        res.send('✦ Đã bơm thành công danh sách Quyên Góp vào Database!');
-    } catch (err) {
-        res.status(500).send('Lỗi: ' + err.message);
-    }
-});
 
 // ══════════════ API LẤY DANH SÁCH QUYÊN GÓP LÊN WEB ══════════════
 app.get('/api/donations', async (req, res) => {
@@ -330,6 +310,49 @@ app.post('/api/chat', async (req, res) => {
     } catch (err) {
         console.error("Lỗi Server Backend:", err);
         res.status(500).json({ error: "Lỗi kết nối Trợ lý Tâm Linh: " + err.message });
+    }
+});
+
+// ══════════════ API NHẬN THÔNG BÁO TỪ SEPAY (IPN) ══════════════
+app.post('/api/sepay-webhook', async (req, res) => {
+    try {
+        const data = req.body;
+        console.log("✦ Nhận thông báo giao dịch mới:", data);
+
+        const content = data.content;
+        const amount = parseInt(data.amount);
+
+        if (content && content.includes("NAP")) {
+            const parts = content.split(" ");
+            const username = parts[parts.length - 1].toLowerCase();
+
+            const user = await User.findOne({ username: username });
+
+            if (user) {
+                const karmaGained = Math.floor(amount / 10);
+
+                await User.findOneAndUpdate(
+                    { username: username },
+                    { $inc: { "stats.ducTotal": karmaGained } }
+                );
+
+                const newDonation = new Donation({
+                    donorName: user.name,
+                    amount: amount,
+                    message: `Cúng dường tự động qua IPN: ${content}`,
+                    createdAt: new Date()
+                });
+                await newDonation.save();
+
+                console.log(`✅ Đã cộng ${karmaGained} điểm cho ${username}`);
+            }
+        }
+
+        res.status(200).json({ success: true, message: "Nhận tin thành công" });
+
+    } catch (err) {
+        console.error("❌ Lỗi xử lý IPN:", err);
+        res.status(500).send("Internal Server Error");
     }
 });
 app.listen(PORT, () => {
