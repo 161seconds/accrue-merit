@@ -2871,6 +2871,10 @@
       .donate-modal-box {
         padding: 20px !important;
       }
+
+      .tu-tam-btn {
+        grid-column: span 3;
+      }
     }
 
     /* ══ MÃ QR PHÓNG TO ══ */
@@ -3223,6 +3227,18 @@
         font-size: 13px;
       }
 
+      .tu-tam-btn {
+        grid-column: span 2;
+        background: linear-gradient(135deg, rgba(201, 168, 76, 0.15), rgba(13, 10, 4, 0.9));
+        border: 1px dashed var(--gold);
+        letter-spacing: 0.1em;
+      }
+
+      .tu-tam-btn:hover,
+      .tu-tam-btn.active {
+        background: linear-gradient(135deg, rgba(201, 168, 76, 0.3), rgba(13, 10, 4, 0.9));
+      }
+
       .dm-right {
         padding: 12px;
         width: 100%;
@@ -3279,6 +3295,10 @@
       .altar-svg-wrap {
         transform: scale(0.7);
         margin-bottom: -30px;
+      }
+
+      .tu-tam-btn {
+        grid-column: span 2;
       }
     }
 
@@ -4037,6 +4057,8 @@
           <button class="qg-btn-amt" onclick="selectDonation('100k', this)">100.000đ</button>
           <button class="qg-btn-amt" onclick="selectDonation('200k', this)">200.000đ</button>
           <button class="qg-btn-amt" onclick="selectDonation('500k', this)">500.000đ</button>
+
+          <button class="qg-btn-amt tu-tam-btn" onclick="selectDonation('tuytam', this)">TÙY TÂM</button>
         </div>
 
         <div class="dm-right">
@@ -4155,17 +4177,43 @@
       '50k': 'img/QR_Code50k.png',
       '100k': 'img/QR_Code100k.png',
       '200k': 'img/QR_Code200k.png',
-      '500k': 'img/QR_Code500k.png'
+      '500k': 'img/QR_Code500k.png',
+      'tuytam': 'img/QR_CodeOptional.png'
     };
 
-    function openDonateModal() {
-      document.getElementById('donate-modal-overlay').classList.add('open');
-      const firstBtn = document.querySelector('.dm-left .qg-btn-amt');
-      if (firstBtn) selectDonation('10k', firstBtn);
+    let paymentCheckInterval = null;
+    let initialDonationTotal = -1;
+
+    async function openDonateModal() {
+      const box = document.querySelector('.merit-box');
+      if (box) {
+        const coin = document.createElement('div');
+        coin.className = 'merit-coin';
+        coin.style.animation = 'dropCoin 0.6s ease-in forwards';
+        box.appendChild(coin);
+        setTimeout(() => coin.remove(), 600);
+      }
+
+      setTimeout(async () => {
+        document.getElementById('donate-modal-overlay').classList.add('open');
+        const firstBtn = document.querySelector('.dm-left .qg-btn-amt');
+        if (firstBtn) selectDonation('10k', firstBtn);
+
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/donations`);
+          const data = await res.json();
+          initialDonationTotal = data.totalAmount || 0;
+
+          if (paymentCheckInterval) clearInterval(paymentCheckInterval);
+          paymentCheckInterval = setInterval(checkPaymentStatus, 5000);
+        } catch (e) { }
+
+      }, 300);
     }
 
     function closeDonateModal() {
       document.getElementById('donate-modal-overlay').classList.remove('open');
+      if (paymentCheckInterval) clearInterval(paymentCheckInterval);
     }
 
     function selectDonation(amountKey, btnElement) {
@@ -4180,21 +4228,28 @@
       qrBox.innerHTML = `<img src="${MY_QR_IMAGES[amountKey]}" alt="QR ${amountKey}" style="width:100%; height:100%; border-radius:8px; object-fit:contain;">`;
     }
 
-    function openDonateModal() {
-      const box = document.querySelector('.merit-box');
-      if (box) {
-        const coin = document.createElement('div');
-        coin.className = 'merit-coin';
-        coin.style.animation = 'dropCoin 0.6s ease-in forwards';
-        box.appendChild(coin);
-        setTimeout(() => coin.remove(), 600);
-      }
+    async function checkPaymentStatus() {
+      if (initialDonationTotal === -1) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/donations`);
+        const data = await res.json();
 
-      setTimeout(() => {
-        document.getElementById('donate-modal-overlay').classList.add('open');
-        const firstBtn = document.querySelector('.dm-left .qg-btn-amt');
-        if (firstBtn) selectDonation('10k', firstBtn);
-      }, 300);
+        if (data.totalAmount > initialDonationTotal) {
+          clearInterval(paymentCheckInterval);
+          closeDonateModal();
+
+          const donatedAmount = data.totalAmount - initialDonationTotal;
+          const earnedPts = Math.floor(donatedAmount / 10);
+
+          showModal('🎉', 'Phát Tâm Thành Công', 'Đạo tràng đã nhận được tịnh tài. Công đức vô lượng!', `+${earnedPts} Điểm`);
+
+          renderDonors();
+
+          ducTotal += earnedPts;
+          updateScoreDisplays();
+          checkTitleUnlock();
+        }
+      } catch (e) { }
     }
 
     function selectAmt(el, amt) {

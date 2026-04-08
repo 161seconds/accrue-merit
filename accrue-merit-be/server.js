@@ -137,22 +137,30 @@ const Title = mongoose.model('Title', new mongoose.Schema({
     isLimited: { type: Boolean, default: false }, reqText: String
 }));
 
-// 1. API LẤY DANH SÁCH NHIỆM VỤ CỦA USER HÔM NAY (SAFE VERSION)
+// 1. API LẤY DANH SÁCH NHIỆM VỤ CỦA USER HÔM NAY (AUTO-HEAL VERSION)
 app.get('/api/user-missions/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
         const today = new Date().toISOString().split('T')[0];
 
-        // Tìm bảng nhiệm vụ hôm nay
+        const allMissions = await Mission.find({}).lean();
+        const dailyMissions = allMissions.filter(m => m.isChain === false);
+
         let userMission = await UserMission.findOne({
             userId: new mongoose.Types.ObjectId(userId),
             date: today
         });
 
-        // TỰ ĐỘNG SỬA LỖI: Nếu chưa có, HOẶC mảng rỗng
-        if (!userMission || !userMission.kanban || userMission.kanban.length === 0) {
-            const dailyMissions = await Mission.find({ isChain: false }).lean();
+        let isDataValid = true;
+        if (userMission && userMission.kanban && userMission.kanban.length > 0) {
+            if (String(userMission.kanban[0].missionId).length > 10) {
+                isDataValid = false;
+            }
+        } else {
+            isDataValid = false;
+        }
 
+        if (!isDataValid) {
             const kanbanTasks = dailyMissions.map(m => ({
                 missionId: String(m.id),
                 status: 'todo'
@@ -170,14 +178,9 @@ app.get('/api/user-missions/:userId', async (req, res) => {
             await userMission.save();
         }
 
-        // Khớp data thủ công
-        const allMissions = await Mission.find({}).lean();
         const missionDictionary = {};
-        allMissions.forEach(m => {
-            missionDictionary[m.id] = m;
-        });
+        allMissions.forEach(m => { missionDictionary[m.id] = m; });
 
-        // Gửi về web
         const tasks = userMission.kanban.map(k => {
             const detail = missionDictionary[k.missionId];
             if (!detail) return null;
@@ -330,47 +333,64 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // ══════════════ API NHẬN THÔNG BÁO TỪ SEPAY (IPN) ══════════════
+const Donation = require('./models/Donation');
 app.post('/api/sepay-webhook', async (req, res) => {
     try {
         const data = req.body;
-        console.log("✦ Nhận thông báo giao dịch mới:", data);
+        console.log("✦ Nhận Webhook từ SePay:", data);
 
-        const content = data.content;
-        const amount = parseInt(data.amount);
+        const transactionId = String(data.id || data.referenceCode || Date.now());
 
-        if (content && content.includes("NAP")) {
-            const parts = content.split(" ");
-            const username = parts[parts.length - 1].toLowerCase();
+        const existingDonation = await Donation.findOne({ message: { $regex: transactionId } });
+        if (existingDonation) {
+            console.log(`⚠️ Giao dịch [${transactionId}] đã tồn tại. Bỏ qua!`);
+            return res.status(200).json({ success: true, message: "Giao dịch đã tồn tại" });
+        }
 
-            const user = await User.findOne({ username: username });
+        const content = (data.content || data.transferContent || data.description || "").toUpperCase();
+        const amount = parseInt(data.transferAmount || data.amount || 0);
 
+        let donorName = "Nhà hảo tâm ẩn danh";
+        let foundUsername = null;
+
+        const match = content.match(/NAP[\s\-_]+([A-Z0-9]+)/);
+        if (match) {
+            foundUsername = match[1].toLowerCase();
+        }
+
+        if (foundUsername && foundUsername !== "tuthien") {
+            const user = await User.findOne({ username: foundUsername });
             if (user) {
+                donorName = user.name;
                 const karmaGained = Math.floor(amount / 10);
 
                 await User.findOneAndUpdate(
-                    { username: username },
+                    { username: foundUsername },
                     { $inc: { "stats.ducTotal": karmaGained } }
                 );
-
-                const newDonation = new Donation({
-                    donorName: user.name,
-                    amount: amount,
-                    message: `Cúng dường tự động qua IPN: ${content}`,
-                    createdAt: new Date()
-                });
-                await newDonation.save();
-
-                console.log(`✅ Đã cộng ${karmaGained} điểm cho ${username}`);
+                console.log(`✅ Đã cộng ${karmaGained} điểm cho ${foundUsername}`);
             }
         }
 
-        res.status(200).json({ success: true, message: "Nhận tin thành công" });
+        if (amount > 0) {
+            const newDonation = new Donation({
+                donorName: donorName,
+                amount: amount,
+                message: `[${transactionId}] ${content}`,
+                createdAt: new Date()
+            });
+            await newDonation.save();
+            console.log(`✅ Đã lưu giao dịch ${amount}đ vào Database`);
+        }
+
+        res.status(200).json({ success: true, message: "Đã xử lý IPN" });
 
     } catch (err) {
         console.error("❌ Lỗi xử lý IPN:", err);
         res.status(500).send("Internal Server Error");
     }
 });
+
 app.listen(PORT, () => {
     console.log(`✦ Máy chủ đang chạy tại: http://localhost:${PORT}`);
 });
