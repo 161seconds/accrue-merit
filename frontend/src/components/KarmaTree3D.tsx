@@ -187,7 +187,7 @@ export function KarmaTreeCanvas({
         const ribbonGeo = new THREE.PlaneGeometry(0.15, 0.8);
         ribbonGeo.translate(0, -0.4, 0);
         const ribbonMat = new THREE.MeshBasicMaterial({
-            color: "dc2626",
+            color: "#dc2626",
             side: THREE.DoubleSide,
         });
         const ribbons: THREE.Mesh[] = [];
