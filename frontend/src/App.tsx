@@ -9,6 +9,8 @@ import KarmaPage from '@/pages/KarmaPage'
 import IncensePage from '@/pages/IncensePage'
 import WoodenFishPage from '@/pages/WoodenFishPage'
 import SettingsPage from '@/pages/SettingsPage'
+import DonationPage from '@/pages/DonationPage'
+import ChatPage from '@/pages/ChatPage'
 
 export default function App() {
     return (
@@ -32,13 +34,15 @@ export default function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
 
-                    {/* Protected */}
                     <Route element={<ProtectedRoute />}>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/karma" element={<KarmaPage />} />
                         <Route path="/incense" element={<IncensePage />} />
                         <Route path="/wooden-fish" element={<WoodenFishPage />} />
                         <Route path="/settings" element={<SettingsPage />} />
+
+                        <Route path="/donate" element={<DonationPage />} />
+                        <Route path="/chat" element={<ChatPage />} />
                     </Route>
                 </Route>
             </Routes>
