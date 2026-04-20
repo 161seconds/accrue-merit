@@ -1,4 +1,4 @@
-# AccrueMerit – Gamified Karma Management System
+# AccrueMerit – Karma Management System
 
 **Project Status:** Production Deployed  
 **Version:** 4.0.0  
