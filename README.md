@@ -59,19 +59,19 @@ During the transition from local development to cloud production, several archit
    git clone [https://github.com/your-username/accrue-merit.git](https://github.com/your-username/accrue-merit.git)
    cd accrue-merit
 
-## Installation Guide
+### Installation Steps
 
-### 1. Clone the repository
-```bash
-git clone [https://github.com/your-username/accrue-merit.git](https://github.com/your-username/accrue-merit.git)
-cd accrue-merit
-```
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/accrue-merit.git](https://github.com/your-username/accrue-merit.git)
+   cd accrue-merit
 
-### 2. Backend Setup
+### 2. Backend Configuration
 
 - cd backend
-
 - npm install
+Create a .env file in the backend directory based on .env.example (or configure the following variables):
+PORT=5000
 
 - cp .env.example .env
 
@@ -79,10 +79,9 @@ cd accrue-merit
 
 
 
-### 3. Frontend Setup
+### 3. Frontend Configuration
 
 - cd frontend
-
 - npm install
-
 - npm run dev
+
