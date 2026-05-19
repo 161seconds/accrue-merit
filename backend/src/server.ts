@@ -20,11 +20,6 @@ const PORT = process.env.PORT || 5000
 
 initFolder()
 
-const allowedOrigins = [
-    'http://localhost:5173',
-    'https://accrue-merit.vercel.app'
-]
-
 app.use(cors({
     origin: [
         'https://accrue-merit.vercel.app',
