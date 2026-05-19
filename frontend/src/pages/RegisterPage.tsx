@@ -106,7 +106,6 @@ function FormField({ icon, label, placeholder, type = 'text', value, onChange, r
     );
 }
 
-// --- MAIN REGISTER PAGE ---
 export default function RegisterPage() {
     const [form, setForm] = useState({ username: '', email: '', password: '', confirm_password: '', name: '' });
     const [showPw, setShowPw] = useState(false);
