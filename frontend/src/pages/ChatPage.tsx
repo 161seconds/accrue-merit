@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 interface Message {
     id: string
     text: string
-    displayText: string // text đang hiển thị (cho streaming effect)
+    displayText: string 
     sender: 'ai' | 'user'
     timestamp: Date
     isStreaming: boolean
@@ -22,15 +22,14 @@ export default function ChatPage() {
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     useEffect(() => { scrollToBottom() }, [messages, isTyping])
 
-    // Streaming effect: hiện chữ từng ký tự
     const streamText = useCallback((msgId: string, fullText: string) => {
         let charIndex = 0
-        const speed = 18 // ms per character
+        const speed = 18 
 
         if (streamIntervalRef.current) clearInterval(streamIntervalRef.current)
 
         streamIntervalRef.current = window.setInterval(() => {
-            charIndex += 1 + Math.floor(Math.random() * 2) // 1-2 chars at a time for natural feel
+            charIndex += 1 + Math.floor(Math.random() * 2) 
             if (charIndex >= fullText.length) {
                 charIndex = fullText.length
                 if (streamIntervalRef.current) clearInterval(streamIntervalRef.current)
@@ -41,7 +40,6 @@ export default function ChatPage() {
         }, speed)
     }, [])
 
-    // Welcome message
     useEffect(() => {
         if (messages.length === 0) {
             setIsTyping(true)

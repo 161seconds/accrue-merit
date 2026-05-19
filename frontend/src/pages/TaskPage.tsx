@@ -47,7 +47,6 @@ export default function TaskPage() {
     const toggleMission = async (missionId: string) => {
         setCompleted(prev => prev.includes(missionId) ? prev.filter(id => id !== missionId) : [...prev, missionId]);
 
-        // Mở lại dòng này nếu đạo hữu đã có API cập nhật trạng thái nhiệm vụ
         // await fetch(`/api/users/missions/complete`, { method: 'POST', body: JSON.stringify({ missionId }) });
     };
 
