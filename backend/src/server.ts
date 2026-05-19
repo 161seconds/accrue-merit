@@ -26,7 +26,10 @@ const allowedOrigins = [
 ]
 
 app.use(cors({
-    origin: 'https://accrue-merit.vercel.app',
+    origin: [
+        'https://accrue-merit.vercel.app',
+        'http://localhost:5173'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
