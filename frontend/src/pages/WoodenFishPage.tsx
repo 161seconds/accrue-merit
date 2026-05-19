@@ -15,7 +15,6 @@ export default function WoodenFishPage() {
     }, [])
 
     const handleTap = async () => {
-        // Visual feedback ngay lập tức
         setRipple(true)
         setTimeout(() => setRipple(false), 300)
 
@@ -29,7 +28,6 @@ export default function WoodenFishPage() {
         try {
             const res = await woodenFishApi.tap(1)
             setMoCount(res.data.result.moCount)
-            // Update user stats
             if (user) {
                 updateUser({
                     ...user,
@@ -40,11 +38,11 @@ export default function WoodenFishPage() {
     }
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <div className="flex flex-col items-center justify-center flex-1 px-6">
             <PageTitle badge="Thiền định" title="Gõ" highlight="Mõ" />
 
             {/* Counter */}
-            <div className="text-center mb-8">
+            <div className="mb-8 text-center">
                 <div className="text-[8px] tracking-[0.3em] text-gold-dim uppercase mb-1">Tổng số lần gõ</div>
                 <div className="font-display text-5xl font-bold text-gold-light drop-shadow-[0_0_30px_rgba(201,168,76,0.5)]">
                     {moCount.toLocaleString()}
@@ -75,11 +73,11 @@ export default function WoodenFishPage() {
 
                 {/* Ripple ring */}
                 {ripple && (
-                    <div className="absolute inset-0 rounded-full border-2 border-gold/40 animate-ping pointer-events-none" />
+                    <div className="absolute inset-0 border-2 rounded-full pointer-events-none border-gold/40 animate-ping" />
                 )}
             </div>
 
-            <p className="text-xs text-parchment/30 italic text-center">Nhấn vào mõ để tích đức</p>
+            <p className="text-xs italic text-center text-parchment/30">Nhấn vào mõ để tích đức</p>
             <p className="text-[10px] text-parchment/20 mt-1">Mỗi lần gõ = +1 điểm công đức</p>
 
             <style>{`
