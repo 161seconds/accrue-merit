@@ -4,8 +4,8 @@
   "description": "AccrueMerit Karma Management System - Backend API",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "npx tsx watch src/server.ts",
-    "start": "npx tsx src/server.ts"
+    "dev": "tsx src/server.ts",
+    "start": "tsx src/server.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
