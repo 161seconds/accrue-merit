@@ -11,12 +11,10 @@ export default function SettingsPage() {
     const { user, updateUser, logout } = useAuth()
     const navigate = useNavigate()
 
-    // Dialogs
     const [nameDialog, setNameDialog] = useState(false)
     const [pwDialog, setPwDialog] = useState(false)
     const [deleteDialog, setDeleteDialog] = useState(false)
 
-    // Form states
     const [newName, setNewName] = useState(user?.name || '')
     const [pwForm, setPwForm] = useState({ old_password: '', password: '', confirm_password: '' })
     const [deletePassword, setDeletePassword] = useState('')
@@ -64,7 +62,7 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="flex-1 flex flex-col px-4 py-4 overflow-y-auto">
+        <div className="flex flex-col flex-1 px-4 py-4 overflow-y-auto">
             <PageTitle title="Cài" highlight="Đặt" />
 
             <div className="max-w-[500px] mx-auto w-full space-y-5">
@@ -76,12 +74,12 @@ export default function SettingsPage() {
 
                 {/* Giao diện */}
                 <Section title="Giao diện">
-                    <div className="px-4 py-3 flex justify-between items-center">
+                    <div className="flex items-center justify-between px-4 py-3">
                         <div className="flex items-center gap-2.5 text-sm text-parchment">
                             <Type size={14} className="text-gold-dim" /> Font chữ
                         </div>
                         <select
-                            className="bg-transparent text-gold-light border border-gold-dim rounded px-2 py-1 text-xs outline-none cursor-pointer"
+                            className="px-2 py-1 text-xs bg-transparent border rounded outline-none cursor-pointer text-gold-light border-gold-dim"
                             value={user?.settings.font || 'Noto Serif'}
                             onChange={(e) => handleUpdateFont(e.target.value)}
                         >
@@ -107,17 +105,17 @@ export default function SettingsPage() {
 
             {/* Dialogs */}
             <Dialog open={nameDialog} onClose={() => setNameDialog(false)} title="Đổi tên hiển thị" actions={
-                <div className="flex gap-3 w-full">
-                    <button className="flex-1 btn-gold opacity-50" onClick={() => setNameDialog(false)}>Huỷ</button>
+                <div className="flex w-full gap-3">
+                    <button className="flex-1 opacity-50 btn-gold" onClick={() => setNameDialog(false)}>Huỷ</button>
                     <button className="flex-1 btn-gold" onClick={handleUpdateName}>Lưu</button>
                 </div>
             }>
-                <input className="input-field text-center" value={newName} onChange={(e) => setNewName(e.target.value)} />
+                <input className="text-center input-field" value={newName} onChange={(e) => setNewName(e.target.value)} />
             </Dialog>
 
             <Dialog open={pwDialog} onClose={() => setPwDialog(false)} title="Đổi mật khẩu" actions={
-                <div className="flex gap-3 w-full">
-                    <button className="flex-1 btn-gold opacity-50" onClick={() => setPwDialog(false)}>Huỷ</button>
+                <div className="flex w-full gap-3">
+                    <button className="flex-1 opacity-50 btn-gold" onClick={() => setPwDialog(false)}>Huỷ</button>
                     <button className="flex-1 btn-gold" onClick={handleChangePassword}>Đổi</button>
                 </div>
             }>
@@ -129,8 +127,8 @@ export default function SettingsPage() {
             </Dialog>
 
             <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)} title="⚠️ Xoá tài khoản" actions={
-                <div className="flex gap-3 w-full">
-                    <button className="flex-1 btn-gold opacity-50" onClick={() => setDeleteDialog(false)}>Huỷ</button>
+                <div className="flex w-full gap-3">
+                    <button className="flex-1 opacity-50 btn-gold" onClick={() => setDeleteDialog(false)}>Huỷ</button>
                     <button className="flex-1 btn-red" onClick={handleDeleteAccount}>Xoá vĩnh viễn</button>
                 </div>
             }>
@@ -143,7 +141,7 @@ export default function SettingsPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <div className="card overflow-hidden">
+        <div className="overflow-hidden card">
             <div className="text-[11px] font-bold tracking-[0.15em] text-gold-light uppercase px-4 pt-3 pb-2 bg-gold/5 border-b border-gold/10">
                 {title}
             </div>
@@ -156,12 +154,12 @@ function Item({ icon, label, value, onClick }: { icon: React.ReactNode; label: s
     return (
         <button
             onClick={onClick}
-            className="w-full px-4 py-3 text-sm text-parchment flex justify-between items-center border-b border-gold/10 last:border-b-0 hover:bg-gold/10 transition-colors cursor-pointer bg-transparent text-left"
+            className="flex items-center justify-between w-full px-4 py-3 text-sm text-left transition-colors bg-transparent border-b cursor-pointer text-parchment border-gold/10 last:border-b-0 hover:bg-gold/10"
         >
             <span className="flex items-center gap-2.5">
                 <span className="text-gold-dim">{icon}</span> {label}
             </span>
-            <span className="flex items-center gap-1 text-xs text-parchment/40 font-bold">
+            <span className="flex items-center gap-1 text-xs font-bold text-parchment/40">
                 {value} <ChevronRight size={12} />
             </span>
         </button>
