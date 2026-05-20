@@ -12,7 +12,7 @@ const GREEN_LEAF_COLORS = [
     "#1e3f20", "#163822", "#22543d", "#276749", "#2f855a"
 ];
 const YELLOW_LEAF_COLORS = [
-    "#d4af37", "#c59b27", "#daa520", "#facc15", "#eab308"
+    "#FFFF00", "#FFF700", "#FFEA00", "#FFFF33", "#FFFF66"
 ];
 // Sắc màu chùm quả/đèn công đức hoàn toàn là Vàng hoàng kim và Xanh lục bảo, loại bỏ sắc đỏ
 const CLUSTER_COLORS = [
@@ -79,8 +79,8 @@ function generateTreeRoots(): RootData[] {
         const startPos = new THREE.Vector3(Math.cos(angle) * 0.25, -0.4, Math.sin(angle) * 0.25);
         const dir = new THREE.Vector3(Math.cos(angle), -0.6, Math.sin(angle)).normalize();
 
-        // Kéo dài chiều dài gốc rễ (2.5 -> 3.5)
-        addRoot(startPos, dir, 2.5 + rand() * 1.0, 0.35, 0);
+        // Chiều dài gốc rễ ngắn hơn, bằng khoảng 1/3 cành chính (khoảng 0.8 đến 1.2)
+        addRoot(startPos, dir, 0.8 + rand() * 0.4, 0.35, 0);
     }
     return roots;
 }
@@ -208,27 +208,49 @@ function createMountains(scene: THREE.Scene) {
         { x: 10, z: 28, h: 6, r: 4, mat: matNear },
     ];
 
-    mountains.forEach(p => {
-        // Cone Geometry có 12 radial segments, 5 height segments để dễ biến dạng
-        const geo = new THREE.ConeGeometry(p.r, p.h, 12, 5);
+    const baseColorMap = new Map([
+        [matFar, new THREE.Color('#3A4F5E')], // Mist slate blue (Far)
+        [matMid, new THREE.Color('#2C3E50')], // Slate (Mid)
+        [matNear, new THREE.Color('#1F2D3D')] // Dark Slate (Near)
+    ]);
+    const snowColor = new THREE.Color('#ffffff');
 
-        // Gây nhiễu ngẫu nhiên cho đỉnh Cone để tạo kết cấu núi tự nhiên gồ ghề
+    mountains.forEach(p => {
+        // Cone Geometry có 4 radial segments tạo mỏm đá vát góc sắc nhọn, mạnh mẽ
+        const geo = new THREE.ConeGeometry(p.r, p.h, 4, 6);
         const pos = geo.attributes.position;
         const rand = seededRandom(p.x * 7 + p.z * 13);
+        const colors = [];
+        const baseColor = baseColorMap.get(p.mat) || new THREE.Color('#2C3E50');
+
         for (let i = 0; i < pos.count; i++) {
             const y = pos.getY(i);
-            // Càng ở trên cao biến dạng càng nhiều, chân núi giữ nguyên độ bám đất
-            const factor = Math.max(0, (y + p.h / 2) / p.h);
-            const dx = (rand() - 0.5) * p.r * 0.18 * factor;
-            const dy = (rand() - 0.5) * p.h * 0.1 * factor;
-            const dz = (rand() - 0.5) * p.r * 0.18 * factor;
+            const factor = Math.max(0, (y + p.h / 2) / p.h); // Tỉ lệ độ cao (0 đến 1)
+
+            // Gây nhiễu nhẹ nhàng để giữ form đá sắc nét thay vì phình to lồi lõm
+            const dx = (rand() - 0.5) * p.r * 0.1 * factor;
+            const dy = (rand() - 0.5) * p.h * 0.05 * factor;
+            const dz = (rand() - 0.5) * p.r * 0.1 * factor;
             pos.setX(i, pos.getX(i) + dx);
             pos.setY(i, y + dy);
             pos.setZ(i, pos.getZ(i) + dz);
+
+            // Trải texture đỉnh núi tuyết gradient mượt mà
+            const vertexColor = baseColor.clone();
+            if (factor > 0.55) {
+                // Trên 55% độ cao sẽ bắt đầu phủ tuyết trắng
+                const snowMix = Math.min(1, (factor - 0.55) / 0.45);
+                vertexColor.lerp(snowColor, snowMix);
+            }
+            colors.push(vertexColor.r, vertexColor.g, vertexColor.b);
         }
+        
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
         geo.computeVertexNormals();
 
-        const mesh = new THREE.Mesh(geo, p.mat);
+        // Sử dụng vertexColors: true để hiển thị gradient tuyết phủ
+        const mountainMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1.0, flatShading: true });
+        const mesh = new THREE.Mesh(geo, mountainMat);
         mesh.position.set(p.x, p.h * 0.5 - 1.8, p.z);
         mesh.rotation.y = rand() * Math.PI * 2;
         scene.add(mesh);
@@ -542,8 +564,8 @@ export function KarmaTreeCanvas({
 
         const ribbonGeo = new THREE.PlaneGeometry(0.15, 0.8);
         ribbonGeo.translate(0, -0.4, 0);
-        // Thay ruy băng đỏ bằng ruy băng vàng nhám
-        const ribbonMat = new THREE.MeshStandardMaterial({ color: "#d4af37", roughness: 1.0, metalness: 0.0, side: THREE.DoubleSide });
+        // Ruy băng màu đỏ nhám tĩnh lặng
+        const ribbonMat = new THREE.MeshStandardMaterial({ color: "#dc2626", roughness: 1.0, metalness: 0.0, side: THREE.DoubleSide });
         const ribbons: THREE.Mesh[] = [];
         branches.filter(b => b.depth === 3).forEach((b) => {
             if (Math.random() > 0.7) {
@@ -583,7 +605,7 @@ export function KarmaTreeCanvas({
             scene.add(mesh);
         });
 
-        const maxLeaves = 450;
+        const maxLeaves = 20000;
         const leafGeo = new THREE.SphereGeometry(0.12, 5, 5);
         leafGeo.scale(1, 0.35, 1.25);
 
@@ -605,9 +627,9 @@ export function KarmaTreeCanvas({
         for (let i = 0; i < maxLeaves; i++) {
             const basePos = leafPositions[i % leafPositions.length];
             const offset = new THREE.Vector3(
-                (leafRand() - 0.5) * 1.8,
-                (leafRand() - 0.6) * 1.4,
-                (leafRand() - 0.5) * 1.8
+                (leafRand() - 0.5) * 2.8,
+                (leafRand() - 0.6) * 2.4,
+                (leafRand() - 0.5) * 2.8
             );
             const finalPos = basePos.clone().add(offset);
             const finalRot = new THREE.Euler(
@@ -623,8 +645,8 @@ export function KarmaTreeCanvas({
             leafDummy.updateMatrix();
             leafInstances.setMatrixAt(i, leafDummy.matrix);
 
-            // Tỷ lệ: 90% màu xanh lá chủ đạo, 10% chấm điểm màu vàng úa/vàng công đức
-            const isYellow = leafRand() < 0.10;
+            // Tỷ lệ: 98% màu xanh lá chủ đạo, chỉ có 2% chấm điểm màu vàng tươi sáng (thiểu số)
+            const isYellow = leafRand() < 0.02;
             const colorHex = isYellow
                 ? YELLOW_LEAF_COLORS[Math.floor(leafRand() * YELLOW_LEAF_COLORS.length)]
                 : GREEN_LEAF_COLORS[Math.floor(leafRand() * GREEN_LEAF_COLORS.length)];
@@ -666,8 +688,8 @@ export function KarmaTreeCanvas({
 
             if (state.leafInstances && state.leafInstances.count > 0) {
                 const dummy = new THREE.Object3D();
-                // Sprouting leaf threshold: base 150 leaves + 2 leaves per point
-                const activeLeaves = Math.min(450, 150 + (state.totalPoints || 0) * 2);
+                // Sprouting leaf threshold: base 300 leaves + 3 leaves per point
+                const activeLeaves = Math.min(2500, 300 + (state.totalPoints || 0) * 3);
 
                 for (let i = 0; i < state.leafInstances.count; i++) {
                     const initialPos = state.leafInitialPositions[i];
@@ -773,8 +795,9 @@ export function KarmaTreeCanvas({
         const state = sceneRef.current;
         if (!state) return;
 
-        state.totalPoints = totalPoints; // Cập nhật tổng số điểm để animate loop điều chỉnh số lá
-        const totalClusters = Math.floor(totalPoints / CLUSTER_THRESHOLD);
+        const maxClusters = state.clusterPositions.length;
+        const totalClusters = Math.min(Math.floor(totalPoints / CLUSTER_THRESHOLD), maxClusters);
+        state.totalPoints = totalPoints;
 
         state.clusterGroups.forEach((g) => {
             g.children.forEach((child) => {
@@ -791,9 +814,9 @@ export function KarmaTreeCanvas({
 
         const fruitGeo = new THREE.SphereGeometry(0.06, 6, 6);
         fruitGeo.scale(1, 1.5, 1);
-        // Đổi màu chùm quả từ đỏ đất sang vàng nhám
+        // Đổi base color thành trắng (#ffffff) để màu set từ CLUSTER_COLORS (xanh/vàng) không bị sai màu thành cam/nâu
         const fruitMat = new THREE.MeshStandardMaterial({
-            color: "#d4af37",
+            color: "#ffffff",
             roughness: 1.0,
             metalness: 0.0,
             flatShading: true
