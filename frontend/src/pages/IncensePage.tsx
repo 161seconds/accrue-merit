@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { wishApi } from '@/api/wish.api'
 import { Wish } from '@/types'
-import PageTitle from '@/components/ui/PageTitle'
 import toast from 'react-hot-toast'
-import { Trash2, Flame } from 'lucide-react'
+import { Trash2, Sparkles, Send, Flame } from 'lucide-react'
 
 const WISH_CATEGORIES = [
     { value: 'suc-khoe', label: 'Sức khoẻ' },
@@ -48,7 +47,7 @@ export default function IncensePage() {
             toast.success('Lời nguyện đã được gửi đi 🙏')
             setContent('')
             fetchWishes()
-            setTimeout(() => setBurning(false), 3000)
+            setTimeout(() => setBurning(false), 5000)
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Lỗi')
             setBurning(false)
@@ -66,66 +65,204 @@ export default function IncensePage() {
     }
 
     return (
-        <div className="flex-1 flex flex-col px-4 py-4 overflow-hidden">
-            <PageTitle badge="Tâm linh" title="Thắp" highlight="Nhang" />
+        <div className="flex flex-col min-h-screen bg-[#070b09] relative overflow-hidden pt-24 pb-16 px-6">
+            {/* Dark Ambient Background */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className={`absolute top-1/2 left-1/4 w-96 h-96 rounded-full blur-[150px] transition-all duration-1000 ${burning ? 'bg-orange-500/10 scale-150' : 'bg-gold-dark/5 scale-100'}`} />
+            </div>
 
-            {/* Incense visual */}
-            <div className="flex justify-center my-6">
-                <div className="flex flex-col items-center">
-                    {burning && (
-                        <div className="text-4xl animate-pulse mb-2 drop-shadow-[0_0_20px_rgba(255,100,0,0.6)]">🔥</div>
-                    )}
-                    <div className="text-6xl">{burning ? '🕯️' : '🪔'}</div>
-                    <div className="text-[10px] text-gold-dim mt-2 tracking-wider">
-                        {burning ? 'Đang thắp nhang...' : 'Sẵn sàng thắp nhang'}
+            <div className="relative z-10 max-w-6xl mx-auto w-full">
+                <div className="mb-8 text-center flex flex-col items-center">
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-parchment/60 shadow-lg backdrop-blur-xl">
+                        <Sparkles size={14} className="text-gold-light" />
+                        Không gian thanh tịnh
                     </div>
-                </div>
-            </div>
-
-            {/* Form */}
-            <div className="max-w-[500px] mx-auto w-full space-y-3 mb-4">
-                <div className="flex gap-2">
-                    <select className="input-field flex-1" value={category} onChange={(e) => setCategory(e.target.value)}>
-                        {WISH_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-                    </select>
-                    <select className="input-field flex-1" value={incenseType} onChange={(e) => setIncenseType(e.target.value)}>
-                        {INCENSE_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                    </select>
+                    <h1 className="text-4xl font-black tracking-tight font-display text-parchment sm:text-5xl drop-shadow-lg">
+                        Dâng Hương <span className="text-transparent bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text">Cầu Nguyện</span>
+                    </h1>
                 </div>
 
-                <textarea
-                    className="input-field resize-none h-20"
-                    placeholder="Nhập lời nguyện cầu của bạn..."
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    maxLength={300}
-                />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
+                    
+                    {/* Left Column: The Altar */}
+                    <div className="lg:col-span-5 flex flex-col items-center justify-center bg-gradient-to-b from-black/20 to-black/60 rounded-[2rem] border border-white/5 relative min-h-[500px]">
+                        <div className="absolute top-0 w-full h-1/2 bg-gradient-to-b from-transparent to-orange-500/5 pointer-events-none opacity-50" />
+                        
+                        <div className="relative w-full h-full flex flex-col items-center justify-end pb-12">
+                            {/* Animated Smoke */}
+                            <div className={`absolute bottom-32 w-full h-64 flex justify-center pointer-events-none transition-opacity duration-1000 ${burning ? 'opacity-100' : 'opacity-0'}`}>
+                                <div className="smoke smoke-1" />
+                                <div className="smoke smoke-2" />
+                                <div className="smoke smoke-3" />
+                            </div>
 
-                <button onClick={handleSubmit} disabled={loading || burning} className="btn-gold w-full flex items-center justify-center gap-2">
-                    <Flame size={14} /> {loading ? 'Đang gửi...' : 'Thắp Nhang & Gửi Nguyện'}
-                </button>
-            </div>
+                            {/* Incense Sticks */}
+                            <div className="relative flex justify-center gap-2 mb-[-20px] z-10">
+                                {[...Array(3)].map((_, i) => (
+                                    <div key={i} className="w-1.5 h-32 bg-gradient-to-b from-[#8c593b] to-[#2d1b11] rounded-full relative shadow-[2px_0_5px_rgba(0,0,0,0.5)]">
+                                        <div className={`absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-3 rounded-full transition-all duration-500 ${burning ? 'bg-gradient-to-t from-red-500 to-orange-300 shadow-[0_0_15px_#f97316]' : 'bg-[#1a0f0a]'}`} />
+                                    </div>
+                                ))}
+                            </div>
 
-            {/* Wishes list */}
-            <div className="flex-1 overflow-y-auto space-y-2 max-w-[500px] mx-auto w-full">
-                <div className="text-[9px] text-gold-dim uppercase tracking-widest mb-2">Lời nguyện gần đây</div>
-                {wishes.map((w) => (
-                    <div key={w._id} className="card px-4 py-3 flex justify-between items-start group">
-                        <div className="flex-1 min-w-0">
-                            <div className="text-sm text-parchment">{w.content}</div>
-                            <div className="text-[10px] text-parchment/30 mt-1">
-                                {WISH_CATEGORIES.find((c) => c.value === w.category)?.label} · {new Date(w.created_at).toLocaleDateString('vi-VN')}
+                            {/* Incense Burner (Lư Hương) */}
+                            <div className="relative z-20 w-48 h-24 bg-gradient-to-b from-[#b8860b] via-[#8b6508] to-[#553c00] rounded-b-3xl rounded-t-lg shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-t-4 border-[#ffd700]/30 flex flex-col items-center justify-start pt-2">
+                                {/* Decor details on burner */}
+                                <div className="w-40 h-2 bg-black/30 rounded-full mb-3" />
+                                <div className="flex gap-4">
+                                    <div className="w-6 h-6 rounded-full border-2 border-black/20" />
+                                    <div className="w-8 h-8 rounded-full border-2 border-black/20" />
+                                    <div className="w-6 h-6 rounded-full border-2 border-black/20" />
+                                </div>
+                                {/* Legs */}
+                                <div className="absolute -bottom-4 left-6 w-4 h-6 bg-[#553c00] rounded-b-full skew-x-12 shadow-lg" />
+                                <div className="absolute -bottom-4 right-6 w-4 h-6 bg-[#553c00] rounded-b-full -skew-x-12 shadow-lg" />
+                            </div>
+
+                            <div className="mt-8 text-center z-20">
+                                <p className="text-gold-light/60 font-display tracking-widest text-sm uppercase mb-1">
+                                    {burning ? 'Hương đang cháy...' : 'Lư Hương'}
+                                </p>
+                                <p className="text-[10px] text-parchment/30">Thành tâm thì linh</p>
                             </div>
                         </div>
-                        <button
-                            onClick={() => handleDelete(w._id)}
-                            className="opacity-0 group-hover:opacity-100 text-parchment/30 hover:text-red transition-all bg-transparent border-none cursor-pointer ml-2 shrink-0"
-                        >
-                            <Trash2 size={14} />
-                        </button>
                     </div>
-                ))}
+
+                    {/* Right Column: Form & List */}
+                    <div className="lg:col-span-7 flex flex-col gap-6">
+                        
+                        {/* Send Wish Form */}
+                        <div className="bg-[#0a100d]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl relative">
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="block text-[10px] text-parchment/50 uppercase tracking-widest mb-1.5 ml-1">Loại hương</label>
+                                    <select 
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-parchment focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all appearance-none"
+                                        value={incenseType} 
+                                        onChange={(e) => setIncenseType(e.target.value)}
+                                    >
+                                        {INCENSE_TYPES.map((t) => <option key={t.value} value={t.value} className="bg-[#0a100d]">{t.label}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] text-parchment/50 uppercase tracking-widest mb-1.5 ml-1">Lĩnh vực cầu nguyện</label>
+                                    <select 
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-parchment focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all appearance-none"
+                                        value={category} 
+                                        onChange={(e) => setCategory(e.target.value)}
+                                    >
+                                        {WISH_CATEGORIES.map((c) => <option key={c.value} value={c.value} className="bg-[#0a100d]">{c.label}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-[10px] text-parchment/50 uppercase tracking-widest mb-1.5 ml-1">Lời khấn nguyện</label>
+                                <textarea
+                                    className="w-full h-28 resize-none bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-parchment focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all placeholder:text-parchment/20"
+                                    placeholder="Viết lời nguyện cầu từ tâm..."
+                                    value={content}
+                                    onChange={(e) => setContent(e.target.value)}
+                                    maxLength={300}
+                                />
+                                <div className="text-right text-[10px] text-parchment/30 mt-1">{content.length}/300</div>
+                            </div>
+
+                            <button 
+                                onClick={handleSubmit} 
+                                disabled={loading || burning} 
+                                className={`w-full py-4 rounded-xl font-bold text-sm transition-all flex justify-center items-center gap-2 ${
+                                    burning 
+                                    ? 'bg-black/50 text-orange-500/50 border border-orange-500/20 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-500 hover:to-orange-400 text-white shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] cursor-pointer'
+                                }`}
+                            >
+                                {burning ? <Flame size={18} className="animate-pulse" /> : <Send size={16} />}
+                                {burning ? 'Hương đang cháy...' : 'Dâng Hương & Gửi Lời Nguyện'}
+                            </button>
+                        </div>
+
+                        {/* Recent Wishes List */}
+                        <div className="bg-[#0a100d]/60 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex-1 flex flex-col min-h-[300px]">
+                            <h3 className="text-sm font-bold text-parchment mb-4 font-display flex items-center justify-between">
+                                Sổ Lưu Nguyện Cầu
+                                <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full font-normal">Gần đây</span>
+                            </h3>
+
+                            <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                                {wishes.length === 0 ? (
+                                    <div className="h-full flex items-center justify-center text-parchment/30 text-sm">Chưa có lời nguyện nào.</div>
+                                ) : (
+                                    wishes.map((w) => (
+                                        <div key={w._id} className="group relative bg-black/30 border border-white/5 hover:border-white/10 rounded-2xl p-4 transition-all">
+                                            <div className="flex justify-between items-start gap-3">
+                                                <div className="flex-1">
+                                                    <p className="text-sm text-parchment/90 leading-relaxed font-serif italic mb-2">"{w.content}"</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="px-2 py-0.5 rounded-md bg-orange-500/10 text-orange-400 text-[9px] uppercase tracking-wider font-bold">
+                                                            {WISH_CATEGORIES.find((c) => c.value === w.category)?.label}
+                                                        </span>
+                                                        <span className="text-[10px] text-parchment/30">
+                                                            {new Date(w.created_at).toLocaleDateString('vi-VN')}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleDelete(w._id)}
+                                                    className="opacity-0 group-hover:opacity-100 text-parchment/30 hover:text-red-400 transition-all bg-transparent border-none cursor-pointer p-1"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+                
+                .smoke {
+                    position: absolute;
+                    width: 20px;
+                    height: 20px;
+                    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+                    border-radius: 50%;
+                    bottom: 0;
+                    opacity: 0;
+                    animation: rise 4s infinite ease-in;
+                }
+                .smoke-1 { left: calc(50% - 15px); animation-delay: 0s; }
+                .smoke-2 { left: calc(50% + 5px); animation-delay: 1.5s; }
+                .smoke-3 { left: calc(50% - 5px); animation-delay: 3s; }
+
+                @keyframes rise {
+                    0% {
+                        bottom: 0;
+                        transform: scale(1) translateX(0);
+                        opacity: 0;
+                    }
+                    20% {
+                        opacity: 0.5;
+                    }
+                    50% {
+                        transform: scale(3) translateX(-10px);
+                        opacity: 0.2;
+                    }
+                    100% {
+                        bottom: 150px;
+                        transform: scale(6) translateX(10px);
+                        opacity: 0;
+                    }
+                }
+            `}</style>
         </div>
     )
 }
