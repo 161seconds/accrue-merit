@@ -6,12 +6,19 @@ const CLUSTER_THRESHOLD = 10;
 const TRUNK_COLOR = "#2A1A0A";
 const BRANCH_COLOR = "#3D2512";
 
-// TONE MÀU LÁ TRỘN LẪN (Trầm, nhám, tuyệt đối không chói)
-const MIXED_LEAF_COLORS = [
-    "#2d5a27", "#3b7a33", "#4c9a41", "#244c1e", "#5cb85c", // Xanh lục
-    "#d4af37", "#c59b27", "#daa520", "#e6c200", "#b8860b"  // Vàng úa
+// TONE MÀU LÁ CHỦ ĐẠO (Xanh lá làm chủ đạo xen lẫn sắc Vàng công đức)
+const GREEN_LEAF_COLORS = [
+    "#2d5a27", "#3b7a33", "#4c9a41", "#244c1e", "#5cb85c",
+    "#1e3f20", "#163822", "#22543d", "#276749", "#2f855a"
 ];
-const CLUSTER_COLORS = ["#ca8a04", "#eab308", "#a16207", "#d97706", "#b45309"];
+const YELLOW_LEAF_COLORS = [
+    "#d4af37", "#c59b27", "#daa520", "#facc15", "#eab308"
+];
+// Sắc màu chùm quả/đèn công đức hoàn toàn là Vàng hoàng kim và Xanh lục bảo, loại bỏ sắc đỏ
+const CLUSTER_COLORS = [
+    "#eab308", "#facc15", "#d4af37", // Vàng hoàng kim
+    "#4ade80", "#22c55e", "#10b981"  // Xanh ngọc / xanh tươi
+];
 
 // TONE MÀU BÌNH MINH (DAWN) & ĐỒNG CỎ
 const FOG_COLOR = "#d4c5b0";
@@ -25,6 +32,57 @@ function seededRandom(seed: number) {
         s = (s * 16807 + 0) % 213647;
         return (s - 1) / 213647;
     };
+}
+
+// ─── ROOT GEOMETRY GENERATION ───
+interface RootData {
+    start: THREE.Vector3;
+    end: THREE.Vector3;
+    radius: number;
+}
+
+function generateTreeRoots(): RootData[] {
+    const roots: RootData[] = [];
+    const rand = seededRandom(99);
+
+    function addRoot(start: THREE.Vector3, direction: THREE.Vector3, length: number, radius: number, depth: number) {
+        if (depth > 3 || radius < 0.02) return;
+        const end = start.clone().add(direction.clone().multiplyScalar(length));
+
+        // Đảm bảo rễ cây luôn bò trên mặt đất (mặt đất ở y = -1) để người dùng có thể thấy rõ
+        if (end.y < -0.98) {
+            end.y = -0.98;
+        }
+
+        roots.push({ start: start.clone(), end: end.clone(), radius });
+
+        const numChildren = 2;
+        for (let i = 0; i < numChildren; i++) {
+            const spreadAngle = 0.3 + rand() * 0.4;
+            const rotAngle = ((Math.PI * 2) / numChildren) * i + (rand() - 0.5) * 1.0;
+            const newDir = direction.clone();
+            const axis = new THREE.Vector3(Math.cos(rotAngle), 0, Math.sin(rotAngle)).normalize();
+            newDir.applyAxisAngle(axis, spreadAngle);
+            newDir.y = -0.15 - rand() * 0.2; // xuôi nhẹ xuống mặt đất
+            newDir.normalize();
+
+            const newLength = length * (0.7 + rand() * 0.2);
+            const newRadius = radius * (0.65 + rand() * 0.1);
+            addRoot(end.clone(), newDir, newLength, newRadius, depth + 1);
+        }
+    }
+
+    const numRoots = 7; // tăng số nhánh rễ cây lớn tỏa ra các hướng
+    for (let i = 0; i < numRoots; i++) {
+        const angle = (i / numRoots) * Math.PI * 2 + (rand() - 0.5) * 0.2;
+        // Bắt đầu trên gốc thân một chút (ở y = -0.4) để thấy rễ cắm xuống đất
+        const startPos = new THREE.Vector3(Math.cos(angle) * 0.25, -0.4, Math.sin(angle) * 0.25);
+        const dir = new THREE.Vector3(Math.cos(angle), -0.6, Math.sin(angle)).normalize();
+
+        // Kéo dài chiều dài gốc rễ (2.5 -> 3.5)
+        addRoot(startPos, dir, 2.5 + rand() * 1.0, 0.35, 0);
+    }
+    return roots;
 }
 
 // ─── TREE GEOMETRY GENERATION ───
@@ -97,26 +155,82 @@ function createMountains(scene: THREE.Scene) {
     const matNear = new THREE.MeshStandardMaterial({ color: '#2b3824', roughness: 0.9 });
 
     const mountains = [
+        // FAR LAYER (Back & Sides & FRONT)
         { x: -35, z: -40, h: 28, r: 20, mat: matFar },
         { x: 0, z: -45, h: 32, r: 25, mat: matFar },
         { x: 35, z: -38, h: 25, r: 18, mat: matFar },
         { x: -45, z: -10, h: 24, r: 18, mat: matFar },
         { x: 45, z: 0, h: 26, r: 19, mat: matFar },
+        { x: -50, z: -25, h: 30, r: 22, mat: matFar },
+        { x: 50, z: -25, h: 28, r: 20, mat: matFar },
+        { x: -40, z: 20, h: 25, r: 18, mat: matFar },
+        { x: 40, z: 20, h: 24, r: 18, mat: matFar },
+        { x: -15, z: -48, h: 35, r: 24, mat: matFar },
+        { x: 18, z: -46, h: 33, r: 22, mat: matFar },
+
+        // NEW FAR MOUNTAINS TO FILL THE GAP (Front/South)
+        { x: -25, z: 45, h: 26, r: 19, mat: matFar },
+        { x: 0, z: 48, h: 28, r: 21, mat: matFar },
+        { x: 25, z: 45, h: 25, r: 18, mat: matFar },
+        { x: -45, z: 35, h: 24, r: 17, mat: matFar },
+        { x: 45, z: 35, h: 27, r: 20, mat: matFar },
+
+        // MID LAYER
         { x: -20, z: -25, h: 18, r: 14, mat: matMid },
         { x: 15, z: -28, h: 16, r: 12, mat: matMid },
         { x: 30, z: -15, h: 15, r: 10, mat: matMid },
         { x: -30, z: 5, h: 14, r: 11, mat: matMid },
         { x: -25, z: -15, h: 12, r: 9, mat: matMid },
+        { x: -32, z: -30, h: 16, r: 12, mat: matMid },
+        { x: 32, z: -30, h: 15, r: 11, mat: matMid },
+        { x: -35, z: 12, h: 14, r: 10, mat: matMid },
+        { x: 35, z: 12, h: 13, r: 9, mat: matMid },
+
+        // NEW MID MOUNTAINS TO FILL THE GAP
+        { x: -18, z: 35, h: 15, r: 11, mat: matMid },
+        { x: 0, z: 38, h: 16, r: 12, mat: matMid },
+        { x: 18, z: 35, h: 14, r: 10, mat: matMid },
+        { x: -30, z: 28, h: 13, r: 9, mat: matMid },
+        { x: 30, z: 28, h: 12, r: 9, mat: matMid },
+
+        // NEAR LAYER
         { x: -25, z: 15, h: 10, r: 8, mat: matNear },
         { x: 28, z: 10, h: 9, r: 7, mat: matNear },
         { x: -18, z: -10, h: 8, r: 6, mat: matNear },
         { x: 22, z: -12, h: 7, r: 5, mat: matNear },
+        { x: -22, z: 0, h: 9, r: 7, mat: matNear },
+        { x: 20, z: 0, h: 8, r: 6, mat: matNear },
+        { x: -15, z: 25, h: 7, r: 5, mat: matNear },
+        { x: 18, z: 25, h: 6, r: 4, mat: matNear },
+
+        // NEW NEAR MOUNTAINS TO FILL THE GAP
+        { x: -10, z: 28, h: 7, r: 5, mat: matNear },
+        { x: 10, z: 28, h: 6, r: 4, mat: matNear },
     ];
 
     mountains.forEach(p => {
-        const mesh = new THREE.Mesh(new THREE.ConeGeometry(p.r, p.h, 6), p.mat);
-        mesh.position.set(p.x, p.h * 0.3 - 2, p.z);
-        mesh.rotation.y = Math.random() * Math.PI;
+        // Cone Geometry có 12 radial segments, 5 height segments để dễ biến dạng
+        const geo = new THREE.ConeGeometry(p.r, p.h, 12, 5);
+
+        // Gây nhiễu ngẫu nhiên cho đỉnh Cone để tạo kết cấu núi tự nhiên gồ ghề
+        const pos = geo.attributes.position;
+        const rand = seededRandom(p.x * 7 + p.z * 13);
+        for (let i = 0; i < pos.count; i++) {
+            const y = pos.getY(i);
+            // Càng ở trên cao biến dạng càng nhiều, chân núi giữ nguyên độ bám đất
+            const factor = Math.max(0, (y + p.h / 2) / p.h);
+            const dx = (rand() - 0.5) * p.r * 0.18 * factor;
+            const dy = (rand() - 0.5) * p.h * 0.1 * factor;
+            const dz = (rand() - 0.5) * p.r * 0.18 * factor;
+            pos.setX(i, pos.getX(i) + dx);
+            pos.setY(i, y + dy);
+            pos.setZ(i, pos.getZ(i) + dz);
+        }
+        geo.computeVertexNormals();
+
+        const mesh = new THREE.Mesh(geo, p.mat);
+        mesh.position.set(p.x, p.h * 0.5 - 1.8, p.z);
+        mesh.rotation.y = rand() * Math.PI * 2;
         scene.add(mesh);
     });
 }
@@ -195,40 +309,84 @@ function createWell(scene: THREE.Scene) {
     scene.add(wellGroup);
 }
 
-function createPampasGrass(scene: THREE.Scene) {
-    const count = 350;
-    const stalkGeo = new THREE.CylinderGeometry(0.015, 0.03, 1.2, 3);
+function createGrassAndReeds(scene: THREE.Scene) {
+    // 1. REEDS (Cỏ lau) - Giảm số lượng xuống còn 120 cây để làm điểm nhấn
+    const reedCount = 120;
+    const stalkGeo = new THREE.CylinderGeometry(0.008, 0.02, 1.2, 3);
     stalkGeo.translate(0, 0.6, 0);
-    const stalkMat = new THREE.MeshStandardMaterial({ color: '#8b995e', roughness: 0.8 });
-    const stalkInst = new THREE.InstancedMesh(stalkGeo, stalkMat, count);
+    const stalkMat = new THREE.MeshStandardMaterial({ color: '#7a8a4e', roughness: 0.85 });
+    const reedStalkInst = new THREE.InstancedMesh(stalkGeo, stalkMat, reedCount);
 
-    const plumeGeo = new THREE.SphereGeometry(0.12, 5, 5);
-    const plumeMat = new THREE.MeshStandardMaterial({ color: '#e8e0ce', roughness: 0.9, transparent: true, opacity: 0.9 });
-    const plumeInst = new THREE.InstancedMesh(plumeGeo, plumeMat, count);
+    const plumeGeo = new THREE.SphereGeometry(0.08, 5, 5);
+    const plumeMat = new THREE.MeshStandardMaterial({ color: '#f0e6c8', roughness: 0.95, transparent: true, opacity: 0.85 });
+    const reedPlumeInst = new THREE.InstancedMesh(plumeGeo, plumeMat, reedCount);
+
+    // 2. NORMAL GRASS (Cỏ thường dạng ngọn nhọn thẳng) - Tăng lên 1800 bụi để phủ nền xanh tươi tốt
+    const grassCount = 1800;
+    const grassGeo = new THREE.ConeGeometry(0.035, 0.35, 3);
+    grassGeo.translate(0, 0.175, 0);
+    const grassMat = new THREE.MeshStandardMaterial({ color: '#3f662d', roughness: 0.9 });
+    const grassInst = new THREE.InstancedMesh(grassGeo, grassMat, grassCount);
 
     const dummy = new THREE.Object3D();
-    const rand = seededRandom(777);
+    const rand = seededRandom(888);
 
-    for (let i = 0; i < count; i++) {
-        const x = 7 + rand() * 15;
-        const z = -2 + rand() * -18;
-        const scale = 0.7 + rand() * 0.6;
+    // Dựng Cỏ Lau (Reeds)
+    for (let i = 0; i < reedCount; i++) {
+        let r = 5 + rand() * 18;
+        let angle = rand() * Math.PI * 2;
+        let x = Math.cos(angle) * r;
+        let z = Math.sin(angle) * r;
 
+        const distToTemple = Math.sqrt((x + 10) ** 2 + (z + 6) ** 2);
+        if (distToTemple < 2.5) {
+            x += (x + 10) * 0.5;
+            z += (z + 6) * 0.5;
+        }
+
+        const scale = 0.6 + rand() * 0.6;
         dummy.position.set(x, -1, z);
         dummy.rotation.y = rand() * Math.PI;
-        dummy.rotation.z = (rand() - 0.5) * 0.3;
+        dummy.rotation.z = (rand() - 0.5) * 0.2;
+        dummy.rotation.x = (rand() - 0.5) * 0.1;
         dummy.scale.setScalar(scale);
         dummy.updateMatrix();
-        stalkInst.setMatrixAt(i, dummy.matrix);
+        reedStalkInst.setMatrixAt(i, dummy.matrix);
 
-        dummy.position.set(x + Math.sin(dummy.rotation.z) * 1.2 * scale, -1 + 1.2 * scale, z);
-        dummy.scale.set(scale, scale * 3, scale);
+        const stalkHeight = 1.2 * scale;
+        dummy.position.set(
+            x + Math.sin(dummy.rotation.z) * stalkHeight,
+            -1 + stalkHeight,
+            z - Math.sin(dummy.rotation.x) * stalkHeight
+        );
+        dummy.scale.set(scale, scale * 3.0, scale);
         dummy.updateMatrix();
-        plumeInst.setMatrixAt(i, dummy.matrix);
+        reedPlumeInst.setMatrixAt(i, dummy.matrix);
     }
 
-    scene.add(stalkInst);
-    scene.add(plumeInst);
+    // Dựng Cỏ Thường (Normal Grass)
+    for (let i = 0; i < grassCount; i++) {
+        let r = 1.5 + rand() * 25;
+        let angle = rand() * Math.PI * 2;
+        let x = Math.cos(angle) * r;
+        let z = Math.sin(angle) * r;
+
+        // Tránh quá sát gốc cây chính
+        if (r < 1.3) continue;
+
+        const scale = 0.5 + rand() * 0.8;
+        dummy.position.set(x, -1, z);
+        dummy.rotation.y = rand() * Math.PI;
+        dummy.rotation.z = (rand() - 0.5) * 0.35; // Hơi nghiêng nhẹ tự nhiên
+        dummy.rotation.x = (rand() - 0.5) * 0.35;
+        dummy.scale.set(scale, scale * (1 + rand() * 0.4), scale);
+        dummy.updateMatrix();
+        grassInst.setMatrixAt(i, dummy.matrix);
+    }
+
+    scene.add(reedStalkInst);
+    scene.add(reedPlumeInst);
+    scene.add(grassInst);
 }
 
 function createFlowers(scene: THREE.Scene) {
@@ -251,15 +409,15 @@ function createFlowers(scene: THREE.Scene) {
 
 function createSun(scene: THREE.Scene) {
     const sun = new THREE.Mesh(
-        new THREE.SphereGeometry(4.0, 32, 32),
+        new THREE.SphereGeometry(4.5, 32, 32),
         new THREE.MeshBasicMaterial({ color: '#ffcc77', fog: false })
     );
-    sun.position.set(0, 8, -40);
+    sun.position.set(0, 22, -65);
     scene.add(sun);
 
     const halo = new THREE.Mesh(
-        new THREE.SphereGeometry(7.0, 32, 32),
-        new THREE.MeshBasicMaterial({ color: '#ffaa55', transparent: true, opacity: 0.15, fog: false })
+        new THREE.SphereGeometry(8.5, 32, 32),
+        new THREE.MeshBasicMaterial({ color: '#ffaa55', transparent: true, opacity: 0.18, fog: false })
     );
     halo.position.copy(sun.position);
     scene.add(halo);
@@ -314,6 +472,10 @@ export function KarmaTreeCanvas({
         clusterPositions: { position: THREE.Vector3; direction: THREE.Vector3 }[];
         prevPoints: number;
         leafOpacities: number[];
+        leafScales: number[];
+        leafInitialPositions: THREE.Vector3[];
+        leafInitialRotations: THREE.Euler[];
+        totalPoints: number;
         mists: THREE.Mesh[];
     } | null>(null);
 
@@ -373,14 +535,15 @@ export function KarmaTreeCanvas({
         createMountains(scene);
         createTemple(scene);
         createWell(scene);
-        createPampasGrass(scene);
+        createGrassAndReeds(scene);
         createSun(scene);
         createFlowers(scene);
         const mists = createMistLayers(scene);
 
         const ribbonGeo = new THREE.PlaneGeometry(0.15, 0.8);
         ribbonGeo.translate(0, -0.4, 0);
-        const ribbonMat = new THREE.MeshStandardMaterial({ color: "#991b1b", roughness: 1.0, side: THREE.DoubleSide });
+        // Thay ruy băng đỏ bằng ruy băng vàng nhám
+        const ribbonMat = new THREE.MeshStandardMaterial({ color: "#d4af37", roughness: 1.0, metalness: 0.0, side: THREE.DoubleSide });
         const ribbons: THREE.Mesh[] = [];
         branches.filter(b => b.depth === 3).forEach((b) => {
             if (Math.random() > 0.7) {
@@ -407,31 +570,74 @@ export function KarmaTreeCanvas({
             scene.add(mesh);
         });
 
-        for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2 + Math.random() * 0.3;
-            const rootGeo = new THREE.CylinderGeometry(0.05, 0.18, 1.2, 4);
-            const rootMesh = new THREE.Mesh(rootGeo, treeMaterial);
-            rootMesh.position.set(Math.cos(angle) * 0.5, -0.4, Math.sin(angle) * 0.5);
-            rootMesh.rotation.z = (Math.random() - 0.5) * 0.5;
-            rootMesh.rotation.x = (Math.random() - 0.5) * 0.5;
-            scene.add(rootMesh);
-        }
+        const roots = generateTreeRoots();
+        roots.forEach((r) => {
+            const dir = r.end.clone().sub(r.start);
+            const length = dir.length();
+            const geo = new THREE.CylinderGeometry(r.radius * 0.5, r.radius, length, 6, 1);
+            geo.translate(0, length / 2, 0);
+            const mesh = new THREE.Mesh(geo, treeMaterial);
+            mesh.position.copy(r.start);
+            const up = new THREE.Vector3(0, 1, 0);
+            mesh.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(up, dir.normalize()));
+            scene.add(mesh);
+        });
 
-        const maxLeaves = CLUSTER_THRESHOLD;
-        const leafGeo = new THREE.SphereGeometry(0.09, 5, 5);
-        leafGeo.scale(1, 0.3, 1);
+        const maxLeaves = 450;
+        const leafGeo = new THREE.SphereGeometry(0.12, 5, 5);
+        leafGeo.scale(1, 0.35, 1.25);
 
         const leafMat = new THREE.MeshStandardMaterial({
-            color: "#3b7a33",
-            roughness: 1.0,
+            roughness: 0.9,
             metalness: 0.0,
-            emissive: 0x000000,
             flatShading: true,
-            transparent: false,
         });
 
         const leafInstances = new THREE.InstancedMesh(leafGeo, leafMat, maxLeaves);
-        leafInstances.count = 0;
+
+        const leafDummy = new THREE.Object3D();
+        const leafRand = seededRandom(12345);
+        const leafScales: number[] = [];
+        const leafOpacities: number[] = [];
+        const leafInitialPositions: THREE.Vector3[] = [];
+        const leafInitialRotations: THREE.Euler[] = [];
+
+        for (let i = 0; i < maxLeaves; i++) {
+            const basePos = leafPositions[i % leafPositions.length];
+            const offset = new THREE.Vector3(
+                (leafRand() - 0.5) * 1.8,
+                (leafRand() - 0.6) * 1.4,
+                (leafRand() - 0.5) * 1.8
+            );
+            const finalPos = basePos.clone().add(offset);
+            const finalRot = new THREE.Euler(
+                (leafRand() - 0.5) * Math.PI,
+                leafRand() * Math.PI * 2,
+                (leafRand() - 0.5) * Math.PI
+            );
+
+            leafDummy.position.copy(finalPos);
+            leafDummy.rotation.copy(finalRot);
+            const baseScale = 0.65 + leafRand() * 0.55;
+            leafDummy.scale.setScalar(baseScale);
+            leafDummy.updateMatrix();
+            leafInstances.setMatrixAt(i, leafDummy.matrix);
+
+            // Tỷ lệ: 90% màu xanh lá chủ đạo, 10% chấm điểm màu vàng úa/vàng công đức
+            const isYellow = leafRand() < 0.10;
+            const colorHex = isYellow
+                ? YELLOW_LEAF_COLORS[Math.floor(leafRand() * YELLOW_LEAF_COLORS.length)]
+                : GREEN_LEAF_COLORS[Math.floor(leafRand() * GREEN_LEAF_COLORS.length)];
+            leafInstances.setColorAt(i, new THREE.Color(colorHex));
+
+            leafScales.push(baseScale);
+            leafOpacities.push(1);
+            leafInitialPositions.push(finalPos);
+            leafInitialRotations.push(finalRot);
+        }
+        leafInstances.instanceMatrix.needsUpdate = true;
+        if (leafInstances.instanceColor) leafInstances.instanceColor.needsUpdate = true;
+        leafInstances.count = maxLeaves;
         scene.add(leafInstances);
 
         const state = {
@@ -440,7 +646,7 @@ export function KarmaTreeCanvas({
             cameraAngle: { theta: Math.PI / 4, phi: Math.PI / 5, radius: 14 },
             targetAngle: { theta: Math.PI / 4, phi: Math.PI / 5, radius: 14 },
             clock: new THREE.Clock(), branches, leafPositions, clusterPositions,
-            prevPoints: 0, leafOpacities: [] as number[], mists
+            prevPoints: 0, totalPoints: 0, leafOpacities, leafScales, leafInitialPositions, leafInitialRotations, mists
         };
         sceneRef.current = state;
 
@@ -460,22 +666,29 @@ export function KarmaTreeCanvas({
 
             if (state.leafInstances && state.leafInstances.count > 0) {
                 const dummy = new THREE.Object3D();
+                // Sprouting leaf threshold: base 150 leaves + 2 leaves per point
+                const activeLeaves = Math.min(450, 150 + (state.totalPoints || 0) * 2);
+
                 for (let i = 0; i < state.leafInstances.count; i++) {
-                    const matrix = new THREE.Matrix4();
-                    state.leafInstances.getMatrixAt(i, matrix);
-                    const pos = new THREE.Vector3().setFromMatrixPosition(matrix);
-                    const offsetY = Math.sin(time * 1.0 + i * 0.7) * 0.02;
+                    const initialPos = state.leafInitialPositions[i];
+                    const initialRot = state.leafInitialRotations[i];
+                    if (!initialPos || !initialRot) continue;
 
-                    dummy.position.set(pos.x, pos.y + offsetY, pos.z);
+                    dummy.position.copy(initialPos);
+
+                    // Animate opacity/scale based on whether leaf is unlocked
+                    const isUnlocked = i < activeLeaves;
                     const opacity = state.leafOpacities[i] || 0;
-                    if (opacity < 1) state.leafOpacities[i] = Math.min(1, opacity + 0.05);
+                    if (isUnlocked) {
+                        state.leafOpacities[i] = Math.min(1.0, opacity + 0.05);
+                    } else {
+                        state.leafOpacities[i] = Math.max(0.0, opacity - 0.05);
+                    }
 
-                    const scale = state.leafOpacities[i] || 0;
-                    dummy.scale.setScalar(scale);
+                    const baseScale = state.leafScales[i] || 1.0;
+                    dummy.scale.setScalar(baseScale * state.leafOpacities[i]);
 
-                    const rotationMatrix = new THREE.Matrix4();
-                    rotationMatrix.extractRotation(matrix);
-                    dummy.setRotationFromMatrix(rotationMatrix);
+                    dummy.rotation.copy(initialRot);
 
                     dummy.updateMatrix();
                     state.leafInstances.setMatrixAt(i, dummy.matrix);
@@ -560,36 +773,8 @@ export function KarmaTreeCanvas({
         const state = sceneRef.current;
         if (!state) return;
 
-        const currentLeaves = totalPoints % CLUSTER_THRESHOLD;
+        state.totalPoints = totalPoints; // Cập nhật tổng số điểm để animate loop điều chỉnh số lá
         const totalClusters = Math.floor(totalPoints / CLUSTER_THRESHOLD);
-
-        const dummy = new THREE.Object3D();
-        const rand = seededRandom(totalPoints * 7 + 13);
-
-        if (state.leafInstances) {
-            state.leafInstances.count = currentLeaves;
-            state.leafOpacities = [];
-
-            for (let i = 0; i < currentLeaves; i++) {
-                const basePos = state.leafPositions[i % state.leafPositions.length];
-                const offset = new THREE.Vector3((rand() - 0.5) * 1.5, (rand() - 0.5) * 1.0, (rand() - 0.5) * 1.5);
-                dummy.position.copy(basePos).add(offset);
-
-                const isNew = i >= (state.prevPoints % CLUSTER_THRESHOLD);
-                dummy.scale.setScalar(isNew ? 0 : 1);
-                state.leafOpacities.push(isNew ? 0 : 1);
-
-                dummy.rotation.set((rand() - 0.5) * Math.PI, rand() * Math.PI, (rand() - 0.5) * Math.PI);
-                dummy.updateMatrix();
-                state.leafInstances.setMatrixAt(i, dummy.matrix);
-
-                // GÁN MÀU NGẪU NHIÊN TỪ MẢNG TRỘN LẪN (VỪA XANH VỪA VÀNG)
-                const colorHex = MIXED_LEAF_COLORS[Math.floor(rand() * MIXED_LEAF_COLORS.length)];
-                state.leafInstances.setColorAt(i, new THREE.Color(colorHex));
-            }
-            state.leafInstances.instanceMatrix.needsUpdate = true;
-            if (state.leafInstances.instanceColor) state.leafInstances.instanceColor.needsUpdate = true;
-        }
 
         state.clusterGroups.forEach((g) => {
             g.children.forEach((child) => {
@@ -606,8 +791,9 @@ export function KarmaTreeCanvas({
 
         const fruitGeo = new THREE.SphereGeometry(0.06, 6, 6);
         fruitGeo.scale(1, 1.5, 1);
+        // Đổi màu chùm quả từ đỏ đất sang vàng nhám
         const fruitMat = new THREE.MeshStandardMaterial({
-            color: "#a16207",
+            color: "#d4af37",
             roughness: 1.0,
             metalness: 0.0,
             flatShading: true
