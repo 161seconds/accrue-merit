@@ -128,53 +128,56 @@ export default function ChatPage() {
     const formatTime = (d: Date) => d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-[#0f1a14] relative overflow-hidden">
-            {/* Ambient bg */}
+        <div className="flex flex-col h-[100dvh] bg-[#060a08] relative overflow-hidden">
+            {/* Ambient bg - breathing orbs */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-jade/5 rounded-full blur-[120px]" />
-                <div className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-gold/3 rounded-full blur-[100px]" />
+                <div className={`absolute top-1/3 left-1/4 w-96 h-96 rounded-full blur-[150px] transition-all duration-[3000ms] ${isTyping ? 'bg-jade/10 scale-125' : 'bg-jade/4 scale-100'}`} />
+                <div className={`absolute bottom-1/3 right-1/4 w-72 h-72 rounded-full blur-[120px] transition-all duration-[3000ms] ${isTyping ? 'bg-gold/8 scale-125' : 'bg-gold/3 scale-100'}`} />
+                {/* Subtle noise texture */}
+                <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
             </div>
 
             {/* Header */}
-            <header className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 h-16 bg-[#0a100d]/90 backdrop-blur-xl border-b border-white/5 shadow-lg">
-                <button onClick={() => navigate(-1)} className="p-2 transition-colors bg-transparent border-none cursor-pointer text-parchment/50 hover:text-parchment">
-                    <ArrowLeft size={20} />
+            <header className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-5 h-16 bg-[#060a08]/90 backdrop-blur-2xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+                <button onClick={() => navigate(-1)} className="p-2.5 transition-all bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 rounded-xl cursor-pointer text-parchment/60 hover:text-parchment">
+                    <ArrowLeft size={18} />
                 </button>
                 <div className="flex flex-col items-center">
                     <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-jade-light animate-pulse" />
+                        <div className="w-2 h-2 rounded-full bg-jade-light animate-pulse shadow-[0_0_8px_#4A9B6A]" />
                         <h1 className="text-sm font-bold tracking-widest uppercase font-display text-parchment">Tuệ Năng AI</h1>
                     </div>
                     <p className="text-[8px] tracking-[0.3em] uppercase text-gold-dim mt-0.5">Trợ lý Chánh niệm</p>
                 </div>
-                <Sparkles size={18} className="text-gold-light/40" />
+                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+                    <Sparkles size={16} className="text-gold-light/40" />
+                </div>
             </header>
 
             {/* Messages */}
-            <div className="relative z-10 flex-1 px-4 pt-20 pb-4 overflow-y-auto">
+            <div className="relative z-10 flex-1 px-4 pt-20 pb-4 overflow-y-auto custom-scrollbar">
                 <div className="max-w-3xl mx-auto space-y-5">
                     {messages.map((msg) => {
                         const isAI = msg.sender === 'ai'
                         return (
                             <div key={msg.id} className={`flex gap-3 w-full ${isAI ? 'justify-start' : 'justify-end'} animate-[fadeSlideIn_0.4s_ease-out]`}>
                                 {isAI && (
-                                    <div className="flex items-center justify-center w-8 h-8 mt-1 rounded-full bg-jade/20 text-jade-light shrink-0 border border-jade/20 shadow-[0_0_12px_rgba(74,155,106,0.15)]">
-                                        <Bot size={14} />
+                                    <div className="flex items-center justify-center w-9 h-9 mt-1 rounded-2xl bg-jade/15 text-jade-light shrink-0 border border-jade/15 shadow-[0_0_15px_rgba(74,155,106,0.1)]">
+                                        <Bot size={16} />
                                     </div>
                                 )}
-                                <div className={`relative max-w-[85%] p-4 rounded-2xl shadow-lg ${isAI
-                                    ? 'bg-[#0a100d]/70 backdrop-blur-sm border border-white/5 text-parchment/90 rounded-tl-sm'
-                                    : 'bg-gradient-to-br from-gold/15 to-gold/5 border border-gold/20 text-parchment rounded-tr-sm'
+                                <div className={`relative max-w-[80%] p-5 rounded-3xl shadow-xl ${isAI
+                                    ? 'bg-[#0a100d]/80 backdrop-blur-xl border border-white/5 text-parchment/90 rounded-tl-lg'
+                                    : 'bg-gradient-to-br from-gold/15 via-gold/10 to-gold/5 backdrop-blur-xl border border-gold/15 text-parchment rounded-tr-lg'
                                     }`}>
-                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                    <p className="text-sm leading-relaxed whitespace-pre-wrap font-serif">
                                         {renderMessageText(msg.displayText)}
-                                        {/* Blinking cursor khi đang stream */}
                                         {msg.isStreaming && (
-                                            <span className="inline-block w-0.5 h-4 ml-0.5 bg-gold-light animate-[blink_0.8s_infinite] align-text-bottom" />
+                                            <span className="inline-block w-0.5 h-4 ml-0.5 bg-gold-light animate-[blink_0.8s_infinite] align-text-bottom rounded-full" />
                                         )}
                                     </p>
                                     {!msg.isStreaming && (
-                                        <span className="block text-[8px] mt-2 opacity-25 text-right uppercase tracking-wider">
+                                        <span className="block text-[8px] mt-3 opacity-20 text-right uppercase tracking-wider">
                                             {formatTime(msg.timestamp)}
                                         </span>
                                     )}
@@ -186,15 +189,15 @@ export default function ChatPage() {
                     {/* Typing indicator */}
                     {isTyping && (
                         <div className="flex justify-start w-full gap-3 animate-[fadeSlideIn_0.3s_ease-out]">
-                            <div className="flex items-center justify-center w-8 h-8 mt-1 border rounded-full bg-jade/20 text-jade-light shrink-0 border-jade/20">
-                                <Loader2 size={12} className="animate-spin" />
+                            <div className="flex items-center justify-center w-9 h-9 mt-1 border rounded-2xl bg-jade/15 text-jade-light shrink-0 border-jade/15">
+                                <Loader2 size={14} className="animate-spin" />
                             </div>
-                            <div className="bg-[#0a100d]/50 px-5 py-3 rounded-2xl rounded-tl-sm border border-white/5">
-                                <div className="flex gap-1.5 items-center">
-                                    <div className="w-1.5 h-1.5 bg-jade-light/60 rounded-full animate-bounce" />
-                                    <div className="w-1.5 h-1.5 bg-jade-light/60 rounded-full animate-bounce [animation-delay:150ms]" />
-                                    <div className="w-1.5 h-1.5 bg-jade-light/60 rounded-full animate-bounce [animation-delay:300ms]" />
-                                    <span className="text-[10px] text-parchment/20 ml-2 italic">đang suy tư...</span>
+                            <div className="bg-[#0a100d]/60 backdrop-blur-xl px-6 py-4 rounded-3xl rounded-tl-lg border border-white/5">
+                                <div className="flex gap-2 items-center">
+                                    <div className="w-2 h-2 bg-jade-light/60 rounded-full animate-bounce" />
+                                    <div className="w-2 h-2 bg-jade-light/60 rounded-full animate-bounce [animation-delay:150ms]" />
+                                    <div className="w-2 h-2 bg-jade-light/60 rounded-full animate-bounce [animation-delay:300ms]" />
+                                    <span className="text-[10px] text-parchment/25 ml-2 italic font-serif">đang suy tư...</span>
                                 </div>
                             </div>
                         </div>
@@ -204,36 +207,41 @@ export default function ChatPage() {
             </div>
 
             {/* Input */}
-            <div className="relative z-20 shrink-0 w-full px-4 pt-3 pb-24 bg-gradient-to-t from-[#0f1a14] via-[#0f1a14]/95 to-transparent">
-                <div className="relative flex items-center max-w-3xl gap-2 mx-auto">
-                    <input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Gieo duyên đàm đạo..."
-                        className="w-full bg-[#0a100d]/90 border border-white/10 rounded-2xl py-3.5 pl-5 pr-14 text-sm text-parchment focus:outline-none focus:border-jade/40 focus:shadow-[0_0_20px_rgba(74,155,106,0.1)] transition-all placeholder:text-parchment/15 shadow-2xl font-serif"
-                    />
+            <div className="relative z-20 shrink-0 w-full px-4 pt-3 pb-24 bg-gradient-to-t from-[#060a08] via-[#060a08]/95 to-transparent">
+                <div className="relative flex items-center max-w-3xl gap-3 mx-auto">
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Gieo duyên đàm đạo..."
+                            className="w-full bg-[#0a100d]/90 backdrop-blur-xl border border-white/10 rounded-2xl py-4 pl-5 pr-4 text-sm text-parchment focus:outline-none focus:border-jade/40 focus:shadow-[0_0_25px_rgba(74,155,106,0.1)] transition-all placeholder:text-parchment/15 shadow-2xl font-serif"
+                        />
+                    </div>
                     <button
                         onClick={handleSendMessage}
                         disabled={!inputValue.trim() || isTyping}
-                        className="absolute p-2.5 transition-all right-2 rounded-xl bg-jade/30 text-jade-light hover:bg-jade/60 hover:text-white disabled:opacity-15 disabled:cursor-not-allowed border-none cursor-pointer"
+                        className="p-4 transition-all rounded-2xl bg-jade/30 text-jade-light hover:bg-jade/60 hover:text-white disabled:opacity-15 disabled:cursor-not-allowed border border-jade/20 hover:border-jade/40 cursor-pointer shadow-[0_0_20px_rgba(74,155,106,0.1)] hover:shadow-[0_0_30px_rgba(74,155,106,0.2)]"
                     >
-                        <Send size={16} />
+                        <Send size={18} />
                     </button>
                 </div>
             </div>
 
             <style>{`
-        @keyframes fadeSlideIn {
-          0% { opacity: 0; transform: translateY(12px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes blink {
-          0%, 50% { opacity: 1; }
-          51%, 100% { opacity: 0; }
-        }
-      `}</style>
+                @keyframes fadeSlideIn {
+                    0% { opacity: 0; transform: translateY(12px); }
+                    100% { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes blink {
+                    0%, 50% { opacity: 1; }
+                    51%, 100% { opacity: 0; }
+                }
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
+            `}</style>
         </div>
     )
 }
