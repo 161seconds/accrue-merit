@@ -269,15 +269,6 @@ export default function LoginPage() {
                             Đăng ký ngay
                         </Link>
                     </p>
-
-                    {/* Nút bỏ qua, xem trang chính */}
-                    <button
-                        type="button"
-                        onClick={() => navigate('/')}
-                        className="w-full mt-4 text-xs font-medium text-center transition-colors text-[#a8a18e] hover:text-amber-400 py-2"
-                    >
-                        Bỏ qua, xem trang chủ trước →
-                    </button>
                 </div>
             </div>
 
