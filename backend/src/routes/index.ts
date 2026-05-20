@@ -5,6 +5,7 @@ import wishRouter from '~/routes/wish.routes';
 import woodenFishRouter from '~/routes/woodenfish.routes';
 import mediasRouter from '~/routes/medias.routes';
 import staticRouter from '~/routes/static.routes';
+import missionRouter from '~/routes/mission.routes';
 
 const router = Router();
 
@@ -15,5 +16,6 @@ router.use('/wishes', wishRouter);
 router.use('/wooden-fish', woodenFishRouter);
 router.use('/medias', mediasRouter);
 router.use('/static', staticRouter);
+router.use('/missions', missionRouter);
 
 export default router;

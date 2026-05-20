@@ -116,7 +116,7 @@ export default function TaskPage() {
             {/* Background glow */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute left-1/2 top-0 h-[420px] w-[760px] -translate-x-1/2 rounded-full bg-gold-light/10 blur-[120px]" />
-                <div className="absolute -left-32 top-36 h-80 w-80 rounded-full bg-jade-500/10 blur-[90px]" />
+                <div className="absolute -left-32 top-36 h-80 w-80 rounded-full bg-jade/10 blur-[90px]" />
                 <div className="absolute -right-32 bottom-20 h-96 w-96 rounded-full bg-gold-dim/10 blur-[110px]" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.055),transparent_34%)]" />
             </div>
@@ -184,7 +184,7 @@ export default function TaskPage() {
 
                             <div className="h-3 overflow-hidden rounded-full bg-black/30 ring-1 ring-white/10">
                                 <div
-                                    className="h-full transition-all duration-700 rounded-full bg-gradient-to-r from-jade-400 via-gold-dim to-gold-light"
+                                    className="h-full transition-all duration-700 rounded-full bg-gradient-to-r from-jade-light via-gold-dim to-gold-light"
                                     style={{ width: `${progress}%` }}
                                 />
                             </div>
@@ -408,7 +408,7 @@ function MissionTile({
             type="button"
             onClick={onClick}
             className={`group relative aspect-square overflow-hidden rounded-[1.7rem] border p-4 text-left shadow-xl transition-all duration-300 hover:-translate-y-1 ${isCompleted
-                ? 'border-jade-400/25 bg-jade-500/[0.08] shadow-jade-950/20'
+                ? 'border-jade-light/25 bg-jade/[0.08] shadow-[#0a1a10]/20'
                 : 'border-white/10 bg-[#101812]/90 shadow-black/25 hover:border-gold-light/35 hover:bg-[#162018]'
                 }`}
         >
@@ -419,7 +419,7 @@ function MissionTile({
             <div className="relative z-10 flex flex-col h-full">
                 <div className="flex items-start justify-between mb-3">
                     <div
-                        className={`grid h-12 w-12 place-items-center rounded-2xl text-2xl ring-1 ring-white/10 ${isCompleted ? 'bg-jade-400/10 opacity-50' : 'bg-white/[0.05]'
+                        className={`grid h-12 w-12 place-items-center rounded-2xl text-2xl ring-1 ring-white/10 ${isCompleted ? 'bg-jade-light/10 opacity-50' : 'bg-white/[0.05]'
                             }`}
                     >
                         {mission.icon}
@@ -427,7 +427,7 @@ function MissionTile({
 
                     <span
                         className={`transition ${isCompleted
-                            ? 'text-jade-300'
+                            ? 'text-jade-light'
                             : 'text-white/25 group-hover:text-gold-light'
                             }`}
                     >
@@ -457,7 +457,7 @@ function MissionTile({
 
                     <span
                         className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-black ring-1 ${isCompleted
-                            ? 'bg-jade-400/10 text-jade-200 ring-jade-300/10'
+                            ? 'bg-jade-light/10 text-jade-light ring-jade-light/10'
                             : 'bg-gold-light/10 text-gold-light ring-gold-light/10'
                             }`}
                     >
