@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HeartHandshake, Crown, Medal, Sparkles, Send } from 'lucide-react';
 import Ornament from '@/components/ui/Ornament';
 
@@ -11,6 +11,61 @@ const topDonors = [
 ];
 
 const PRESET_AMOUNTS = [50000, 100000, 200000, 500000];
+
+// Gold dust particle component
+function GoldDust() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        const particles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number; decay: number }[] = [];
+
+        for (let i = 0; i < 50; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: -Math.random() * 0.5 - 0.1,
+                size: Math.random() * 2 + 0.5,
+                alpha: Math.random() * 0.5 + 0.1,
+                decay: Math.random() * 0.002 + 0.001,
+            });
+        }
+
+        let animId: number;
+        const animate = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0 || p.y < 0) {
+                    p.x = Math.random() * canvas.width;
+                    p.y = canvas.height + 10;
+                    p.alpha = Math.random() * 0.5 + 0.1;
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(201, 168, 76, ${p.alpha})`;
+                ctx.fill();
+            });
+            animId = requestAnimationFrame(animate);
+        };
+        animate();
+        return () => cancelAnimationFrame(animId);
+    }, []);
+
+    return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
+}
 
 export default function DonationPage() {
     const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -31,7 +86,11 @@ export default function DonationPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0f1a14] pt-28 pb-16 px-6 relative overflow-hidden">
+        <div className="min-h-screen bg-[#0a0e0b] pt-28 pb-16 px-6 relative overflow-hidden">
+            {/* Gold Dust Particles */}
+            <GoldDust />
+
+            {/* Ambient glows */}
             <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-gold-light/5 blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-jade-light/5 blur-[150px] pointer-events-none" />
 
@@ -39,17 +98,22 @@ export default function DonationPage() {
 
                 <div className="lg:col-span-7 space-y-10 animate-[fadeIn_0.6s_ease]">
 
-                    <section className="bg-[#0a100d]/80 backdrop-blur-md border border-white/5 rounded-3xl p-8 shadow-2xl">
+                    {/* Hero Campaign Card */}
+                    <section className="bg-[#0a100d]/80 backdrop-blur-md border border-white/5 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-light/50 to-transparent" />
+                        
                         <div className="text-[10px] tracking-[0.3em] text-jade-light uppercase mb-3 flex items-center gap-2">
                             <Sparkles size={14} /> Sự kiện nổi bật
                         </div>
                         <h1 className="mb-4 text-4xl font-bold font-display text-parchment drop-shadow-md">
-                            Chung Tay Xây Dựng <span className="text-gold-light">Đại Hùng Bảo Điện</span>
+                            Chung Tay Xây Dựng <span className="text-transparent bg-gradient-to-r from-gold-light to-gold-dim bg-clip-text">Đại Hùng Bảo Điện</span>
                         </h1>
                         <p className="mb-6 text-sm leading-relaxed text-justify text-parchment/70">
                             "Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao". Quỹ công đức hiện đang kêu gọi sự phát tâm gieo duyên của quý Phật tử gần xa để hoàn thiện phần mái và cột trụ của Đại Hùng Bảo Điện. Mọi đóng góp, dù lớn hay nhỏ, đều là những viên gạch quý giá xây dựng nên ngôi già lam tú lệ, lưu truyền chánh pháp đến ngàn sau.
                         </p>
-                        <div className="flex items-center gap-4 p-4 border rounded-2xl bg-black/40 border-gold-dim/20">
+
+                        {/* Progress Stats */}
+                        <div className="flex items-center gap-4 p-5 rounded-2xl bg-black/40 border border-white/5">
                             <div className="flex-1">
                                 <div className="text-[10px] text-parchment/50 uppercase tracking-widest mb-1">Mục tiêu</div>
                                 <div className="text-xl font-bold font-display text-parchment">1.000.000.000 ₫</div>
@@ -60,41 +124,56 @@ export default function DonationPage() {
                                 <div className="text-xl font-bold font-display text-gold-light">450.000.000 ₫</div>
                             </div>
                         </div>
-                        <div className="w-full h-2 mt-4 overflow-hidden rounded-full bg-white/5">
-                            <div className="h-full bg-gradient-to-r from-jade-light to-gold-light w-[45%] rounded-full shadow-[0_0_10px_rgba(250,204,21,0.5)]" />
+                        <div className="w-full h-3 mt-4 overflow-hidden rounded-full bg-black/30 ring-1 ring-white/5">
+                            <div className="h-full bg-gradient-to-r from-jade-light to-gold-light w-[45%] rounded-full shadow-[0_0_15px_rgba(250,204,21,0.5)] relative">
+                                <div className="absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white/30 to-transparent rounded-full animate-pulse" />
+                            </div>
+                        </div>
+                        <div className="flex justify-between mt-2 text-[10px] text-parchment/40">
+                            <span>0%</span>
+                            <span className="text-gold-light font-bold">45%</span>
+                            <span>100%</span>
                         </div>
                     </section>
 
+                    {/* Leaderboard */}
                     <section>
                         <h2 className="flex items-center gap-3 mb-6 text-2xl font-bold font-display text-parchment">
-                            <Crown className="text-gold-light" size={24} /> Bảng Vàng Công Đức
+                            <div className="w-10 h-10 rounded-2xl bg-gold-light/10 text-gold-light flex items-center justify-center">
+                                <Crown size={20} />
+                            </div>
+                            Bảng Vàng Công Đức
                         </h2>
                         <div className="space-y-3">
                             {topDonors.map((donor, index) => {
+                                const rankStyles = [
+                                    'bg-gradient-to-r from-yellow-500/10 to-transparent border-yellow-500/30 hover:shadow-[0_0_30px_rgba(250,204,21,0.1)]',
+                                    'bg-gradient-to-r from-slate-300/10 to-transparent border-slate-300/20 hover:shadow-[0_0_20px_rgba(148,163,184,0.1)]',
+                                    'bg-gradient-to-r from-amber-700/10 to-transparent border-amber-700/20 hover:shadow-[0_0_20px_rgba(180,83,9,0.1)]',
+                                ];
                                 const isTop3 = index < 3;
                                 return (
                                     <div
                                         key={donor.id}
-                                        className={`flex items-center gap-4 p-4 rounded-2xl border transition-all hover:-translate-y-1 ${index === 0 ? 'bg-gradient-to-r from-yellow-500/10 to-transparent border-yellow-500/30' :
-                                            index === 1 ? 'bg-gradient-to-r from-slate-300/10 to-transparent border-slate-300/20' :
-                                                index === 2 ? 'bg-gradient-to-r from-amber-700/10 to-transparent border-amber-700/20' :
-                                                    'bg-[#0a100d]/60 border-white/5 hover:border-white/10'
+                                        className={`flex items-center gap-4 p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${isTop3
+                                            ? rankStyles[index]
+                                            : 'bg-[#0a100d]/60 border-white/5 hover:border-white/10'
                                             }`}
                                     >
-                                        <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold font-display ${index === 0 ? 'bg-yellow-500/20 text-yellow-400' :
-                                            index === 1 ? 'bg-slate-300/20 text-slate-300' :
-                                                index === 2 ? 'bg-amber-700/20 text-amber-500' :
-                                                    'bg-white/5 text-parchment/50'
+                                        <div className={`flex items-center justify-center w-12 h-12 rounded-2xl font-bold font-display text-lg ${index === 0 ? 'bg-yellow-500/20 text-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.15)]'
+                                            : index === 1 ? 'bg-slate-300/20 text-slate-300'
+                                                : index === 2 ? 'bg-amber-700/20 text-amber-500'
+                                                    : 'bg-white/5 text-parchment/50'
                                             }`}>
-                                            {index === 0 ? <Crown size={20} /> : index === 1 ? <Medal size={20} /> : index === 2 ? <Medal size={20} /> : `#${index + 1}`}
+                                            {index === 0 ? <Crown size={22} /> : index < 3 ? <Medal size={22} /> : `#${index + 1}`}
                                         </div>
                                         <div className="flex-1">
-                                            <div className="font-medium text-parchment">{donor.name}</div>
+                                            <div className="font-bold text-parchment">{donor.name}</div>
                                             {donor.message && (
-                                                <div className="text-[11px] text-parchment/50 italic mt-0.5">"{donor.message}"</div>
+                                                <div className="text-[11px] text-parchment/50 italic mt-0.5 font-serif">"{donor.message}"</div>
                                             )}
                                         </div>
-                                        <div className={`font-display font-bold ${isTop3 ? 'text-gold-light' : 'text-parchment/80'}`}>
+                                        <div className={`font-display font-black text-lg ${isTop3 ? 'text-gold-light' : 'text-parchment/80'}`}>
                                             {formatCurrency(donor.amount)}
                                         </div>
                                     </div>
@@ -105,9 +184,10 @@ export default function DonationPage() {
 
                 </div>
 
+                {/* Right Column: Donation Box */}
                 <div className="lg:col-span-5 animate-[fadeIn_0.6s_0.2s_both]">
-                    <div className="sticky top-28 self-start bg-gradient-to-b from-[#1a120b] to-[#0a0704] border border-[#3d2512] rounded-[2rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#4a2f1d] via-[#8c593b] to-[#4a2f1d]" />
+                    <div className="sticky top-28 self-start bg-gradient-to-b from-[#1a120b] to-[#0a0704] border border-[#3d2512]/50 rounded-[2rem] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#4a2f1d] via-[#c9a84c] to-[#4a2f1d]" />
                         <Ornament className="mx-auto mb-6 opacity-60 text-gold-dim" />
 
                         <div className="mb-8 text-center">
@@ -121,9 +201,9 @@ export default function DonationPage() {
                                     <button
                                         key={amount}
                                         onClick={() => handlePresetClick(amount)}
-                                        className={`py-3 px-4 rounded-xl font-display font-bold text-sm transition-all border ${selectedAmount === amount
-                                            ? 'bg-gold-light/20 border-gold-light text-gold-light shadow-[0_0_15px_rgba(250,204,21,0.2)]'
-                                            : 'bg-black/40 border-[#3d2512] text-parchment/70 hover:bg-[#3d2512]/50 hover:border-gold-dim/50'
+                                        className={`py-4 px-4 rounded-2xl font-display font-bold text-sm transition-all border cursor-pointer ${selectedAmount === amount
+                                            ? 'bg-gold-light/20 border-gold-light text-gold-light shadow-[0_0_20px_rgba(250,204,21,0.2)] scale-[1.02]'
+                                            : 'bg-black/40 border-[#3d2512]/50 text-parchment/70 hover:bg-[#3d2512]/50 hover:border-gold-dim/50 active:scale-95'
                                             }`}
                                     >
                                         {amount / 1000}K
@@ -139,9 +219,9 @@ export default function DonationPage() {
                                         placeholder="VD: 300000"
                                         value={customAmount}
                                         onChange={handleCustomAmountChange}
-                                        className="w-full bg-black/40 border border-[#3d2512] rounded-xl py-3 pl-4 pr-12 text-parchment font-display focus:outline-none focus:border-gold-light focus:ring-1 focus:ring-gold-light/50 transition-all placeholder:text-parchment/20"
+                                        className="w-full bg-black/40 border border-[#3d2512]/50 rounded-xl py-3.5 pl-4 pr-12 text-parchment font-display focus:outline-none focus:border-gold-light focus:ring-1 focus:ring-gold-light/50 focus:shadow-[0_0_20px_rgba(250,204,21,0.1)] transition-all placeholder:text-parchment/20"
                                     />
-                                    <span className="absolute -translate-y-1/2 right-4 top-1/2 text-parchment/50 font-display">VNĐ</span>
+                                    <span className="absolute -translate-y-1/2 right-4 top-1/2 text-parchment/50 font-display text-sm">VNĐ</span>
                                 </div>
                             </div>
 
@@ -150,16 +230,16 @@ export default function DonationPage() {
                                 <textarea
                                     rows={3}
                                     placeholder="Viết lời cầu bình an, siêu độ..."
-                                    className="w-full bg-black/40 border border-[#3d2512] rounded-xl p-4 text-sm text-parchment focus:outline-none focus:border-gold-light focus:ring-1 focus:ring-gold-light/50 transition-all placeholder:text-parchment/20 resize-none"
+                                    className="w-full bg-black/40 border border-[#3d2512]/50 rounded-xl p-4 text-sm text-parchment focus:outline-none focus:border-gold-light focus:ring-1 focus:ring-gold-light/50 focus:shadow-[0_0_20px_rgba(250,204,21,0.1)] transition-all placeholder:text-parchment/20 resize-none"
                                 />
                             </div>
 
-                            <button className="w-full flex items-center justify-center gap-2 py-4 mt-4 bg-gradient-to-r from-amber-700 to-yellow-600 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(217,119,6,0.3)] hover:shadow-[0_0_30px_rgba(250,204,21,0.4)] hover:brightness-110 transition-all active:scale-95">
+                            <button className="w-full flex items-center justify-center gap-2 py-4 mt-4 bg-gradient-to-r from-amber-700 to-yellow-600 rounded-xl font-bold text-white shadow-[0_0_25px_rgba(217,119,6,0.3)] hover:shadow-[0_0_40px_rgba(250,204,21,0.4)] hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer border-none">
                                 <HeartHandshake size={20} />
                                 Tiến Cúng Dường
                             </button>
 
-                            <div className="text-center text-[10px] text-parchment/40 italic mt-4">
+                            <div className="text-center text-[10px] text-parchment/40 italic mt-4 font-serif">
                                 * Mọi khoản đóng góp đều được ghi nhận công khai và minh bạch.
                             </div>
                         </div>
@@ -168,6 +248,13 @@ export default function DonationPage() {
                 </div>
 
             </div>
+
+            <style>{`
+                @keyframes fadeIn {
+                    0% { opacity: 0; transform: translateY(15px); }
+                    100% { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
         </div>
     );
 }
