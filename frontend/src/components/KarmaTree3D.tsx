@@ -244,7 +244,7 @@ function createMountains(scene: THREE.Scene) {
             }
             colors.push(vertexColor.r, vertexColor.g, vertexColor.b);
         }
-        
+
         geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
         geo.computeVertexNormals();
 
@@ -258,39 +258,133 @@ function createMountains(scene: THREE.Scene) {
 }
 
 function createTemple(scene: THREE.Scene) {
-    const wallMat = new THREE.MeshStandardMaterial({ color: '#dca626', roughness: 0.9 });
-    const roofMat = new THREE.MeshStandardMaterial({ color: '#5a2e15', roughness: 0.8 });
-    const pillarMat = new THREE.MeshStandardMaterial({ color: '#991b1b', roughness: 0.7 });
-    const stoneMat = new THREE.MeshStandardMaterial({ color: '#7a7a7a', roughness: 0.9 });
+    const wallMat = new THREE.MeshStandardMaterial({ color: '#c49a6c', roughness: 1.0 }); // lighter wood/plaster
+    const roofMat = new THREE.MeshStandardMaterial({ color: '#4a2c1a', roughness: 0.9, flatShading: true }); // dark wood roof
+    const pillarMat = new THREE.MeshStandardMaterial({ color: '#8b0000', roughness: 0.8 }); // red pillars
+    const stoneMat = new THREE.MeshStandardMaterial({ color: '#5a5a5a', roughness: 0.95 }); // stone
+    const goldMat = new THREE.MeshStandardMaterial({ color: '#ffd700', roughness: 0.3, metalness: 0.8 }); // gold for Buddha/Decor
+    const altarMat = new THREE.MeshStandardMaterial({ color: '#3e2312', roughness: 0.9 }); // dark wood altar
 
     const temple = new THREE.Group();
 
-    const base = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.4, 3.2), stoneMat);
+    // 1. Base (Nền đá lớn hơn một chút)
+    const base = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.4, 3.8), stoneMat);
     base.position.set(0, 0, 0);
     temple.add(base);
 
-    const mainHall = new THREE.Mesh(new THREE.BoxGeometry(2.8, 2.5, 2), wallMat);
-    mainHall.position.set(0, 1.4, 0);
-    temple.add(mainHall);
+    // Bậc thềm (Steps)
+    const step1 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.2, 0.6), stoneMat);
+    step1.position.set(0, -0.1, 2.0);
+    temple.add(step1);
+    const step2 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.2, 0.6), stoneMat);
+    step2.position.set(0, -0.3, 2.4);
+    temple.add(step2);
 
-    const door = new THREE.Mesh(new THREE.PlaneGeometry(1, 1.6), new THREE.MeshStandardMaterial({ color: '#2a1a10' }));
-    door.position.set(0, 1.0, 1.01);
-    temple.add(door);
+    // 2. Walls (3 bức tường, mặt trước mở)
+    // Tường sau
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(4.0, 2.5, 0.2), wallMat);
+    backWall.position.set(0, 1.45, -1.3);
+    temple.add(backWall);
+    // Tường trái
+    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.5, 2.6), wallMat);
+    leftWall.position.set(-1.9, 1.45, 0);
+    temple.add(leftWall);
+    // Tường phải
+    const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.5, 2.6), wallMat);
+    rightWall.position.set(1.9, 1.45, 0);
+    temple.add(rightWall);
 
-    for (let i = 0; i < 4; i++) {
-        const p = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 2.8, 8), pillarMat);
-        p.position.set((i % 2 === 0 ? -1 : 1) * 1.8, 1.6, (i < 2 ? -1 : 1) * 1.2);
-        temple.add(p);
+    // 3. Nội thất (Interior)
+    // Bàn thờ (Altar)
+    const altar = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.8, 0.8), altarMat);
+    altar.position.set(0, 0.6, -0.8);
+    temple.add(altar);
+
+    // Tượng phật đơn giản (Buddha statue)
+    const buddhaGroup = new THREE.Group();
+    const bBase = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.2, 16), goldMat);
+    bBase.position.y = 0.1;
+    buddhaGroup.add(bBase);
+    const bBody = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.35, 0.7, 16), goldMat);
+    bBody.position.y = 0.55;
+    buddhaGroup.add(bBody);
+    const bHead = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), goldMat);
+    bHead.position.y = 1.0;
+    buddhaGroup.add(bHead);
+    buddhaGroup.position.set(0, 1.0, -0.8);
+    temple.add(buddhaGroup);
+
+    // Hào quang (Halo)
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.04, 8, 24), goldMat);
+    halo.position.set(0, 2.0, -0.85);
+    temple.add(halo);
+
+    // Đèn cầy / Nến (Candles)
+    const candleMat = new THREE.MeshBasicMaterial({ color: '#ff4400' });
+    const flameMat = new THREE.MeshBasicMaterial({ color: '#ffcc00' });
+    for (let i of [-1, 1]) {
+        const candle = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.3), candleMat);
+        candle.position.set(i * 0.7, 1.15, -0.6);
+        temple.add(candle);
+
+        const flame = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.1, 4), flameMat);
+        flame.position.set(i * 0.7, 1.35, -0.6);
+        temple.add(flame);
+
+        // Point light for candles
+        const light = new THREE.PointLight('#ffaa00', 0.5, 3);
+        light.position.set(i * 0.7, 1.4, -0.5);
+        temple.add(light);
     }
 
-    const roof = new THREE.Mesh(new THREE.ConeGeometry(3.2, 1.5, 4), roofMat);
-    roof.position.y = 3.4;
-    roof.rotation.y = Math.PI / 4;
-    temple.add(roof);
+    // Lư hương (Incense Burner on altar)
+    const burner = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.2, 8), goldMat);
+    burner.position.set(0, 1.1, -0.5);
+    temple.add(burner);
+    const incense = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.3), candleMat);
+    incense.position.set(0, 1.3, -0.5);
+    temple.add(incense);
 
-    temple.position.set(-10, -0.8, -6);
+    // 4. Pillars (4 cột đỏ phía trước và giữa)
+    for (let i of [-1, 1]) {
+        // Cột trước
+        const pFront = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 2.8, 8), pillarMat);
+        pFront.position.set(i * 1.8, 1.6, 1.2);
+        temple.add(pFront);
+        // Cột giữa
+        const pMid = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 2.8, 8), pillarMat);
+        pMid.position.set(i * 1.8, 1.6, 0);
+        temple.add(pMid);
+    }
+
+    // 5. Roof (Mái chùa cong)
+    // Tầng mái dưới
+    const roof1 = new THREE.Mesh(new THREE.ConeGeometry(3.6, 1.0, 4), roofMat);
+    roof1.position.y = 3.2;
+    roof1.rotation.y = Math.PI / 4;
+    temple.add(roof1);
+    // Tầng mái trên
+    const roof2 = new THREE.Mesh(new THREE.ConeGeometry(2.5, 1.2, 4), roofMat);
+    roof2.position.y = 4.0;
+    roof2.rotation.y = Math.PI / 4;
+    temple.add(roof2);
+
+    // Thêm đèn lồng treo ở hiên
+    const lanternMat = new THREE.MeshBasicMaterial({ color: '#ff2200' });
+    for (let i of [-1, 1]) {
+        const lantern = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), lanternMat);
+        lantern.position.set(i * 1.8, 2.4, 1.2);
+        lantern.scale.y = 1.2;
+        temple.add(lantern);
+
+        const lLight = new THREE.PointLight('#ff3300', 1.0, 4);
+        lLight.position.set(i * 1.8, 2.2, 1.2);
+        temple.add(lLight);
+    }
+
+    temple.position.set(-14, -0.6, -10);
     temple.rotation.y = 0.3;
-    temple.scale.setScalar(0.85);
+    temple.scale.setScalar(2.0);
     scene.add(temple);
 }
 
@@ -326,8 +420,8 @@ function createWell(scene: THREE.Scene) {
     roof.rotation.y = Math.PI / 4;
     wellGroup.add(roof);
 
-    wellGroup.position.set(-7.5, -1, -4.5);
-    wellGroup.scale.setScalar(0.8);
+    wellGroup.position.set(-10, -1, -5);
+    wellGroup.scale.setScalar(1.3);
     scene.add(wellGroup);
 }
 

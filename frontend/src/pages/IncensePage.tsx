@@ -47,7 +47,7 @@ export default function IncensePage() {
             toast.success('Lời nguyện đã được gửi đi 🙏')
             setContent('')
             fetchWishes()
-            setTimeout(() => setBurning(false), 5000)
+            setTimeout(() => setBurning(false), 60000) // Khói bốc 1 phút
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Lỗi')
             setBurning(false)
@@ -83,24 +83,23 @@ export default function IncensePage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
-                    
+
                     {/* Left Column: The Altar */}
                     <div className="lg:col-span-5 flex flex-col items-center justify-center bg-gradient-to-b from-black/20 to-black/60 rounded-[2rem] border border-white/5 relative min-h-[500px]">
                         <div className="absolute top-0 w-full h-1/2 bg-gradient-to-b from-transparent to-orange-500/5 pointer-events-none opacity-50" />
-                        
-                        <div className="relative w-full h-full flex flex-col items-center justify-end pb-12">
-                            {/* Animated Smoke */}
-                            <div className={`absolute bottom-32 w-full h-64 flex justify-center pointer-events-none transition-opacity duration-1000 ${burning ? 'opacity-100' : 'opacity-0'}`}>
-                                <div className="smoke smoke-1" />
-                                <div className="smoke smoke-2" />
-                                <div className="smoke smoke-3" />
-                            </div>
 
+                        <div className="relative w-full h-full flex flex-col items-center justify-end pb-12">
                             {/* Incense Sticks */}
                             <div className="relative flex justify-center gap-2 mb-[-20px] z-10">
                                 {[...Array(3)].map((_, i) => (
                                     <div key={i} className="w-1.5 h-32 bg-gradient-to-b from-[#8c593b] to-[#2d1b11] rounded-full relative shadow-[2px_0_5px_rgba(0,0,0,0.5)]">
-                                        <div className={`absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-3 rounded-full transition-all duration-500 ${burning ? 'bg-gradient-to-t from-red-500 to-orange-300 shadow-[0_0_15px_#f97316]' : 'bg-[#1a0f0a]'}`} />
+                                        <div className={`absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-3 rounded-full transition-all duration-500 ${burning ? 'bg-gradient-to-t from-red-500 to-orange-300 shadow-[0_0_15px_#f97316]' : 'bg-[#1a0f0a]'}`}>
+                                            {/* Animated Smoke from the tip */}
+                                            <div className={`absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 pointer-events-none transition-opacity duration-1000 z-30 ${burning ? 'opacity-100' : 'opacity-0'}`}>
+                                                <div className="smoke" style={{ animationDelay: `${i * 0.8}s` }} />
+                                                <div className="smoke" style={{ animationDelay: `${i * 0.8 + 2.5}s` }} />
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -130,15 +129,15 @@ export default function IncensePage() {
 
                     {/* Right Column: Form & List */}
                     <div className="lg:col-span-7 flex flex-col gap-6">
-                        
+
                         {/* Send Wish Form */}
                         <div className="bg-[#0a100d]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl relative">
                             <div className="grid grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label className="block text-[10px] text-parchment/50 uppercase tracking-widest mb-1.5 ml-1">Loại hương</label>
-                                    <select 
+                                    <select
                                         className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-parchment focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all appearance-none"
-                                        value={incenseType} 
+                                        value={incenseType}
                                         onChange={(e) => setIncenseType(e.target.value)}
                                     >
                                         {INCENSE_TYPES.map((t) => <option key={t.value} value={t.value} className="bg-[#0a100d]">{t.label}</option>)}
@@ -146,9 +145,9 @@ export default function IncensePage() {
                                 </div>
                                 <div>
                                     <label className="block text-[10px] text-parchment/50 uppercase tracking-widest mb-1.5 ml-1">Lĩnh vực cầu nguyện</label>
-                                    <select 
+                                    <select
                                         className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-parchment focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all appearance-none"
-                                        value={category} 
+                                        value={category}
                                         onChange={(e) => setCategory(e.target.value)}
                                     >
                                         {WISH_CATEGORIES.map((c) => <option key={c.value} value={c.value} className="bg-[#0a100d]">{c.label}</option>)}
@@ -168,14 +167,13 @@ export default function IncensePage() {
                                 <div className="text-right text-[10px] text-parchment/30 mt-1">{content.length}/300</div>
                             </div>
 
-                            <button 
-                                onClick={handleSubmit} 
-                                disabled={loading || burning} 
-                                className={`w-full py-4 rounded-xl font-bold text-sm transition-all flex justify-center items-center gap-2 ${
-                                    burning 
+                            <button
+                                onClick={handleSubmit}
+                                disabled={loading || burning}
+                                className={`w-full py-4 rounded-xl font-bold text-sm transition-all flex justify-center items-center gap-2 ${burning
                                     ? 'bg-black/50 text-orange-500/50 border border-orange-500/20 cursor-not-allowed'
                                     : 'bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-500 hover:to-orange-400 text-white shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] cursor-pointer'
-                                }`}
+                                    }`}
                             >
                                 {burning ? <Flame size={18} className="animate-pulse" /> : <Send size={16} />}
                                 {burning ? 'Hương đang cháy...' : 'Dâng Hương & Gửi Lời Nguyện'}
@@ -231,34 +229,36 @@ export default function IncensePage() {
                 
                 .smoke {
                     position: absolute;
-                    width: 20px;
-                    height: 20px;
-                    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+                    width: 30px;
+                    height: 30px;
+                    background: radial-gradient(circle, rgba(220,220,220,0.6) 0%, rgba(220,220,220,0) 70%);
                     border-radius: 50%;
                     bottom: 0;
+                    left: -15px; /* Center relative to w-0 container */
                     opacity: 0;
-                    animation: rise 4s infinite ease-in;
+                    animation: rise 5s infinite ease-in;
+                    filter: blur(5px);
                 }
-                .smoke-1 { left: calc(50% - 15px); animation-delay: 0s; }
-                .smoke-2 { left: calc(50% + 5px); animation-delay: 1.5s; }
-                .smoke-3 { left: calc(50% - 5px); animation-delay: 3s; }
 
                 @keyframes rise {
                     0% {
                         bottom: 0;
-                        transform: scale(1) translateX(0);
+                        transform: scale(0.5) translateX(0);
                         opacity: 0;
                     }
                     20% {
-                        opacity: 0.5;
+                        opacity: 0.8;
                     }
                     50% {
-                        transform: scale(3) translateX(-10px);
+                        transform: scale(2) translateX(-15px);
+                        opacity: 0.5;
+                    }
+                    80% {
                         opacity: 0.2;
                     }
                     100% {
-                        bottom: 150px;
-                        transform: scale(6) translateX(10px);
+                        bottom: 250px;
+                        transform: scale(5) translateX(20px);
                         opacity: 0;
                     }
                 }

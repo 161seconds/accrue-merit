@@ -11,8 +11,8 @@ export default {
                 parchment: { DEFAULT: '#F0E6C8', 2: '#D8C89A' }
             },
             fontFamily: {
-                serif: ['Noto Serif', 'serif'],
-                display: ['Cinzel', 'serif']
+                serif: ['Mulish', 'sans-serif'],
+                display: ['Lora', 'serif']
             }
         }
     },
