@@ -1,8 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { getMissions, completeMission } from '../controllers/mission.controllers';
+import { accessTokenValidator } from '../middlewares/users.middlewares';
+
 const router = express.Router();
-const { getMissions, completeMission } = require('../controllers/mission.controllers');
 
 router.get('/', getMissions);
-router.post('/complete', completeMission);
+router.post('/complete', accessTokenValidator, completeMission);
 
 export default router;
