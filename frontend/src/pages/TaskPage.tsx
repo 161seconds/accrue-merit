@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { missionApi } from '@/api/mission.api';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Mission {
     _id?: string;
@@ -60,6 +61,7 @@ export default function TaskPage() {
         return mission._id || mission.id || '';
     };
 
+    const { refreshProfile } = useAuth();
     const toggleMission = async (missionId: string) => {
         if (!missionId) {
             toast.error('Không tìm thấy ID nhiệm vụ');
@@ -78,7 +80,8 @@ export default function TaskPage() {
             await missionApi.complete(missionId);
 
             if (!isCurrentlyCompleted) {
-                toast.success('Đã hoàn thành nhiệm vụ! 🙏');
+                toast.success('Đã hoàn thành nhiệm vụ và cộng điểm! 🙏');
+                await refreshProfile(); // Cập nhật lại điểm số
             }
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi ghi nhận công đức');
