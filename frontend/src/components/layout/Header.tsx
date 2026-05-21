@@ -57,13 +57,7 @@ export default function Header() {
                         )}
                     </div>
                 </div>
-            ) : (
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-parchment/60">
-                    <Link to="/login" className="transition-colors hover:text-gold-light">Đăng nhập</Link>
-                    <span className="text-gold/30">|</span>
-                    <Link to="/register" className="transition-colors hover:text-gold-light">Đăng ký</Link>
-                </div>
-            )}
+            ) : null}
         </header>
     )
 }

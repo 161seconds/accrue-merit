@@ -6,7 +6,7 @@ class DatabaseConfig {
     private uri: string
 
     constructor() {
-        this.uri = process.env.MONGODB_URI || 'mongodb://localhost:5173/tichduc_db';
+        this.uri = process.env.MONGODB_URI as string;
     }
 
 
