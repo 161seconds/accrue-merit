@@ -253,14 +253,6 @@ export default function RegisterPage() {
                             Đăng nhập
                         </Link>
                     </p>
-
-                    <button
-                        type="button"
-                        onClick={() => navigate('/')}
-                        className="w-full mt-3 text-xs font-medium text-center transition-colors text-[#a8a18e] hover:text-amber-400 py-2"
-                    >
-                        Bỏ qua, xem trang chính trước →
-                    </button>
                 </div>
             </div>
 
