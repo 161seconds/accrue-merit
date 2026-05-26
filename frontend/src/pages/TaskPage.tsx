@@ -9,6 +9,7 @@ import {
     Target,
     AlertCircle,
     Sparkles,
+    Lock,
 } from 'lucide-react';
 import { missionApi } from '@/api/mission.api';
 import toast from 'react-hot-toast';
@@ -231,7 +232,7 @@ export default function TaskPage() {
 
                         <MissionGrid
                             title="Chuỗi thử thách"
-                            desc="Giữ streak nhiều ngày."
+                            desc="Hệ thống tự động ghi nhận phần thưởng khi đạo hữu duy trì chuỗi tu tập liên tục. Đừng làm đứt chuỗi nhé!"
                             icon={<Target size={18} />}
                             missions={chainMissions}
                             totalCount={chainMissions.length}
@@ -406,35 +407,41 @@ function MissionTile({
     category: string;
     isChain?: boolean;
 }) {
+    const Component = isChain ? 'div' : 'button';
+    
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            className={`group relative aspect-square overflow-hidden rounded-[1.7rem] border p-4 text-left shadow-xl transition-all duration-300 hover:-translate-y-1 ${isCompleted
+        <Component
+            type={isChain ? undefined : 'button'}
+            onClick={isChain ? undefined : onClick}
+            className={`group relative aspect-square overflow-hidden rounded-[1.7rem] border p-4 text-left shadow-xl transition-all duration-300 ${
+                isChain ? '' : 'hover:-translate-y-1 cursor-pointer'
+            } ${isCompleted
                 ? 'border-jade-light/25 bg-jade/[0.08] shadow-[#0a1a10]/20'
-                : 'border-white/10 bg-[#101812]/90 shadow-black/25 hover:border-gold-light/35 hover:bg-[#162018]'
+                : `${isChain ? 'border-dashed border-white/20 bg-[#101812]/50 opacity-80' : 'border-white/10 bg-[#101812]/90 hover:border-gold-light/35 hover:bg-[#162018]'} shadow-black/25`
                 }`}
         >
-            <div className="absolute inset-0 transition-opacity duration-300 opacity-0 pointer-events-none group-hover:opacity-100">
-                <div className="absolute rounded-full -right-10 -top-10 h-28 w-28 bg-gold-light/15 blur-2xl" />
-            </div>
+            {!isChain && (
+                <div className="absolute inset-0 transition-opacity duration-300 opacity-0 pointer-events-none group-hover:opacity-100">
+                    <div className="absolute rounded-full -right-10 -top-10 h-28 w-28 bg-gold-light/15 blur-2xl" />
+                </div>
+            )}
 
             <div className="relative z-10 flex flex-col h-full">
                 <div className="flex items-start justify-between mb-3">
                     <div
-                        className={`grid h-12 w-12 place-items-center rounded-2xl text-2xl ring-1 ring-white/10 ${isCompleted ? 'bg-jade-light/10 opacity-50' : 'bg-white/[0.05]'
+                        className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-2xl ring-1 ring-white/10 ${isCompleted ? 'bg-jade-light/10 opacity-50' : 'bg-white/[0.05]'
                             }`}
                     >
                         {mission.icon}
                     </div>
 
                     <span
-                        className={`transition ${isCompleted
+                        className={`transition shrink-0 flex items-center justify-center ${isCompleted
                             ? 'text-jade-light'
-                            : 'text-white/25 group-hover:text-gold-light'
+                            : `text-white/25 ${isChain ? '' : 'group-hover:text-gold-light'}`
                             }`}
                     >
-                        {isCompleted ? <CheckCircle2 size={23} /> : <Circle size={23} />}
+                        {isCompleted ? <CheckCircle2 size={23} /> : (isChain ? <Lock size={18} /> : <Circle size={23} />)}
                     </span>
                 </div>
 
@@ -454,9 +461,16 @@ function MissionTile({
                 </div>
 
                 <div className="flex items-center justify-between gap-2 mt-3">
-                    <span className="truncate rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-parchment/40">
-                        {category}
-                    </span>
+                    <div className="flex items-center gap-2 overflow-hidden">
+                        <span className="truncate rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-parchment/40">
+                            {category}
+                        </span>
+                        {isChain && (
+                            <span className="shrink-0 rounded-full bg-orange-400/10 px-2 py-1 text-[10px] font-black text-orange-200 ring-1 ring-orange-300/10">
+                                Streak
+                            </span>
+                        )}
+                    </div>
 
                     <span
                         className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-black ring-1 ${isCompleted
@@ -467,14 +481,8 @@ function MissionTile({
                         +{mission.pts}
                     </span>
                 </div>
-
-                {isChain && (
-                    <div className="absolute left-4 top-16 rounded-full bg-orange-400/10 px-2 py-1 text-[10px] font-black text-orange-200 ring-1 ring-orange-300/10">
-                        Streak
-                    </div>
-                )}
             </div>
-        </button>
+        </Component>
     );
 }
 
