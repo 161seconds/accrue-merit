@@ -11,7 +11,8 @@ export default {
                 parchment: { DEFAULT: '#F0E6C8', 2: '#D8C89A' }
             },
             fontFamily: {
-                serif: ['Mulish', 'sans-serif'],
+                sans: ['Lora', 'serif'],
+                serif: ['Lora', 'serif'],
                 display: ['Lora', 'serif']
             }
         }
