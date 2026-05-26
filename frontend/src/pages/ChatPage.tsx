@@ -18,13 +18,22 @@ export default function ChatPage() {
     const [isTyping, setIsTyping] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const streamIntervalRef = useRef<number | null>(null)
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
 
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     useEffect(() => { scrollToBottom() }, [messages, isTyping])
 
+    // Auto resize textarea
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto'
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
+        }
+    }, [inputValue])
+
     const streamText = useCallback((msgId: string, fullText: string) => {
         let charIndex = 0
-        const speed = 18 
+        const speed = 15 
 
         if (streamIntervalRef.current) clearInterval(streamIntervalRef.current)
 
@@ -77,6 +86,7 @@ export default function ChatPage() {
         }
         setMessages(prev => [...prev, userMsg])
         setInputValue('')
+        if (textareaRef.current) textareaRef.current.style.height = 'auto'
         setIsTyping(true)
 
         try {
@@ -128,47 +138,47 @@ export default function ChatPage() {
     const formatTime = (d: Date) => d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-[#060a08] relative overflow-hidden">
-            {/* Ambient bg - breathing orbs */}
+        <div className="fixed inset-0 z-[100] flex flex-col bg-[#020504] overflow-hidden">
+            {/* Ambient bg */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className={`absolute top-1/3 left-1/4 w-96 h-96 rounded-full blur-[150px] transition-all duration-[3000ms] ${isTyping ? 'bg-jade/10 scale-125' : 'bg-jade/4 scale-100'}`} />
-                <div className={`absolute bottom-1/3 right-1/4 w-72 h-72 rounded-full blur-[120px] transition-all duration-[3000ms] ${isTyping ? 'bg-gold/8 scale-125' : 'bg-gold/3 scale-100'}`} />
-                {/* Subtle noise texture */}
-                <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+                <div className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[150px] transition-all duration-[4000ms] ${isTyping ? 'bg-gold-light/20 scale-110' : 'bg-gold-dim/10 scale-100'} -translate-y-1/2 translate-x-1/3`} />
+                <div className={`absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full blur-[150px] transition-all duration-[4000ms] delay-700 ${isTyping ? 'bg-jade/20 scale-110' : 'bg-jade/10 scale-100'} translate-y-1/3 -translate-x-1/4`} />
+                <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
             </div>
 
             {/* Header */}
-            <header className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-5 h-16 bg-[#060a08]/90 backdrop-blur-2xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
-                <button onClick={() => navigate(-1)} className="p-2.5 transition-all bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 rounded-xl cursor-pointer text-parchment/60 hover:text-parchment">
-                    <ArrowLeft size={18} />
+            <header className="absolute top-0 left-0 w-full z-50 flex items-center justify-between px-6 pt-safe-top h-20 bg-gradient-to-b from-[#020504]/90 to-transparent">
+                <button onClick={() => navigate(-1)} className="p-2 transition-all rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/5 text-parchment/70 hover:text-parchment">
+                    <ArrowLeft size={20} />
                 </button>
                 <div className="flex flex-col items-center">
                     <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-jade-light animate-pulse shadow-[0_0_8px_#4A9B6A]" />
-                        <h1 className="text-sm font-bold tracking-widest uppercase font-display text-parchment">Tuệ Năng AI</h1>
+                        <div className="relative flex items-center justify-center w-6 h-6">
+                            <div className="absolute inset-0 rounded-full bg-gold-light/30 animate-ping duration-3000" />
+                            <Sparkles size={14} className="text-gold-light relative z-10" />
+                        </div>
+                        <h1 className="text-sm font-black tracking-[0.2em] uppercase font-display text-transparent bg-clip-text bg-gradient-to-r from-gold-light to-parchment">Tuệ Năng</h1>
                     </div>
-                    <p className="text-[8px] tracking-[0.3em] uppercase text-gold-dim mt-0.5">Trợ lý Chánh niệm</p>
+                    <p className="text-[9px] tracking-[0.3em] uppercase text-jade-light/70 mt-1">Trợ lý Chánh niệm</p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
-                    <Sparkles size={16} className="text-gold-light/40" />
-                </div>
+                <div className="w-10 h-10" /> {/* Spacer */}
             </header>
 
             {/* Messages */}
-            <div className="relative z-10 flex-1 px-4 pt-20 pb-4 overflow-y-auto custom-scrollbar">
-                <div className="max-w-3xl mx-auto space-y-5">
+            <div className="relative z-10 flex-1 px-4 pt-24 pb-32 overflow-y-auto custom-scrollbar scroll-smooth">
+                <div className="max-w-3xl mx-auto space-y-6">
                     {messages.map((msg) => {
                         const isAI = msg.sender === 'ai'
                         return (
                             <div key={msg.id} className={`flex gap-3 w-full ${isAI ? 'justify-start' : 'justify-end'} animate-[fadeSlideIn_0.4s_ease-out]`}>
                                 {isAI && (
-                                    <div className="flex items-center justify-center w-9 h-9 mt-1 rounded-2xl bg-jade/15 text-jade-light shrink-0 border border-jade/15 shadow-[0_0_15px_rgba(74,155,106,0.1)]">
+                                    <div className="flex items-center justify-center w-8 h-8 mt-2 rounded-full bg-gradient-to-br from-gold-dim to-gold-light text-[#020504] shrink-0 shadow-[0_0_15px_rgba(201,168,76,0.3)]">
                                         <Bot size={16} />
                                     </div>
                                 )}
-                                <div className={`relative max-w-[80%] p-5 rounded-3xl shadow-xl ${isAI
-                                    ? 'bg-[#0a100d]/80 backdrop-blur-xl border border-white/5 text-parchment/90 rounded-tl-lg'
-                                    : 'bg-gradient-to-br from-gold/15 via-gold/10 to-gold/5 backdrop-blur-xl border border-gold/15 text-parchment rounded-tr-lg'
+                                <div className={`relative max-w-[85%] px-5 py-4 shadow-2xl ${isAI
+                                    ? 'bg-[#101812]/80 backdrop-blur-2xl border border-white/10 text-parchment/90 rounded-[2rem] rounded-tl-sm'
+                                    : 'bg-gradient-to-br from-gold-light/20 to-gold-dim/10 backdrop-blur-2xl border border-gold-light/20 text-parchment rounded-[2rem] rounded-tr-sm'
                                     }`}>
                                     <p className="text-sm leading-relaxed whitespace-pre-wrap font-serif">
                                         {renderMessageText(msg.displayText)}
@@ -177,7 +187,7 @@ export default function ChatPage() {
                                         )}
                                     </p>
                                     {!msg.isStreaming && (
-                                        <span className="block text-[8px] mt-3 opacity-20 text-right uppercase tracking-wider">
+                                        <span className="block text-[9px] mt-2 opacity-30 text-right uppercase tracking-wider">
                                             {formatTime(msg.timestamp)}
                                         </span>
                                     )}
@@ -189,49 +199,48 @@ export default function ChatPage() {
                     {/* Typing indicator */}
                     {isTyping && (
                         <div className="flex justify-start w-full gap-3 animate-[fadeSlideIn_0.3s_ease-out]">
-                            <div className="flex items-center justify-center w-9 h-9 mt-1 border rounded-2xl bg-jade/15 text-jade-light shrink-0 border-jade/15">
+                            <div className="flex items-center justify-center w-8 h-8 mt-2 rounded-full bg-gradient-to-br from-gold-dim to-gold-light text-[#020504] shrink-0 shadow-[0_0_10px_rgba(201,168,76,0.2)]">
                                 <Loader2 size={14} className="animate-spin" />
                             </div>
-                            <div className="bg-[#0a100d]/60 backdrop-blur-xl px-6 py-4 rounded-3xl rounded-tl-lg border border-white/5">
+                            <div className="bg-[#101812]/80 backdrop-blur-2xl px-6 py-5 rounded-[2rem] rounded-tl-sm border border-white/10 shadow-2xl">
                                 <div className="flex gap-2 items-center">
-                                    <div className="w-2 h-2 bg-jade-light/60 rounded-full animate-bounce" />
-                                    <div className="w-2 h-2 bg-jade-light/60 rounded-full animate-bounce [animation-delay:150ms]" />
-                                    <div className="w-2 h-2 bg-jade-light/60 rounded-full animate-bounce [animation-delay:300ms]" />
-                                    <span className="text-[10px] text-parchment/25 ml-2 italic font-serif">đang suy tư...</span>
+                                    <div className="w-2 h-2 bg-gold-light/60 rounded-full animate-bounce" />
+                                    <div className="w-2 h-2 bg-gold-light/60 rounded-full animate-bounce [animation-delay:150ms]" />
+                                    <div className="w-2 h-2 bg-gold-light/60 rounded-full animate-bounce [animation-delay:300ms]" />
+                                    <span className="text-[10px] text-parchment/40 ml-3 italic font-serif">Bần tăng đang niệm...</span>
                                 </div>
                             </div>
                         </div>
                     )}
-                    <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef} className="h-4" />
                 </div>
             </div>
 
-            {/* Input */}
-            <div className="relative z-20 shrink-0 w-full px-4 pt-3 pb-24 bg-gradient-to-t from-[#060a08] via-[#060a08]/95 to-transparent">
-                <div className="relative flex items-center max-w-3xl gap-3 mx-auto">
-                    <div className="relative flex-1">
-                        <input
-                            type="text"
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Gieo duyên đàm đạo..."
-                            className="w-full bg-[#0a100d]/90 backdrop-blur-xl border border-white/10 rounded-2xl py-4 pl-5 pr-4 text-sm text-parchment focus:outline-none focus:border-jade/40 focus:shadow-[0_0_25px_rgba(74,155,106,0.1)] transition-all placeholder:text-parchment/15 shadow-2xl font-serif"
-                        />
-                    </div>
+            {/* Input Container */}
+            <div className="absolute bottom-0 left-0 w-full z-20 px-4 pb-safe-bottom bg-gradient-to-t from-[#020504] via-[#020504]/90 to-transparent pt-12">
+                <div className="relative flex items-end max-w-3xl gap-2 mx-auto mb-6 p-1.5 bg-[#101812]/90 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+                    <textarea
+                        ref={textareaRef}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Thí chủ muốn đàm đạo điều gì..."
+                        className="w-full bg-transparent border-none py-3.5 pl-4 pr-2 text-sm text-parchment focus:outline-none resize-none min-h-[48px] max-h-32 placeholder:text-parchment/30 font-serif leading-relaxed custom-scrollbar"
+                        rows={1}
+                    />
                     <button
                         onClick={handleSendMessage}
                         disabled={!inputValue.trim() || isTyping}
-                        className="p-4 transition-all rounded-2xl bg-jade/30 text-jade-light hover:bg-jade/60 hover:text-white disabled:opacity-15 disabled:cursor-not-allowed border border-jade/20 hover:border-jade/40 cursor-pointer shadow-[0_0_20px_rgba(74,155,106,0.1)] hover:shadow-[0_0_30px_rgba(74,155,106,0.2)]"
+                        className="p-3.5 mb-0.5 mr-0.5 transition-all rounded-2xl bg-gold-light text-[#020504] hover:bg-parchment disabled:opacity-30 disabled:bg-white/5 disabled:text-parchment/50 cursor-pointer shadow-[0_0_15px_rgba(201,168,76,0.4)] disabled:shadow-none shrink-0 group"
                     >
-                        <Send size={18} />
+                        <Send size={18} className={inputValue.trim() ? "group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" : ""} />
                     </button>
                 </div>
             </div>
 
             <style>{`
                 @keyframes fadeSlideIn {
-                    0% { opacity: 0; transform: translateY(12px); }
+                    0% { opacity: 0; transform: translateY(16px); }
                     100% { opacity: 1; transform: translateY(0); }
                 }
                 @keyframes blink {

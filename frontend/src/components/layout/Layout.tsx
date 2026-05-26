@@ -11,7 +11,7 @@ export default function Layout() {
         <div className="relative flex flex-col min-h-screen page-bg">
             <Header />
 
-            <main className="flex flex-col flex-1 overflow-hidden">
+            <main className="flex flex-col flex-1 overflow-hidden pb-32">
                 <Outlet />
             </main>
 

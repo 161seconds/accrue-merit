@@ -1,4 +1,5 @@
 import axios from 'axios'
+import toast from 'react-hot-toast'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
@@ -82,7 +83,10 @@ api.interceptors.response.use(
             } catch (refreshError) {
                 processQueue(refreshError, null)
                 localStorage.clear()
-                window.location.href = '/login'
+                toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!', { duration: 3000 })
+                setTimeout(() => {
+                    window.location.href = '/login'
+                }, 2000)
                 return Promise.reject(refreshError)
             } finally {
                 isRefreshing = false

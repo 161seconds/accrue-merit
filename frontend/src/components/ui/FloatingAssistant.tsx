@@ -1,98 +1,32 @@
-import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext'; 
-import { Bot, Settings, LogOut, MessageSquare, X, Sparkles } from 'lucide-react';
+import { Bot } from 'lucide-react';
 
 export default function FloatingAssistant() {
-    const [isOpen, setIsOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
-    const { logout, user } = useAuth(); 
-
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const handleAction = (path: string) => {
-        setIsOpen(false);
-        navigate(path);
-    };
-
-    const handleLogout = () => {
-        setIsOpen(false);
-        logout();
-        navigate('/login'); 
-    };
 
     return (
-        <div ref={menuRef} className="fixed z-50 bottom-6 left-6">
-
-            {/* --- MENU POPUP --- */}
-            <div
-                className={`absolute bottom-full left-0 mb-4 w-60 bg-[#0a100d]/95 backdrop-blur-md border border-jade-900/50 rounded-2xl shadow-[0_0_40px_rgba(22,101,52,0.3)] transition-all duration-300 origin-bottom-left ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none'
-                    }`}
-            >
-                {/* Header của Menu */}
-                <div className="p-4 border-b border-white/5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-jade-900/30 text-jade-light">
-                            <Bot size={20} />
-                        </div>
-                        <div>
-                            <div className="text-[10px] text-gold-dim uppercase tracking-widest">Trợ lý</div>
-                            <div className="font-bold text-parchment">Tuệ Năng AI</div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Danh sách các nút chức năng */}
-                <div className="p-2">
-                    <button
-                        onClick={() => handleAction('/chat')}
-                        className="flex items-center w-full gap-3 p-3 transition-colors rounded-xl text-parchment/80 hover:bg-white/5 hover:text-gold-light"
-                    >
-                        <MessageSquare size={18} />
-                        <span className="text-sm font-medium">Trò chuyện với AI</span>
-                    </button>
-
-                    <button
-                        onClick={() => handleAction('/settings')}
-                        className="flex items-center w-full gap-3 p-3 transition-colors rounded-xl text-parchment/80 hover:bg-white/5 hover:text-gold-light"
-                    >
-                        <Settings size={18} />
-                        <span className="text-sm font-medium">Cài đặt tài khoản</span>
-                    </button>
-                </div>
-
-                {/* Nút Đăng xuất */}
-                <div className="p-2 border-t border-white/5">
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center w-full gap-3 p-3 transition-colors rounded-xl text-[#E8A090] hover:bg-red-500/10 hover:text-red-400"
-                    >
-                        <LogOut size={18} />
-                        <span className="text-sm font-medium">Đăng xuất</span>
-                    </button>
-                </div>
+        <div className="fixed z-50 bottom-28 right-6 sm:bottom-8 sm:right-8 group">
+            {/* Label Tooltip */}
+            <div className="absolute right-[calc(100%+12px)] top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-[#07100b]/90 backdrop-blur-md border border-white/10 text-xs font-bold text-parchment/80 whitespace-nowrap opacity-0 -translate-x-2 transition-all duration-300 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 shadow-xl">
+                Trợ lý AI
             </div>
 
-            {/* --- NÚT FLOATING CHÍNH --- */}
             <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#166534] to-[#064e3b] text-parchment shadow-lg hover:shadow-[0_0_25px_rgba(74,222,128,0.4)] hover:scale-105 transition-all duration-300"
+                onClick={() => navigate('/chat')}
+                className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[#1A1209] border border-gold-dim/40 shadow-[0_0_20px_rgba(201,168,76,0.2)] transition-all duration-500 hover:scale-110 hover:shadow-[0_0_35px_rgba(201,168,76,0.5)] hover:border-gold-light/80 outline-none"
             >
-                {/* Vòng sáng xoay nhẹ (trang trí) */}
-                <div className="absolute inset-0 border rounded-full animate-[spin_4s_linear_infinite] border-gold-dim/30 border-t-gold-light" />
-
-                {isOpen ? <X size={24} /> : <Sparkles size={24} className="text-gold-light" />}
+                {/* Glowing inner orb */}
+                <div className="absolute inset-1.5 rounded-full bg-gradient-to-br from-gold-light/30 to-transparent blur-[4px] transition-all duration-500 group-hover:from-gold-light/60" />
+                
+                {/* Spinning decorative ring */}
+                <div className="absolute inset-0 rounded-full border border-dashed border-gold-dim/40 animate-[spin_8s_linear_infinite]" />
+                
+                {/* The icon */}
+                <Bot size={24} strokeWidth={2.5} className="relative z-10 text-gold-light transition-all duration-500 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(201,168,76,0.8)]" />
+                
+                {/* Notification dot (optional, can be removed if not needed, but adds character) */}
+                <div className="absolute top-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-[#1A1209] animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
             </button>
-
         </div>
     );
 }
