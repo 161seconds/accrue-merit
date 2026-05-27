@@ -117,7 +117,7 @@ export default function TaskPage() {
     };
 
     return (
-        <main className="relative min-h-full bg-[#07100b] px-4 pb-16 pt-24 text-parchment sm:px-6">
+        <main className="relative min-h-full bg-transparent px-4 pb-32 pt-24 text-parchment sm:px-6">
             <GoldDust />
             {/* Background glow */}
             <div className="absolute inset-0 pointer-events-none">

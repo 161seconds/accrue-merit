@@ -50,7 +50,7 @@ export default function KarmaPage() {
     }
 
     return (
-        <div className="flex flex-col min-h-full bg-[#07100b] relative pt-24 pb-16 px-6">
+        <div className="flex flex-col min-h-full bg-transparent relative pt-24 pb-16 px-6">
             <GoldDust />
             {/* Ambient Background */}
             <div className="absolute inset-0 pointer-events-none">
