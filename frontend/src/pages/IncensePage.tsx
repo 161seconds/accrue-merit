@@ -87,8 +87,7 @@ export default function IncensePage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
 
                     {/* Left Column: The Altar */}
-                    <div className="lg:col-span-5 flex flex-col items-center justify-center bg-gradient-to-b from-black/20 to-black/60 rounded-[2rem] border border-white/5 relative min-h-[500px]">
-                        <div className="absolute top-0 w-full h-1/2 bg-gradient-to-b from-transparent to-orange-500/5 pointer-events-none opacity-50" />
+                    <div className="lg:col-span-5 flex flex-col items-center justify-center bg-[#0a100d]/80 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl relative min-h-[500px] overflow-hidden">
 
                         <div className="relative w-full h-full flex flex-col items-center justify-end pb-12">
                             {/* Incense Sticks */}
