@@ -11,7 +11,7 @@
 
 body {
     font-family: 'Lora', serif;
-    background: #0D0A04;
+    background: #07100b;
     color: #F0E6C8;
     height: 100dvh;
     overflow: hidden;
@@ -120,5 +120,5 @@ body {
     background:
         radial-gradient(ellipse at 20% 80%, rgba(46, 107, 72, 0.08) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 20%, rgba(201, 168, 76, 0.05) 0%, transparent 50%),
-        #0D0A04;
+        #07100b;
 }

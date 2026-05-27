@@ -19,7 +19,7 @@ export default function Footer() {
             style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         >
             {/* Ambient bottom glow - masks content scrolling behind the nav */}
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0D0A04] via-[#0D0A04]/70 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#07100b] via-[#07100b]/70 to-transparent" />
 
             <div className="relative flex justify-center px-4 pb-4">
                 <nav className="pointer-events-auto w-full max-w-[400px] bg-[#101812]/90 backdrop-blur-3xl border border-white/10 rounded-[18px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.8)] flex items-center justify-around px-1.5 py-1.5">

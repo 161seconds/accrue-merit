@@ -68,7 +68,7 @@ export default function WoodenFishPage() {
     }, [user, updateUser])
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-full bg-[#060a08] relative select-none">
+        <div className="flex flex-col items-center justify-center min-h-full bg-[#07100b] relative select-none">
             {/* Deep Zen Background */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-dark/3 rounded-full blur-[200px]" />

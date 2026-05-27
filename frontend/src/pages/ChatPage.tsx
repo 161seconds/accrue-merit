@@ -1,18 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Send, Bot, Sparkles, Loader2, ArrowLeft } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Send, Bot, Sparkles, Loader2 } from 'lucide-react'
 
 interface Message {
     id: string
     text: string
-    displayText: string 
+    displayText: string
     sender: 'ai' | 'user'
     timestamp: Date
     isStreaming: boolean
 }
 
 export default function ChatPage() {
-    const navigate = useNavigate()
     const [messages, setMessages] = useState<Message[]>([])
     const [inputValue, setInputValue] = useState('')
     const [isTyping, setIsTyping] = useState(false)
@@ -33,12 +31,12 @@ export default function ChatPage() {
 
     const streamText = useCallback((msgId: string, fullText: string) => {
         let charIndex = 0
-        const speed = 15 
+        const speed = 15
 
         if (streamIntervalRef.current) clearInterval(streamIntervalRef.current)
 
         streamIntervalRef.current = window.setInterval(() => {
-            charIndex += 1 + Math.floor(Math.random() * 2) 
+            charIndex += 1 + Math.floor(Math.random() * 2)
             if (charIndex >= fullText.length) {
                 charIndex = fullText.length
                 if (streamIntervalRef.current) clearInterval(streamIntervalRef.current)
@@ -138,25 +136,38 @@ export default function ChatPage() {
     const formatTime = (d: Date) => d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
 
     return (
-        <div className="fixed inset-0 z-[40] flex flex-col bg-[#020504]/90 backdrop-blur-3xl overflow-hidden pt-16">
-            {/* Ambient bg */}
-            <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 z-40 flex flex-col bg-[#07100b]">
+            {/* Ambient Backgrounds */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <div className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[150px] transition-all duration-[4000ms] ${isTyping ? 'bg-gold-light/20 scale-110' : 'bg-gold-dim/10 scale-100'} -translate-y-1/2 translate-x-1/3`} />
                 <div className={`absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full blur-[150px] transition-all duration-[4000ms] delay-700 ${isTyping ? 'bg-jade/20 scale-110' : 'bg-jade/10 scale-100'} translate-y-1/3 -translate-x-1/4`} />
-                <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+                {/* Subtle Zen Grid */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, rgba(201,168,76,0.4) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
             </div>
 
-            {/* No custom header, using global header */}
-
-            {/* Messages */}
-            <div className="relative z-10 flex-1 px-4 pt-8 pb-4 overflow-y-auto custom-scrollbar scroll-smooth">
+            {/* Messages — takes remaining space and scrolls */}
+            <div className="relative z-10 flex-1 overflow-y-auto px-4 pt-24 pb-4 custom-scrollbar scroll-smooth">
                 <div className="max-w-3xl mx-auto space-y-6">
+                    {/* Decorative Header inside scroll area */}
+                    <div className="flex flex-col items-center justify-center mb-8 animate-[fadeSlideIn_0.8s_ease-out]">
+                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-gold-dim/20 to-gold-light/5 border border-gold-light/20 mb-3 shadow-[0_0_20px_rgba(201,168,76,0.15)]">
+                            <Sparkles className="text-gold-light w-6 h-6" />
+                        </div>
+                        <h2 className="text-xl font-black font-display tracking-widest text-transparent bg-gradient-to-r from-gold-light to-gold-dim bg-clip-text uppercase mb-1">
+                            Tuệ Năng AI
+                        </h2>
+                        <div className="flex items-center gap-2 text-xs font-serif italic text-parchment/40">
+                            <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-gold-dim/50" />
+                            Đàm đạo chánh niệm
+                            <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-gold-dim/50" />
+                        </div>
+                    </div>
                     {messages.map((msg) => {
                         const isAI = msg.sender === 'ai'
                         return (
                             <div key={msg.id} className={`flex gap-3 w-full ${isAI ? 'justify-start' : 'justify-end'} animate-[fadeSlideIn_0.4s_ease-out]`}>
                                 {isAI && (
-                                    <div className="flex items-center justify-center w-8 h-8 mt-2 rounded-full bg-gradient-to-br from-gold-dim to-gold-light text-[#020504] shrink-0 shadow-[0_0_15px_rgba(201,168,76,0.3)]">
+                                    <div className="flex items-center justify-center w-8 h-8 mt-2 rounded-full bg-gradient-to-br from-gold-dim to-gold-light text-[#07100b] shrink-0 shadow-[0_0_15px_rgba(201,168,76,0.3)]">
                                         <Bot size={16} />
                                     </div>
                                 )}
@@ -183,7 +194,7 @@ export default function ChatPage() {
                     {/* Typing indicator */}
                     {isTyping && (
                         <div className="flex justify-start w-full gap-3 animate-[fadeSlideIn_0.3s_ease-out]">
-                            <div className="flex items-center justify-center w-8 h-8 mt-2 rounded-full bg-gradient-to-br from-gold-dim to-gold-light text-[#020504] shrink-0 shadow-[0_0_10px_rgba(201,168,76,0.2)]">
+                            <div className="flex items-center justify-center w-8 h-8 mt-2 rounded-full bg-gradient-to-br from-gold-dim to-gold-light text-[#07100b] shrink-0 shadow-[0_0_10px_rgba(201,168,76,0.2)]">
                                 <Loader2 size={14} className="animate-spin" />
                             </div>
                             <div className="bg-[#101812]/80 backdrop-blur-2xl px-6 py-5 rounded-[2rem] rounded-tl-sm border border-white/10 shadow-2xl">
@@ -200,9 +211,9 @@ export default function ChatPage() {
                 </div>
             </div>
 
-            {/* Input Container */}
-            <div className="relative w-full z-20 px-4 pb-[110px] pt-4 bg-[#020504]/80 backdrop-blur-md border-t border-white/5">
-                <div className="relative flex items-end max-w-3xl gap-2 mx-auto mb-6 p-1.5 bg-[#101812]/90 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+            {/* Input — pinned at bottom of this container */}
+            <div className="relative z-20 w-full px-4 pb-28 pt-4 bg-gradient-to-t from-[#07100b] via-[#07100b]/95 to-transparent">
+                <div className="relative flex items-end max-w-3xl gap-2 mx-auto p-1.5 bg-[#101812]/90 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
                     <textarea
                         ref={textareaRef}
                         value={inputValue}
@@ -215,7 +226,7 @@ export default function ChatPage() {
                     <button
                         onClick={handleSendMessage}
                         disabled={!inputValue.trim() || isTyping}
-                        className="p-3.5 mb-0.5 mr-0.5 transition-all rounded-2xl bg-gold-light text-[#020504] hover:bg-parchment disabled:opacity-30 disabled:bg-white/5 disabled:text-parchment/50 cursor-pointer shadow-[0_0_15px_rgba(201,168,76,0.4)] disabled:shadow-none shrink-0 group"
+                        className="p-3.5 mb-0.5 mr-0.5 transition-all rounded-2xl bg-gold-light text-[#07100b] hover:bg-parchment disabled:opacity-30 disabled:bg-white/5 disabled:text-parchment/50 cursor-pointer shadow-[0_0_15px_rgba(201,168,76,0.4)] disabled:shadow-none shrink-0 group"
                     >
                         <Send size={18} className={inputValue.trim() ? "group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" : ""} />
                     </button>
