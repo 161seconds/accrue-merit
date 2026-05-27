@@ -14,6 +14,7 @@ import {
 import { missionApi } from '@/api/mission.api';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import GoldDust from '@/components/ui/GoldDust';
 
 interface Mission {
     _id?: string;
@@ -117,6 +118,7 @@ export default function TaskPage() {
 
     return (
         <main className="relative min-h-full bg-[#07100b] px-4 pb-16 pt-24 text-parchment sm:px-6">
+            <GoldDust />
             {/* Background glow */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute left-1/2 top-0 h-[420px] w-[760px] -translate-x-1/2 rounded-full bg-gold-light/10 blur-[120px]" />

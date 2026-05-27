@@ -3,6 +3,7 @@ import { wishApi } from '@/api/wish.api'
 import { Wish } from '@/types'
 import toast from 'react-hot-toast'
 import { Trash2, Sparkles, Send, Flame } from 'lucide-react'
+import GoldDust from '@/components/ui/GoldDust'
 
 const WISH_CATEGORIES = [
     { value: 'suc-khoe', label: 'Sức khoẻ' },
@@ -66,6 +67,7 @@ export default function IncensePage() {
 
     return (
         <div className="flex flex-col min-h-full bg-[#07100b] relative pt-24 pb-16 px-6">
+            <GoldDust />
             {/* Dark Ambient Background */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className={`absolute top-1/2 left-1/4 w-96 h-96 rounded-full blur-[150px] transition-all duration-1000 ${burning ? 'bg-orange-500/10 scale-150' : 'bg-gold-dark/5 scale-100'}`} />
