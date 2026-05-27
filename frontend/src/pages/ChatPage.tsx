@@ -137,7 +137,7 @@ export default function ChatPage() {
     const formatTime = (d: Date) => d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
 
     return (
-        <div className="absolute inset-0 z-40 flex flex-col bg-[#07100b]">
+        <div className="absolute inset-0 z-40 flex flex-col bg-transparent">
             <GoldDust />
             {/* Ambient Backgrounds */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">

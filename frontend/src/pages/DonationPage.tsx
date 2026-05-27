@@ -33,7 +33,7 @@ export default function DonationPage() {
     };
 
     return (
-        <div className="min-h-full bg-[#07100b] pt-28 pb-16 px-6 relative">
+        <div className="min-h-full bg-transparent pt-28 pb-32 px-6 relative">
             {/* Gold Dust Particles */}
             <GoldDust />
 
