@@ -13,7 +13,8 @@ body {
     font-family: 'Lora', serif;
     background: #0D0A04;
     color: #F0E6C8;
-    min-height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
 }
 
 ::-webkit-scrollbar {

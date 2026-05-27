@@ -12,7 +12,7 @@ export default function HomePage() {
   const totalPoints = stats ? stats.ducTotal : 0
 
   return (
-    <div className="relative flex flex-col items-center justify-between flex-1 w-full min-h-screen py-12 overflow-hidden bg-[#0f1a14]">
+    <div className="relative flex flex-col items-center justify-between flex-1 w-full h-full min-h-[650px] py-12 bg-[#0f1a14]">
 
       {/* --- LỚP 3D BACKGROUND --- */}
       <div className="absolute inset-0 z-0">
@@ -35,11 +35,11 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* --- PHẦN MIDDLE: ĐIỂM SỐ & NÚT BẤM KÉO LÊN GIỮA --- */}
-      <div className="relative z-10 flex flex-col items-center w-full px-6 pointer-events-none">
+      {/* --- PHẦN TRUNG TÂM: ĐIỂM SỐ, NÚT BẤM & THỐNG KÊ (Gộp chung để xích lại gần nhau) --- */}
+      <div className="relative z-10 flex flex-col items-center w-full px-6 pointer-events-none gap-8">
 
         {stats && (
-          <div className="text-center mb-10 animate-[fadeIn_0.9s_0.5s_both]">
+          <div className="text-center animate-[fadeIn_0.9s_0.5s_both]">
             <div className="text-[9px] tracking-[0.3em] text-gold-dim uppercase mb-2 drop-shadow-md">
               Công đức hiện tại
             </div>
@@ -49,39 +49,43 @@ export default function HomePage() {
           </div>
         )}
 
-        <div className="flex gap-4 w-full max-w-[280px] animate-[fadeIn_0.9s_0.8s_both] pointer-events-auto">
-          <button
-            onClick={() => navigate('/karma')}
-            className="flex items-center justify-center flex-1 gap-2 py-3 text-sm transition-all shadow-xl btn-jade shadow-green-900/40 hover:shadow-green-500/60 hover:-translate-y-1"
-          >
-            🪷 Ghi đức
-          </button>
-          <button
-            onClick={() => navigate('/karma')}
-            className="flex items-center justify-center flex-1 gap-2 py-3 text-sm transition-all shadow-xl btn-red shadow-red-900/40 hover:shadow-red-500/60 hover:-translate-y-1"
-          >
-            ⚡ Ghi tội
-          </button>
+        <div className="flex flex-col items-center w-full gap-8 pointer-events-auto">
+          {/* Nút bấm */}
+          <div className="flex gap-4 w-full max-w-[280px] animate-[fadeIn_0.9s_0.8s_both]">
+            <button
+              onClick={() => navigate('/karma')}
+              className="flex items-center justify-center flex-1 gap-2 py-3 text-sm transition-all shadow-xl btn-jade shadow-green-900/40 hover:shadow-green-500/60 hover:-translate-y-1"
+            >
+              🪷 Ghi đức
+            </button>
+            <button
+              onClick={() => navigate('/karma')}
+              className="flex items-center justify-center flex-1 gap-2 py-3 text-sm transition-all shadow-xl btn-red shadow-red-900/40 hover:shadow-red-500/60 hover:-translate-y-1"
+            >
+              ⚡ Ghi tội
+            </button>
+          </div>
+
+          {/* Stats Boards */}
+          {stats && (
+            <div className="grid grid-cols-3 gap-4 w-full max-w-[360px] animate-[fadeIn_0.9s_1.1s_both]">
+              {[
+                { label: 'TỔNG ĐỨC', value: stats.ducTotal, color: 'text-jade-light' },
+                { label: 'TỔNG TỘI', value: stats.toiTotal, color: 'text-[#E8A090]' },
+                { label: 'GÕ MÕ', value: stats.moCount, color: 'text-gold-light' }
+              ].map((s) => (
+                <div key={s.label} className="p-4 text-center transition-all bg-[#0a100d]/60 backdrop-blur-md border border-white/10 rounded-2xl hover:bg-[#0a100d]/80 hover:border-gold-dim/30 card">
+                  <div className="text-[9px] text-parchment/60 uppercase tracking-widest mb-1">{s.label}</div>
+                  <div className={`font-display text-2xl font-bold ${s.color}`}>{s.value}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-
-      {/* --- PHẦN BOTTOM: STATS BOARDS (Cách xa Footer) --- */}
-      <div className="relative z-10 flex justify-center w-full px-6 mb-10 pointer-events-auto">
-        {stats && (
-          <div className="grid grid-cols-3 gap-4 w-full max-w-[360px] animate-[fadeIn_0.9s_1.1s_both]">
-            {[
-              { label: 'TỔNG ĐỨC', value: stats.ducTotal, color: 'text-jade-light' },
-              { label: 'TỔNG TỘI', value: stats.toiTotal, color: 'text-[#E8A090]' },
-              { label: 'GÕ MÕ', value: stats.moCount, color: 'text-gold-light' }
-            ].map((s) => (
-              <div key={s.label} className="p-4 text-center transition-all bg-[#0a100d]/60 backdrop-blur-md border border-white/10 rounded-2xl hover:bg-[#0a100d]/80 hover:border-gold-dim/30 card">
-                <div className="text-[9px] text-parchment/60 uppercase tracking-widest mb-1">{s.label}</div>
-                <div className={`font-display text-2xl font-bold ${s.color}`}>{s.value}</div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      
+      {/* Spacer để giữ cho phần trung tâm được đẩy lên một chút khỏi BottomNav */}
+      <div className="h-20" />
 
     </div>
   )

@@ -138,7 +138,7 @@ export default function ChatPage() {
     const formatTime = (d: Date) => d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
 
     return (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-[#020504] overflow-hidden">
+        <div className="fixed inset-0 z-[40] flex flex-col bg-[#020504]/90 backdrop-blur-3xl overflow-hidden pt-16">
             {/* Ambient bg */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[150px] transition-all duration-[4000ms] ${isTyping ? 'bg-gold-light/20 scale-110' : 'bg-gold-dim/10 scale-100'} -translate-y-1/2 translate-x-1/3`} />
@@ -146,26 +146,10 @@ export default function ChatPage() {
                 <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
             </div>
 
-            {/* Header */}
-            <header className="absolute top-0 left-0 w-full z-50 flex items-center justify-between px-6 pt-safe-top h-20 bg-gradient-to-b from-[#020504]/90 to-transparent">
-                <button onClick={() => navigate(-1)} className="p-2 transition-all rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/5 text-parchment/70 hover:text-parchment">
-                    <ArrowLeft size={20} />
-                </button>
-                <div className="flex flex-col items-center">
-                    <div className="flex items-center gap-2">
-                        <div className="relative flex items-center justify-center w-6 h-6">
-                            <div className="absolute inset-0 rounded-full bg-gold-light/30 animate-ping duration-3000" />
-                            <Sparkles size={14} className="text-gold-light relative z-10" />
-                        </div>
-                        <h1 className="text-sm font-black tracking-[0.2em] uppercase font-display text-transparent bg-clip-text bg-gradient-to-r from-gold-light to-parchment">Tuệ Năng</h1>
-                    </div>
-                    <p className="text-[9px] tracking-[0.3em] uppercase text-jade-light/70 mt-1">Trợ lý Chánh niệm</p>
-                </div>
-                <div className="w-10 h-10" /> {/* Spacer */}
-            </header>
+            {/* No custom header, using global header */}
 
             {/* Messages */}
-            <div className="relative z-10 flex-1 px-4 pt-24 pb-32 overflow-y-auto custom-scrollbar scroll-smooth">
+            <div className="relative z-10 flex-1 px-4 pt-8 pb-4 overflow-y-auto custom-scrollbar scroll-smooth">
                 <div className="max-w-3xl mx-auto space-y-6">
                     {messages.map((msg) => {
                         const isAI = msg.sender === 'ai'
@@ -217,7 +201,7 @@ export default function ChatPage() {
             </div>
 
             {/* Input Container */}
-            <div className="absolute bottom-0 left-0 w-full z-20 px-4 pb-safe-bottom bg-gradient-to-t from-[#020504] via-[#020504]/90 to-transparent pt-12">
+            <div className="relative w-full z-20 px-4 pb-[110px] pt-4 bg-[#020504]/80 backdrop-blur-md border-t border-white/5">
                 <div className="relative flex items-end max-w-3xl gap-2 mx-auto mb-6 p-1.5 bg-[#101812]/90 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
                     <textarea
                         ref={textareaRef}

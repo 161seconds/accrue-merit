@@ -49,7 +49,7 @@ export default function KarmaPage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#0f1a14] relative overflow-hidden pt-24 pb-16 px-6">
+        <div className="flex flex-col min-h-full bg-[#0f1a14] relative pt-24 pb-16 px-6">
             {/* Ambient Background */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-jade-light/5 rounded-full blur-[120px]" />
