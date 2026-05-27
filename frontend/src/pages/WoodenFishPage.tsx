@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { woodenFishApi } from '@/api/woodenfish.api'
 import { useAuth } from '@/contexts/AuthContext'
 import { Sparkles } from 'lucide-react'
+import GoldDust from '@/components/ui/GoldDust'
 
 interface Ripple {
     id: number
@@ -69,6 +70,7 @@ export default function WoodenFishPage() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-full bg-[#07100b] relative select-none">
+            <GoldDust />
             {/* Deep Zen Background */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-dark/3 rounded-full blur-[200px]" />

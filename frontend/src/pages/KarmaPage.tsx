@@ -4,6 +4,7 @@ import { KarmaLog } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import toast from 'react-hot-toast'
 import { Plus, Trash2, Sparkles, TrendingUp, TrendingDown } from 'lucide-react'
+import GoldDust from '@/components/ui/GoldDust'
 
 const CATEGORIES = ['Từ thiện', 'Gia đình', 'Học tập', 'Công việc', 'Sức khoẻ', 'Môi trường', 'Khác']
 
@@ -50,6 +51,7 @@ export default function KarmaPage() {
 
     return (
         <div className="flex flex-col min-h-full bg-[#07100b] relative pt-24 pb-16 px-6">
+            <GoldDust />
             {/* Ambient Background */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-jade-light/5 rounded-full blur-[120px]" />

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Send, Bot, Sparkles, Loader2 } from 'lucide-react'
+import GoldDust from '@/components/ui/GoldDust'
 
 interface Message {
     id: string
@@ -137,6 +138,7 @@ export default function ChatPage() {
 
     return (
         <div className="absolute inset-0 z-40 flex flex-col bg-[#07100b]">
+            <GoldDust />
             {/* Ambient Backgrounds */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <div className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[150px] transition-all duration-[4000ms] ${isTyping ? 'bg-gold-light/20 scale-110' : 'bg-gold-dim/10 scale-100'} -translate-y-1/2 translate-x-1/3`} />

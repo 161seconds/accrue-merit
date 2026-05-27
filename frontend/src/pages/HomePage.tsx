@@ -49,7 +49,7 @@ export default function HomePage() {
           </div>
         )}
 
-        <div className="flex flex-col items-center w-full gap-8 pointer-events-auto">
+        <div className="flex flex-col items-center gap-8 pointer-events-auto">
           {/* Nút bấm */}
           <div className="flex gap-4 w-full max-w-[280px] animate-[fadeIn_0.9s_0.8s_both]">
             <button
