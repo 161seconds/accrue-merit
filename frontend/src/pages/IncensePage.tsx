@@ -65,7 +65,7 @@ export default function IncensePage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#070b09] relative overflow-hidden pt-24 pb-16 px-6">
+        <div className="flex flex-col min-h-full bg-[#070b09] relative pt-24 pb-16 px-6">
             {/* Dark Ambient Background */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className={`absolute top-1/2 left-1/4 w-96 h-96 rounded-full blur-[150px] transition-all duration-1000 ${burning ? 'bg-orange-500/10 scale-150' : 'bg-gold-dark/5 scale-100'}`} />
