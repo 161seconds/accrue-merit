@@ -51,5 +51,5 @@ export default function GoldDust() {
         return () => cancelAnimationFrame(animId);
     }, []);
 
-    return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />;
+    return <canvas ref={canvasRef} className="fixed inset-0 w-full h-full pointer-events-none z-0" style={{ pointerEvents: 'none' }} />;
 }
