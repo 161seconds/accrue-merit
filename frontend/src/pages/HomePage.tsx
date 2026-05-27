@@ -12,7 +12,7 @@ export default function HomePage() {
   const totalPoints = stats ? stats.ducTotal : 0
 
   return (
-    <div className="relative flex flex-col items-center justify-between flex-1 w-full h-full min-h-[650px] py-12 bg-[#0f1a14]">
+    <div className="relative flex flex-col items-center justify-between flex-1 w-full h-full min-h-[650px] py-12 bg-[#07100b]">
 
       {/* --- LỚP 3D BACKGROUND --- */}
       <div className="absolute inset-0 z-0">

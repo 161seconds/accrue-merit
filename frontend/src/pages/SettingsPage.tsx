@@ -66,7 +66,7 @@ export default function SettingsPage() {
     };
 
     return (
-        <main className="relative min-h-full overflow-x-hidden bg-[#07100b] px-4 pb-24 pt-24 text-parchment sm:px-6 flex flex-col">
+        <main className="relative min-h-full overflow-x-hidden bg-[#07100b] px-4 pb-16 pt-24 text-parchment sm:px-6 flex flex-col">
             {/* Background glow elements */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute left-1/2 top-0 h-[400px] w-[700px] -translate-x-1/2 rounded-full bg-gold-light/10 blur-[120px]" />

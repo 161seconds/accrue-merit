@@ -13,7 +13,7 @@ export default function Layout() {
         <div className="relative flex flex-col h-[100dvh] w-full page-bg overflow-hidden">
             <Header />
 
-            <main className={`flex flex-col flex-1 w-full overflow-y-auto overflow-x-hidden custom-scrollbar ${isHomePage ? 'pb-0' : 'pb-24'}`}>
+            <main className="relative flex flex-col flex-1 w-full overflow-y-auto overflow-x-hidden custom-scrollbar">
                 <Outlet />
             </main>
 
