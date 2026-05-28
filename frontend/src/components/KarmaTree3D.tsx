@@ -1,5 +1,8 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from "react";
 import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 
 // ─── CONSTANTS ───
 const CLUSTER_THRESHOLD = 10;
@@ -12,17 +15,17 @@ const GREEN_LEAF_COLORS = [
     "#1e3f20", "#163822", "#22543d", "#276749", "#2f855a"
 ];
 const YELLOW_LEAF_COLORS = [
-    "#FFFF00", "#FFF700", "#FFEA00", "#FFFF33", "#FFFF66"
+    "#FFB300", "#FFC107", "#FFA000", "#FF8F00", "#F5B041"
 ];
-// Sắc màu chùm quả/đèn công đức hoàn toàn là Vàng hoàng kim và Xanh lục bảo, loại bỏ sắc đỏ
+// Sắc màu chùm quả/đèn công đức chuyển sang tone xanh lá chủ đạo
 const CLUSTER_COLORS = [
-    "#eab308", "#facc15", "#d4af37", // Vàng hoàng kim
-    "#4ade80", "#22c55e", "#10b981"  // Xanh ngọc / xanh tươi
+    "#2d5a27", "#3b7a33", "#4c9a41", 
+    "#244c1e", "#22543d", "#276749"  
 ];
 
-// TONE MÀU BÌNH MINH (DAWN) & ĐỒNG CỎ
-const FOG_COLOR = "#d4c5b0";
-const AMBIENT_COLOR = "#8c8273";
+// TONE MÀU SÁNG SỚM (MORNING) MỜ SƯƠNG NHẸ
+const FOG_COLOR = "#d0ccc0"; // Giảm độ chói của bầu trời/sương
+const AMBIENT_COLOR = "#a6a096"; // Sáng hơn
 const GRASS_COLOR = "#3b5e2b";
 
 // ─── SEEDED RANDOM ───
@@ -267,48 +270,73 @@ function createTemple(scene: THREE.Scene) {
 
     const temple = new THREE.Group();
 
-    // 1. Base (Nền đá lớn hơn một chút)
-    const base = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.4, 3.8), stoneMat);
+    const applyNoise = (geo: THREE.BufferGeometry, intensity: number) => {
+        const pos = geo.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+            pos.setXYZ(
+                i, 
+                pos.getX(i) + (Math.random() - 0.5) * intensity,
+                pos.getY(i) + (Math.random() - 0.5) * intensity,
+                pos.getZ(i) + (Math.random() - 0.5) * intensity
+            );
+        }
+        geo.computeVertexNormals();
+        return geo;
+    };
+
+    // 1. Base (Nền đá lớn hơn một chút, có texture)
+    const baseGeo = applyNoise(new THREE.BoxGeometry(5.0, 0.4, 3.8, 12, 2, 10), 0.06);
+    const base = new THREE.Mesh(baseGeo, stoneMat);
     base.position.set(0, 0, 0);
     temple.add(base);
 
     // Bậc thềm (Steps)
-    const step1 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.2, 0.6), stoneMat);
+    const step1Geo = applyNoise(new THREE.BoxGeometry(2.0, 0.2, 0.6, 6, 2, 3), 0.04);
+    const step1 = new THREE.Mesh(step1Geo, stoneMat);
     step1.position.set(0, -0.1, 2.0);
     temple.add(step1);
-    const step2 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.2, 0.6), stoneMat);
+    
+    const step2Geo = applyNoise(new THREE.BoxGeometry(2.0, 0.2, 0.6, 6, 2, 3), 0.04);
+    const step2 = new THREE.Mesh(step2Geo, stoneMat);
     step2.position.set(0, -0.3, 2.4);
     temple.add(step2);
 
     // 2. Walls (3 bức tường, mặt trước mở)
     // Tường sau
-    const backWall = new THREE.Mesh(new THREE.BoxGeometry(4.0, 2.5, 0.2), wallMat);
+    const backWallGeo = applyNoise(new THREE.BoxGeometry(4.0, 2.5, 0.2, 10, 8, 2), 0.05);
+    const backWall = new THREE.Mesh(backWallGeo, wallMat);
     backWall.position.set(0, 1.45, -1.3);
     temple.add(backWall);
     // Tường trái
-    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.5, 2.6), wallMat);
+    const leftWallGeo = applyNoise(new THREE.BoxGeometry(0.2, 2.5, 2.6, 2, 8, 8), 0.05);
+    const leftWall = new THREE.Mesh(leftWallGeo, wallMat);
     leftWall.position.set(-1.9, 1.45, 0);
     temple.add(leftWall);
     // Tường phải
-    const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.5, 2.6), wallMat);
+    const rightWallGeo = applyNoise(new THREE.BoxGeometry(0.2, 2.5, 2.6, 2, 8, 8), 0.05);
+    const rightWall = new THREE.Mesh(rightWallGeo, wallMat);
     rightWall.position.set(1.9, 1.45, 0);
     temple.add(rightWall);
 
     // 3. Nội thất (Interior)
     // Bàn thờ (Altar)
-    const altar = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.8, 0.8), altarMat);
+    const altarGeo = applyNoise(new THREE.BoxGeometry(2.0, 0.8, 0.8, 6, 4, 3), 0.03);
+    const altar = new THREE.Mesh(altarGeo, altarMat);
     altar.position.set(0, 0.6, -0.8);
     temple.add(altar);
 
     // Tượng phật đơn giản (Buddha statue)
     const buddhaGroup = new THREE.Group();
-    const bBase = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.2, 16), goldMat);
+    const bBaseGeo = applyNoise(new THREE.CylinderGeometry(0.4, 0.4, 0.2, 16, 2), 0.02);
+    const bBase = new THREE.Mesh(bBaseGeo, goldMat);
     bBase.position.y = 0.1;
     buddhaGroup.add(bBase);
-    const bBody = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.35, 0.7, 16), goldMat);
+    const bBodyGeo = applyNoise(new THREE.CylinderGeometry(0.25, 0.35, 0.7, 16, 4), 0.02);
+    const bBody = new THREE.Mesh(bBodyGeo, goldMat);
     bBody.position.y = 0.55;
     buddhaGroup.add(bBody);
-    const bHead = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), goldMat);
+    const bHeadGeo = applyNoise(new THREE.SphereGeometry(0.22, 16, 16), 0.015);
+    const bHead = new THREE.Mesh(bHeadGeo, goldMat);
     bHead.position.y = 1.0;
     buddhaGroup.add(bHead);
     buddhaGroup.position.set(0, 1.0, -0.8);
@@ -338,7 +366,8 @@ function createTemple(scene: THREE.Scene) {
     }
 
     // Lư hương (Incense Burner on altar)
-    const burner = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.2, 8), goldMat);
+    const burnerGeo = applyNoise(new THREE.CylinderGeometry(0.12, 0.1, 0.2, 8, 2), 0.01);
+    const burner = new THREE.Mesh(burnerGeo, goldMat);
     burner.position.set(0, 1.1, -0.5);
     temple.add(burner);
     const incense = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.3), candleMat);
@@ -348,23 +377,27 @@ function createTemple(scene: THREE.Scene) {
     // 4. Pillars (4 cột đỏ phía trước và giữa)
     for (let i of [-1, 1]) {
         // Cột trước
-        const pFront = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 2.8, 8), pillarMat);
+        const pFrontGeo = applyNoise(new THREE.CylinderGeometry(0.12, 0.15, 2.8, 8, 8), 0.02);
+        const pFront = new THREE.Mesh(pFrontGeo, pillarMat);
         pFront.position.set(i * 1.8, 1.6, 1.2);
         temple.add(pFront);
         // Cột giữa
-        const pMid = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 2.8, 8), pillarMat);
+        const pMidGeo = applyNoise(new THREE.CylinderGeometry(0.12, 0.15, 2.8, 8, 8), 0.02);
+        const pMid = new THREE.Mesh(pMidGeo, pillarMat);
         pMid.position.set(i * 1.8, 1.6, 0);
         temple.add(pMid);
     }
 
-    // 5. Roof (Mái chùa cong)
+    // 5. Roof (Mái chùa cong, thêm texture)
     // Tầng mái dưới
-    const roof1 = new THREE.Mesh(new THREE.ConeGeometry(3.6, 1.0, 4), roofMat);
+    const roof1Geo = applyNoise(new THREE.ConeGeometry(3.6, 1.0, 16, 6), 0.08);
+    const roof1 = new THREE.Mesh(roof1Geo, roofMat);
     roof1.position.y = 3.2;
     roof1.rotation.y = Math.PI / 4;
     temple.add(roof1);
     // Tầng mái trên
-    const roof2 = new THREE.Mesh(new THREE.ConeGeometry(2.5, 1.2, 4), roofMat);
+    const roof2Geo = applyNoise(new THREE.ConeGeometry(2.5, 1.2, 16, 6), 0.08);
+    const roof2 = new THREE.Mesh(roof2Geo, roofMat);
     roof2.position.y = 4.0;
     roof2.rotation.y = Math.PI / 4;
     temple.add(roof2);
@@ -422,7 +455,68 @@ function createWell(scene: THREE.Scene) {
 
     wellGroup.position.set(-10, -1, -5);
     wellGroup.scale.setScalar(1.3);
+    wellGroup.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+        }
+    });
     scene.add(wellGroup);
+}
+
+function createPond(scene: THREE.Scene) {
+    const pondGroup = new THREE.Group();
+    const pondRadius = 3.2;
+
+    // Mặt nước hình tròn mượt mà
+    const waterGeo = new THREE.CylinderGeometry(pondRadius, pondRadius, 0.1, 32);
+    const waterMat = new THREE.MeshStandardMaterial({ 
+        color: '#1a4a4a', 
+        metalness: 0.98, 
+        roughness: 0.02, 
+        transparent: true, 
+        opacity: 0.85 
+    });
+    const water = new THREE.Mesh(waterGeo, waterMat);
+    water.position.y = -0.95;
+    water.receiveShadow = true;
+    pondGroup.add(water);
+
+    // Bờ hồ: Sỏi đá cuội đan xen
+    const rockMat1 = new THREE.MeshStandardMaterial({ color: '#556b55', roughness: 0.8 });
+    const rockMat2 = new THREE.MeshStandardMaterial({ color: '#445544', roughness: 0.8 });
+    const rockCount = 40;
+    for(let i=0; i<rockCount; i++) {
+        const angle = (i / rockCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.1;
+        const r = pondRadius + 0.2 + (Math.random() - 0.5) * 0.3;
+        const size = 0.3 + Math.random() * 0.4;
+        const rockGeo = new THREE.DodecahedronGeometry(size, 1);
+        const rock = new THREE.Mesh(rockGeo, Math.random() > 0.5 ? rockMat1 : rockMat2);
+        rock.position.set(Math.cos(angle) * r, -0.9 - size*0.3, Math.sin(angle) * r);
+        rock.rotation.set(Math.random(), Math.random(), Math.random());
+        rock.scale.set(1, 0.6 + Math.random()*0.4, 1);
+        rock.castShadow = true;
+        rock.receiveShadow = true;
+        pondGroup.add(rock);
+    }
+
+    // Thêm vài lá sen nổi trên mặt nước
+    const padMat = new THREE.MeshStandardMaterial({ color: '#2d5a27', roughness: 0.9 });
+    for(let i=0; i<5; i++) {
+        const padRadius = 0.2 + Math.random() * 0.3;
+        // Hình trụ dẹp, khuyết một góc để giống lá sen
+        const padGeo = new THREE.CylinderGeometry(padRadius, padRadius, 0.02, 12, 1, false, 0, Math.PI * 1.8);
+        const pad = new THREE.Mesh(padGeo, padMat);
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.random() * (pondRadius - 0.5);
+        pad.position.set(Math.cos(angle) * r, -0.89, Math.sin(angle) * r);
+        pad.rotation.y = Math.random() * Math.PI * 2;
+        pad.receiveShadow = true;
+        pondGroup.add(pad);
+    }
+
+    pondGroup.position.set(-11, 0, 3);
+    scene.add(pondGroup);
 }
 
 function createGrassAndReeds(scene: THREE.Scene) {
@@ -538,9 +632,19 @@ function createSun(scene: THREE.Scene) {
     halo.position.copy(sun.position);
     scene.add(halo);
 
-    const sunLight = new THREE.DirectionalLight('#ffddaa', 1.2);
+    const sunLight = new THREE.DirectionalLight('#ffddaa', 2.0);
     sunLight.position.copy(sun.position);
     sunLight.target.position.set(0, 0, 0);
+    sunLight.castShadow = true;
+    sunLight.shadow.camera.left = -40;
+    sunLight.shadow.camera.right = 40;
+    sunLight.shadow.camera.top = 40;
+    sunLight.shadow.camera.bottom = -40;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 150;
+    sunLight.shadow.bias = -0.0005;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
     scene.add(sunLight);
     scene.add(sunLight.target);
 }
@@ -608,7 +712,7 @@ export function KarmaTreeCanvas({
 
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(FOG_COLOR);
-        scene.fog = new THREE.FogExp2(FOG_COLOR, 0.015);
+        scene.fog = new THREE.FogExp2(FOG_COLOR, 0.006); // Sương mù sáng sớm nhè nhẹ
 
         const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 200);
         camera.position.set(8, 5, 8);
@@ -619,15 +723,45 @@ export function KarmaTreeCanvas({
             alpha: false,
         });
         renderer.setSize(width, height);
-        renderer.setPixelRatio(1);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.0;
+        renderer.toneMappingExposure = 1.1; // Giảm phơi sáng để bầu trời không bị chói
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        const ambient = new THREE.AmbientLight(AMBIENT_COLOR, 1.2);
+        const renderScene = new RenderPass(scene, camera);
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.4, 0.4, 0.85);
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        const firefliesCount = 200;
+        const firefliesGeo = new THREE.BufferGeometry();
+        const firefliesPos = new Float32Array(firefliesCount * 3);
+        const firefliesPhase = new Float32Array(firefliesCount);
+        for(let i=0; i<firefliesCount; i++) {
+            firefliesPos[i*3] = (Math.random() - 0.5) * 40;
+            firefliesPos[i*3+1] = Math.random() * 8;
+            firefliesPos[i*3+2] = (Math.random() - 0.5) * 40;
+            firefliesPhase[i] = Math.random() * Math.PI * 2;
+        }
+        firefliesGeo.setAttribute('position', new THREE.BufferAttribute(firefliesPos, 3));
+        firefliesGeo.setAttribute('phase', new THREE.BufferAttribute(firefliesPhase, 1));
+        const firefliesMat = new THREE.PointsMaterial({
+            color: '#ffddaa',
+            size: 0.15,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+        const fireflies = new THREE.Points(firefliesGeo, firefliesMat);
+        scene.add(fireflies);
+
+        const ambient = new THREE.AmbientLight(AMBIENT_COLOR, 2.0);
         scene.add(ambient);
 
-        const pointLight1 = new THREE.PointLight("#ffddaa", 0.6, 40);
+        const pointLight1 = new THREE.PointLight("#ffddaa", 1.2, 40);
         pointLight1.position.set(5, 6, 8);
         scene.add(pointLight1);
 
@@ -651,18 +785,32 @@ export function KarmaTreeCanvas({
         createMountains(scene);
         createTemple(scene);
         createWell(scene);
+        createPond(scene);
         createGrassAndReeds(scene);
         createSun(scene);
         createFlowers(scene);
         const mists = createMistLayers(scene);
 
-        const ribbonGeo = new THREE.PlaneGeometry(0.15, 0.8);
-        ribbonGeo.translate(0, -0.4, 0);
+        // Bật đổ bóng toàn cảnh
+        scene.traverse((object) => {
+            if (object instanceof THREE.Mesh || object instanceof THREE.InstancedMesh) {
+                // Không đổ bóng cho vật thể trong suốt hoặc mặt trời
+                const mat = object.material as THREE.Material;
+                if (mat && mat.transparent) return;
+                if (object.geometry instanceof THREE.SphereGeometry && object.position.y > 20) return;
+                object.castShadow = true;
+                object.receiveShadow = true;
+            }
+        });
+
         // Ruy băng màu đỏ nhám tĩnh lặng
         const ribbonMat = new THREE.MeshStandardMaterial({ color: "#dc2626", roughness: 1.0, metalness: 0.0, side: THREE.DoubleSide });
         const ribbons: THREE.Mesh[] = [];
-        branches.filter(b => b.depth === 3).forEach((b) => {
-            if (Math.random() > 0.7) {
+        branches.filter(b => b.depth >= 2 && b.depth <= 4).forEach((b) => {
+            if (Math.random() > 0.65) {
+                const ribbonLength = 1.0 + Math.random() * 2.0; // ruy băng dài ngắn khác nhau từ 1.0 đến 3.0
+                const ribbonGeo = new THREE.PlaneGeometry(0.12, ribbonLength);
+                ribbonGeo.translate(0, -ribbonLength / 2, 0);
                 const ribbon = new THREE.Mesh(ribbonGeo, ribbonMat);
                 ribbon.position.copy(b.end);
                 ribbon.rotation.y = Math.random() * Math.PI;
@@ -721,9 +869,9 @@ export function KarmaTreeCanvas({
         for (let i = 0; i < maxLeaves; i++) {
             const basePos = leafPositions[i % leafPositions.length];
             const offset = new THREE.Vector3(
-                (leafRand() - 0.5) * 2.8,
-                (leafRand() - 0.6) * 2.4,
-                (leafRand() - 0.5) * 2.8
+                (leafRand() - 0.5) * 1.5,
+                (leafRand() - 0.4) * 1.5,
+                (leafRand() - 0.5) * 1.5
             );
             const finalPos = basePos.clone().add(offset);
             const finalRot = new THREE.Euler(
@@ -757,12 +905,12 @@ export function KarmaTreeCanvas({
         scene.add(leafInstances);
 
         const state = {
-            scene, camera, renderer, leafInstances, clusterGroups: [] as THREE.Group[],
+            scene, camera, renderer, composer, fireflies, leafInstances, clusterGroups: [] as THREE.Group[],
             animationId: 0, isDragging: false, prevMouse: { x: 0, y: 0 },
             cameraAngle: { theta: Math.PI / 4, phi: Math.PI / 5, radius: 14 },
             targetAngle: { theta: Math.PI / 4, phi: Math.PI / 5, radius: 14 },
             clock: new THREE.Clock(), branches, leafPositions, clusterPositions,
-            prevPoints: 0, totalPoints: 0, leafOpacities, leafScales, leafInitialPositions, leafInitialRotations, mists
+            prevPoints: 0, totalPoints: 0, leafOpacities, leafScales, leafInitialPositions, leafInitialRotations, mists, firefliesCount
         };
         sceneRef.current = state;
 
@@ -814,22 +962,27 @@ export function KarmaTreeCanvas({
 
             state.clusterGroups.forEach((group, gi) => {
                 group.children.forEach((child, ci) => {
-                    child.rotation.z = Math.sin(time * 0.5 + gi * 0.8 + ci * 0.3) * 0.04;
-                    child.rotation.x = Math.cos(time * 0.3 + gi * 0.5) * 0.02;
+                    // Xóa hiệu ứng gió đung đưa
                 });
             });
 
-            ribbons.forEach((ribbon, i) => {
-                ribbon.rotation.x = Math.sin(time * 2 + i) * 0.15;
-                ribbon.rotation.z = Math.cos(time * 1.5 + i) * 0.1;
-            });
+            // Xóa hiệu ứng đung đưa của ruy băng
 
             state.mists.forEach((m, i) => {
                 m.position.x = Math.sin(time * 0.08 + i * 2.5) * 6;
                 (m.material as THREE.MeshBasicMaterial).opacity = 0.03 + Math.sin(time * 0.15 + i * 1.3) * 0.015;
             });
 
-            renderer.render(scene, camera);
+            // Fireflies animation
+            const fPos = state.fireflies.geometry.attributes.position.array as Float32Array;
+            const fPhase = state.fireflies.geometry.attributes.phase.array as Float32Array;
+            for(let i=0; i<state.firefliesCount; i++) {
+                fPos[i*3] += Math.cos(time * 0.5 + fPhase[i]) * 0.01;
+                fPos[i*3+1] += Math.sin(time * 0.3 + fPhase[i]) * 0.01;
+            }
+            state.fireflies.geometry.attributes.position.needsUpdate = true;
+
+            state.composer.render();
         }
         animate();
 
@@ -858,6 +1011,7 @@ export function KarmaTreeCanvas({
             camera.aspect = w / h;
             camera.updateProjectionMatrix();
             renderer.setSize(w, h);
+            state.composer.setSize(w, h);
         };
         window.addEventListener("resize", onResize);
 
