@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="petalDark" x1="64" y1="18" x2="64" y2="100">
+      <stop offset="0%" stop-color="#ff5f9f"/>
+      <stop offset="100%" stop-color="#f43f86"/>
+    </linearGradient>
+
+    <linearGradient id="petalMid" x1="64" y1="32" x2="64" y2="104">
+      <stop offset="0%" stop-color="#ff8fbc"/>
+      <stop offset="100%" stop-color="#f85f9e"/>
+    </linearGradient>
+
+    <linearGradient id="petalLight" x1="64" y1="42" x2="64" y2="106">
+      <stop offset="0%" stop-color="#ffd0e2"/>
+      <stop offset="100%" stop-color="#ff9fc6"/>
+    </linearGradient>
+
+    <linearGradient id="leafGreen" x1="64" y1="86" x2="64" y2="122">
+      <stop offset="0%" stop-color="#7ac943"/>
+      <stop offset="100%" stop-color="#4f9f2f"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M64 101C34 94 19 70 16 38C39 37 59 57 64 101Z" fill="url(#petalDark)"/>
+  <path d="M64 101C94 94 109 70 112 38C89 37 69 57 64 101Z" fill="url(#petalDark)"/>
+
+  <path d="M64 101C42 84 36 52 47 24C68 29 78 67 64 101Z" fill="url(#petalDark)"/>
+  <path d="M64 101C86 84 92 52 81 24C60 29 50 67 64 101Z" fill="url(#petalDark)"/>
+
+  <path d="M64 101C43 73 47 35 64 12C81 35 85 73 64 101Z" fill="url(#petalMid)"/>
+
+  <path d="M64 103C42 95 27 76 27 54C45 58 62 75 64 103Z" fill="url(#petalLight)"/>
+  <path d="M64 103C86 95 101 76 101 54C83 58 66 75 64 103Z" fill="url(#petalLight)"/>
+
+  <path d="M64 104C49 84 51 54 64 36C77 54 79 84 64 104Z" fill="url(#petalMid)"/>
+
+  <path d="M64 101C44 117 22 110 11 95C29 82 52 86 64 101Z" fill="url(#leafGreen)"/>
+  <path d="M64 101C84 117 106 110 117 95C99 82 76 86 64 101Z" fill="url(#leafGreen)"/>
+  <path d="M64 99C73 106 75 116 64 124C53 116 55 106 64 99Z" fill="url(#leafGreen)"/>
+</svg>

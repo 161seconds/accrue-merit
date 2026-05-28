@@ -48,8 +48,7 @@ export default function TaskPage() {
 
                 setMissions(Array.isArray(data) ? data : []);
 
-                // Nếu backend có trả completedIds thì mở dòng này:
-                // setCompleted(response.data.completedIds || []);
+                setCompleted(response.data.completedIds || []);
             } catch (err: any) {
                 console.error('Lỗi kết nối Backend:', err);
                 setError('Không thể thỉnh danh sách nhiệm vụ. Xin đạo hữu kiểm tra lại kết nối.');
