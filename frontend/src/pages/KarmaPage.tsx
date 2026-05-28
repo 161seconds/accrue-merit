@@ -3,8 +3,9 @@ import { karmaApi } from '@/api/karma.api'
 import { KarmaLog } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import toast from 'react-hot-toast'
-import { Plus, Trash2, Sparkles, TrendingUp, TrendingDown } from 'lucide-react'
+import { Plus, Trash2, Sparkles, TrendingUp, TrendingDown, Leaf, Zap } from 'lucide-react'
 import GoldDust from '@/components/ui/GoldDust'
+import { LotusIcon } from '@/components/ui/Icons'
 
 const CATEGORIES = ['Từ thiện', 'Gia đình', 'Học tập', 'Công việc', 'Sức khoẻ', 'Môi trường', 'Khác']
 
@@ -29,7 +30,7 @@ export default function KarmaPage() {
         setLoading(true)
         try {
             await karmaApi.create({ type: tab, ...form })
-            toast.success(tab === 'duc' ? 'Ghi đức thành công 🪷' : 'Ghi tội thành công')
+            toast.success(tab === 'duc' ? <span className="flex items-center gap-2">Ghi đức thành công <LotusIcon className="w-4 h-4" /></span> : 'Ghi tội thành công')
             setForm({ title: '', description: '', points: 5, category: 'Khác' })
             fetchLogs()
             refreshProfile()
@@ -110,7 +111,10 @@ export default function KarmaPage() {
                                         : 'text-parchment/40 hover:text-parchment/70 bg-transparent border-transparent'
                                         }`}
                                 >
-                                    {t === 'duc' ? '🪷 Tích Đức' : '⚡ Ghi Tội'}
+                                    <span className="flex items-center justify-center gap-2">
+                                        {t === 'duc' ? <LotusIcon className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+                                        {t === 'duc' ? 'Tích Đức' : 'Ghi Tội'}
+                                    </span>
                                 </button>
                             ))}
                         </div>
@@ -177,7 +181,12 @@ export default function KarmaPage() {
                                         : 'bg-red-500 hover:bg-red-400 text-white shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:shadow-[0_0_30px_rgba(239,68,68,0.5)]'
                                     }`}
                                 >
-                                    {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : (tab === 'duc' ? '🪷 Lưu Phước Đức' : '⚡ Ghi Nhận Nghiệp')}
+                                    {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : (
+                                        <>
+                                            {tab === 'duc' ? <LotusIcon className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+                                            {tab === 'duc' ? 'Lưu Phước Đức' : 'Ghi Nhận Nghiệp'}
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -199,7 +208,7 @@ export default function KarmaPage() {
                                 {logs.length === 0 ? (
                                     <div className="h-full flex flex-col items-center justify-center text-parchment/30 space-y-4 py-20">
                                         <div className="w-20 h-20 rounded-full border border-dashed border-white/20 flex items-center justify-center text-3xl">
-                                            {tab === 'duc' ? '🪷' : '🍃'}
+                                            {tab === 'duc' ? <LotusIcon className="w-8 h-8" /> : <Leaf className="w-8 h-8" />}
                                         </div>
                                         <div className="text-sm">Chưa có bản ghi nào trong sổ tay.</div>
                                     </div>

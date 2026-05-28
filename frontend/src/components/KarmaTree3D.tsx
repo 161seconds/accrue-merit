@@ -1,5 +1,7 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from "react";
 import * as THREE from "three";
+import { Sparkles, Star, Leaf } from 'lucide-react';
+import { LotusIcon } from '@/components/ui/Icons';
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
@@ -1184,8 +1186,8 @@ export default function KarmaTree() {
             >
                 <div style={{ maxWidth: 400, margin: "0 auto 16px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#86EFAC", marginBottom: 4, letterSpacing: "0.15em" }}>
-                        <span>🍃 {currentLeaves} / {CLUSTER_THRESHOLD} LÁ</span>
-                        <span>✨ {totalClusters} CHÙM LÁ</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Leaf size={12} /> {currentLeaves} / {CLUSTER_THRESHOLD} LÁ</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Sparkles size={12} /> {totalClusters} CHÙM LÁ</span>
                     </div>
                     <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
                         <div style={{ height: "100%", width: `${(currentLeaves / CLUSTER_THRESHOLD) * 100}%`, background: "linear-gradient(90deg, #166534, #4ADE80, #FACC15)", borderRadius: 2, transition: "width 0.5s ease" }} />
@@ -1193,9 +1195,9 @@ export default function KarmaTree() {
                 </div>
 
                 <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-                    <button onClick={addPoint} style={btnStyle("#166534", "#4ADE80")}>🪷 +1 Đức</button>
-                    <button onClick={() => addMany(10)} style={btnStyle("#A16207", "#FACC15")}>✨ +10</button>
-                    <button onClick={() => addMany(50)} style={btnStyle("#D97706", "#FDE047")}>🌟 +50 (1 Chùm)</button>
+                    <button onClick={addPoint} style={btnStyle("#166534", "#4ADE80")}><LotusIcon style={{ width: 14, height: 14 }} /> +1 Đức</button>
+                    <button onClick={() => addMany(10)} style={btnStyle("#A16207", "#FACC15")}><Sparkles size={14} /> +10</button>
+                    <button onClick={() => addMany(50)} style={btnStyle("#D97706", "#FDE047")}><Star size={14} /> +50 (1 Chùm)</button>
                     <button onClick={() => setTotalPoints(0)} style={{ ...btnStyle("#333", "#888"), fontSize: 11, padding: "8px 14px" }}>Reset</button>
                 </div>
 
@@ -1213,5 +1215,6 @@ function btnStyle(borderColor: string, textColor: string): React.CSSProperties {
         background: `linear-gradient(135deg, ${borderColor}22, ${borderColor}08)`, color: textColor,
         fontFamily: "'Noto Serif', serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.06em",
         cursor: "pointer", transition: "all 0.25s",
+        display: "flex", alignItems: "center", gap: "6px", justifyContent: "center"
     };
 }

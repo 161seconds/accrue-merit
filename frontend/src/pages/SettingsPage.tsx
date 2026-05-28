@@ -4,7 +4,7 @@ import { userApi } from '@/api/user.api';
 import { useNavigate } from 'react-router-dom';
 import Dialog from '@/components/ui/Dialog';
 import toast from 'react-hot-toast';
-import { User, Lock, Type, Palette, Globe, Trash2, ChevronRight, LogOut, Settings as SettingsIcon, Shield, Mail } from 'lucide-react';
+import { User, Lock, Type, Palette, Globe, Trash2, ChevronRight, LogOut, Settings as SettingsIcon, Shield, Mail, AlertTriangle } from 'lucide-react';
 
 export default function SettingsPage() {
     const { user, updateUser, logout } = useAuth();
@@ -264,7 +264,7 @@ export default function SettingsPage() {
                 </div>
             </Dialog>
 
-            <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)} title="⚠️ Xoá Tài Khoản" actions={
+            <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)} title={<span className="flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-red-500" /> Xoá Tài Khoản</span>} actions={
                 <div className="flex w-full gap-3 pt-2">
                     <button className="flex-1 py-3 text-sm font-bold rounded-xl bg-white/5 text-parchment/60 hover:bg-white/10 transition-colors" onClick={() => setDeleteDialog(false)}>Huỷ, giữ lại</button>
                     <button className="flex-1 py-3 text-sm font-bold text-white rounded-xl bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-all" onClick={handleDeleteAccount}>Xoá Vĩnh Viễn</button>

@@ -173,7 +173,7 @@ export default function RegisterPage() {
                         <div className="absolute -top-10 -right-10 w-32 h-32 opacity-[0.02] border border-amber-600 rounded-full animate-[spin_60s_linear_infinite]" />
 
                         <h1 className="text-3xl font-black tracking-tight text-white">
-                            Khởi đầu hành trình <span className="inline-block animate-[wave_1.8s_ease-in-out_infinite]">✨</span>
+                            Khởi đầu hành trình <Sparkles className="inline-block animate-[wave_1.8s_ease-in-out_infinite] w-5 h-5 ml-1" />
                         </h1>
                         <p className="mt-2 text-sm leading-relaxed text-[#a8a18e]">
                             Điền thông tin bên dưới để tạo tài khoản mới.

@@ -3,6 +3,7 @@ import { woodenFishApi } from '@/api/woodenfish.api'
 import { useAuth } from '@/contexts/AuthContext'
 import { Sparkles } from 'lucide-react'
 import GoldDust from '@/components/ui/GoldDust'
+import { WoodenFishIcon } from '@/components/ui/Icons'
 
 interface Ripple {
     id: number
@@ -141,9 +142,9 @@ export default function WoodenFishPage() {
                     
                     {/* Center icon area */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center">
-                            <div className="text-5xl mb-1 drop-shadow-lg">🪘</div>
-                        </div>
+                            <div className="flex justify-center items-center mb-1 drop-shadow-lg">
+                                <WoodenFishIcon className="w-16 h-16 text-parchment" />
+                            </div>
                     </div>
 
                     {/* Highlight arc */}
