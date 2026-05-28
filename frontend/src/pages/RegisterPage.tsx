@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '@/api/auth.api';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Lock, User, Calendar, Star, Leaf, Flower2, ChevronRight, Flame, Mail, BadgeCent } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, Calendar, Star, Leaf, Flower2, ChevronRight, Flame, Mail, BadgeCent, Sparkles } from 'lucide-react';
 
 // --- HIỆU ỨNG THẺ LƠ LỬNG BÊN TRÁI (BUDDHIST & AMBER THEME) ---
 function FloatingBuddhistCards() {
