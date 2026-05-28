@@ -196,7 +196,7 @@ function createMountains(scene: THREE.Scene) {
         // NEAR LAYER
         { x: -25, z: 15, h: 10, r: 8, mat: matNear },
         { x: 28, z: 10, h: 9, r: 7, mat: matNear },
-        { x: -18, z: -10, h: 8, r: 6, mat: matNear },
+        { x: -25, z: -12, h: 8, r: 6, mat: matNear }, // Đã di chuyển xa khỏi chùa
         { x: 22, z: -12, h: 7, r: 5, mat: matNear },
         { x: -22, z: 0, h: 9, r: 7, mat: matNear },
         { x: 20, z: 0, h: 8, r: 6, mat: matNear },
@@ -209,28 +209,28 @@ function createMountains(scene: THREE.Scene) {
     ];
 
     const baseColorMap = new Map([
-        [matFar, new THREE.Color('#3A4F5E')], // Mist slate blue (Far)
-        [matMid, new THREE.Color('#2C3E50')], // Slate (Mid)
-        [matNear, new THREE.Color('#1F2D3D')] // Dark Slate (Near)
+        [matFar, new THREE.Color('#4a5e47')], // Forest green (Far)
+        [matMid, new THREE.Color('#3e4a3d')], // Mid green
+        [matNear, new THREE.Color('#2b3824')] // Dark green (Near)
     ]);
     const snowColor = new THREE.Color('#ffffff');
 
     mountains.forEach(p => {
-        // Cone Geometry có 4 radial segments tạo mỏm đá vát góc sắc nhọn, mạnh mẽ
-        const geo = new THREE.ConeGeometry(p.r, p.h, 4, 6);
+        // Cone Geometry có nhiều segment hơn để tạo texture lồi lõm cho núi
+        const geo = new THREE.ConeGeometry(p.r, p.h, 16, 12);
         const pos = geo.attributes.position;
         const rand = seededRandom(p.x * 7 + p.z * 13);
         const colors = [];
-        const baseColor = baseColorMap.get(p.mat) || new THREE.Color('#2C3E50');
+        const baseColor = baseColorMap.get(p.mat) || new THREE.Color('#4a5e47');
 
         for (let i = 0; i < pos.count; i++) {
             const y = pos.getY(i);
             const factor = Math.max(0, (y + p.h / 2) / p.h); // Tỉ lệ độ cao (0 đến 1)
 
-            // Gây nhiễu nhẹ nhàng để giữ form đá sắc nét thay vì phình to lồi lõm
-            const dx = (rand() - 0.5) * p.r * 0.1 * factor;
-            const dy = (rand() - 0.5) * p.h * 0.05 * factor;
-            const dz = (rand() - 0.5) * p.r * 0.1 * factor;
+            // Gây nhiễu mạnh hơn để tạo bề mặt ghồ ghề (texture)
+            const dx = (rand() - 0.5) * p.r * 0.25 * factor;
+            const dy = (rand() - 0.5) * p.h * 0.1 * factor;
+            const dz = (rand() - 0.5) * p.r * 0.25 * factor;
             pos.setX(i, pos.getX(i) + dx);
             pos.setY(i, y + dy);
             pos.setZ(i, pos.getZ(i) + dz);

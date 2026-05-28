@@ -176,10 +176,10 @@ export default function SettingsPage() {
                                 </span>
                                 <select
                                     className="px-3 py-1.5 text-xs font-medium bg-black/40 border rounded-lg outline-none cursor-pointer text-gold-light border-gold-dim/30 hover:border-gold-light/50 transition-colors"
-                                    value={user?.settings.font || 'Noto Serif'}
+                                    value={user?.settings.font || 'Lora'}
                                     onChange={(e) => handleUpdateFont(e.target.value)}
                                 >
-                                    {['Noto Serif', 'Cinzel', 'Quicksand', 'Playfair Display'].map((f) => (
+                                    {['Lora', 'Cinzel', 'Quicksand', 'Playfair Display'].map((f) => (
                                         <option key={f} value={f} className="bg-[#111812] text-parchment">{f}</option>
                                     ))}
                                 </select>
