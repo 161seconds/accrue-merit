@@ -12,7 +12,7 @@ import {
     Lock,
     Clock,
 } from 'lucide-react';
-import { PrayIcon } from '@/components/ui/Icons';
+import { PrayIcon, MissionIcon } from '@/components/ui/Icons';
 import { missionApi } from '@/api/mission.api';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -435,7 +435,7 @@ function MissionTile({
                         className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-2xl ring-1 ring-white/10 ${isCompleted ? 'bg-jade-light/10 opacity-50' : 'bg-white/[0.05]'
                             }`}
                     >
-                        {mission.icon}
+                        <MissionIcon icon={mission.icon} className="w-7 h-7" />
                     </div>
 
                     <span
