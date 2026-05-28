@@ -10,7 +10,9 @@ import {
     AlertCircle,
     Sparkles,
     Lock,
+    Clock,
 } from 'lucide-react';
+import { PrayIcon } from '@/components/ui/Icons';
 import { missionApi } from '@/api/mission.api';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -82,7 +84,7 @@ export default function TaskPage() {
             await missionApi.complete(missionId);
 
             if (!isCurrentlyCompleted) {
-                toast.success('Đã hoàn thành nhiệm vụ và cộng điểm! 🙏');
+                toast.success(<span className="flex items-center gap-2">Đã hoàn thành nhiệm vụ và cộng điểm! <PrayIcon className="w-4 h-4" /></span>);
                 await refreshProfile(); // Cập nhật lại điểm số
             }
         } catch (err: any) {

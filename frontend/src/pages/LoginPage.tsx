@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { authApi } from '@/api/auth.api';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Lock, User, Calendar, Star, Leaf, Flower2, ChevronRight, Flame } from 'lucide-react';
+import { PrayIcon } from '@/components/ui/Icons';
 
 // --- HIỆU ỨNG THẺ LƠ LỬNG BÊN TRÁI (BUDDHIST & AMBER THEME) ---
 function FloatingBuddhistCards() {
@@ -200,7 +201,7 @@ export default function LoginPage() {
                         <div className="absolute -top-10 -right-10 w-32 h-32 opacity-[0.02] border border-amber-600 rounded-full animate-[spin_60s_linear_infinite]" />
 
                         <h1 className="text-3xl font-black tracking-tight text-white">
-                            Tĩnh lặng và Thức tỉnh <span className="inline-block animate-[wave_1.8s_ease-in-out_infinite]">🙏</span>
+                            Tĩnh lặng và Thức tỉnh <PrayIcon className="inline-block animate-[wave_1.8s_ease-in-out_infinite] w-5 h-5 ml-1" />
                         </h1>
                         <p className="mt-2 text-sm leading-relaxed text-[#a8a18e]">
                             Vui lòng đăng nhập tài khoản để tiếp tục công việc an lạc.

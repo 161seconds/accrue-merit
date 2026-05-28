@@ -2,6 +2,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import Ornament from '@/components/ui/Ornament'
 import { KarmaTreeCanvas } from '@/components/KarmaTree3D'
+import { Zap } from 'lucide-react'
+import { LotusIcon } from '@/components/ui/Icons'
 
 const CLUSTER_THRESHOLD = 50
 
@@ -56,13 +58,13 @@ export default function HomePage() {
               onClick={() => navigate('/karma')}
               className="flex items-center justify-center flex-1 gap-2 py-3 text-sm transition-all shadow-xl btn-jade shadow-green-900/40 hover:shadow-green-500/60 hover:-translate-y-1"
             >
-              🪷 Ghi đức
+              <LotusIcon className="w-4 h-4 inline-block" /> Ghi đức
             </button>
             <button
               onClick={() => navigate('/karma')}
               className="flex items-center justify-center flex-1 gap-2 py-3 text-sm transition-all shadow-xl btn-red shadow-red-900/40 hover:shadow-red-500/60 hover:-translate-y-1"
             >
-              ⚡ Ghi tội
+              <Zap className="w-4 h-4 inline-block" /> Ghi tội
             </button>
           </div>
 

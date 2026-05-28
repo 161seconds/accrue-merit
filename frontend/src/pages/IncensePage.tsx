@@ -4,6 +4,7 @@ import { Wish } from '@/types'
 import toast from 'react-hot-toast'
 import { Trash2, Sparkles, Send, Flame } from 'lucide-react'
 import GoldDust from '@/components/ui/GoldDust'
+import { PrayIcon } from '@/components/ui/Icons'
 
 const WISH_CATEGORIES = [
     { value: 'suc-khoe', label: 'Sức khoẻ' },
@@ -45,7 +46,7 @@ export default function IncensePage() {
         setBurning(true)
         try {
             await wishApi.create({ category, content: content.trim(), incense_type: incenseType })
-            toast.success('Lời nguyện đã được gửi đi 🙏')
+            toast.success(<span className="flex items-center gap-2">Lời nguyện đã được gửi đi <PrayIcon className="w-4 h-4" /></span>)
             setContent('')
             fetchWishes()
             setTimeout(() => setBurning(false), 60000) // Khói bốc 1 phút

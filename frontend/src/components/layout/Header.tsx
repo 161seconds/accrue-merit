@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { LogOut, Settings, Flame } from 'lucide-react'
+import { LotusIcon } from '@/components/ui/Icons'
 
 export default function Header() {
     const { user, isAuthenticated, logout } = useAuth()
@@ -17,8 +18,8 @@ export default function Header() {
         <header className="fixed top-0 left-0 z-50 w-full px-4 py-3 flex items-center justify-between bg-black/20 backdrop-blur-[24px] border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)] transition-all duration-300">
             <Link to="/" className="flex items-center gap-3 no-underline group">
                     <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-gold-dim to-gold-light p-[1.5px] group-hover:scale-105 transition-transform duration-300 shadow-[0_0_15px_rgba(201,168,76,0.2)]">
-                        <div className="w-full h-full bg-[#07100b] rounded-full flex items-center justify-center text-gold-light text-sm">
-                            🪷
+                        <div className="w-full h-full bg-[#07100b] rounded-full flex items-center justify-center text-gold-light">
+                            <LotusIcon className="w-5 h-5" />
                         </div>
                     </div>
                     <div className="flex flex-col">
